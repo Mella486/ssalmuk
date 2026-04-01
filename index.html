@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="google-site-verification" content="SXVf-m8jIWeAUG0y9I19GzX5hSdY1vUqVhLyyeK1V_g" />
 
 <!-- ════════════════════════════════════
      SEO 기본 태그
@@ -137,18 +138,31 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .game-info{flex:1;min-width:0;}
 .name-row{display:flex;align-items:center;gap:7px;min-width:0;}
 .game-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
-.comm-btn{display:flex;align-items:center;gap:4px;flex-shrink:0;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:3px 7px 3px 5px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s,background .15s;white-space:nowrap;}
+.comm-btn{display:flex;align-items:center;gap:4px;flex-shrink:0;background:var(--bg3);border:1.5px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 7px 3px 5px;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
 .comm-btn:active{transform:scale(.96);}
-.comm-btn:hover{background:var(--bg4);border-color:rgba(255,255,255,.18);}
-.comm-btn.act-warm{border-color:rgba(251,146,60,.3);}
-.comm-btn.act-hot{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.06);}
-.comm-btn.act-hot .cb-icon{animation:hotpulse 1.8s infinite;}
-@keyframes hotpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes flash-cold{0%,100%{border-color:rgba(163,230,53,.12);}50%{border-color:rgba(163,230,53,.75);}}
+@keyframes flash-warm{0%,100%{border-color:rgba(251,146,60,.12);}50%{border-color:rgba(251,146,60,.9);}}
+@keyframes flash-hot{0%,100%{border-color:rgba(248,113,113,.12);}50%{border-color:rgba(248,113,113,.9);}}
+.comm-btn.act-cold{animation:flash-cold 2.2s ease-in-out infinite;}
+.comm-btn.act-cold .cb-count{color:#a3e635;}
+.comm-btn.act-warm{animation:flash-warm 1.7s ease-in-out infinite;}
+.comm-btn.act-warm .cb-count{color:#fb923c;}
+.comm-btn.act-hot{animation:flash-hot 1.2s ease-in-out infinite;}
+.comm-btn.act-hot .cb-count{color:#f87171;}
 .cb-icon{line-height:1;font-size:12px;}
 .cb-count{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:.3px;color:var(--muted);line-height:1;}
-.comm-btn.act-warm .cb-count{color:#fb923c;}
-.comm-btn.act-hot .cb-count{color:#f87171;}
+
+/* inline-quote: 게임명과 comm-btn 사이, 남는 공간에 맞게 */
+.comm-area{display:flex;align-items:center;gap:5px;flex-shrink:0;max-width:60%;min-width:0;}
+.inline-quote{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+
 .game-tag{display:inline-block;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:9px;padding:1px 6px;border-radius:4px;margin-top:3px;}
+
+/* 아닌듯 경고 배지 */
+.warn-badge{display:flex;align-items:center;gap:6px;border-radius:7px;padding:6px 9px;margin-bottom:9px;border:1px solid rgba(248,113,113,.22);background:rgba(248,113,113,.07);}
+.warn-badge.lv1{border-color:rgba(251,191,36,.22);background:rgba(251,191,36,.07);}
+.warn-txt{font-size:10px;font-weight:700;color:#f87171;}
+.warn-badge.lv1 .warn-txt{color:#fbbf24;}
 
 .wage-section{margin-bottom:10px;}
 .wage-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
@@ -326,16 +340,31 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">🌾 시급 제보하기</div>
-    <div class="modal-sub">실제 플레이 경험 기반으로 제보해주세요. 투표로 신뢰도가 결정됩니다.</div>
-    <div class="fg"><label class="fl">게임 이름</label><input class="fi" id="fName" placeholder="예: 리니지 클래식, 메이플스토리..."/></div>
-    <div class="fg"><label class="fl">게임 장르</label>
+    <div class="modal-sub">게임을 선택하거나 신규 게임을 등록하세요. 투표로 신뢰도가 결정됩니다.</div>
+    <div class="fg">
+      <label class="fl">게임 선택</label>
+      <select class="fs" id="fGameSel" onchange="onGameSelChange()"></select>
+    </div>
+    <div class="fg" id="fNewGameRow" style="display:none;">
+      <label class="fl">신규 게임명 직접 입력</label>
+      <input class="fi" id="fName" placeholder="예: 붉은사막, 로아2..."/>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;">등록 후 다른 유저들도 같은 이름으로 제보 가능합니다</div>
+    </div>
+    <div class="fg" id="fTagRow">
+      <label class="fl">게임 장르</label>
       <select class="fs" id="fTag"><option>MMORPG</option><option>MORPG</option><option>FPS</option><option>스포츠</option><option>전략</option><option>소셜</option><option>기타</option></select>
     </div>
     <div class="frow">
       <div class="fg"><label class="fl">초보 시급 (원)</label><input class="fi" id="fBeg" type="number" placeholder="8000" min="0" inputmode="numeric"/></div>
       <div class="fg"><label class="fl">고수 시급 (원)</label><input class="fi" id="fExp" type="number" placeholder="32000" min="0" inputmode="numeric"/></div>
     </div>
-    <div class="fg"><label class="fl">아이콘 (이모지 1개)</label><input class="fi" id="fIcon" placeholder="⚔️ 🧙 🎮 ⚽ 💀" maxlength="2"/></div>
+    <div class="fg">
+      <label class="fl">게임 아이콘 선택</label>
+      <input type="hidden" id="fIcon" value="🎮"/>
+      <div id="emojiGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:2px;">
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);">선택된 아이콘: <span id="selectedEmoji" style="font-size:18px;">🎮</span></div>
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeReportModal()">취소</button>
       <button class="btn-ok" onclick="submitReport()">제보 등록</button>
@@ -386,16 +415,16 @@ const db = firebase.firestore();
 
 // ── 기본 데이터 ──
 const DEFAULT=[
-  {id:'lineage-classic',name:'리니지 클래식', icon:'⚔️',tag:'MMORPG', beginner:8000, expert:32000,upVotes:723, downVotes:124,ts:Date.now()-864e5*10},
-  {id:'lineage-m',      name:'리니지M',      icon:'🏰',tag:'MMORPG', beginner:5000, expert:45000,upVotes:512, downVotes:98, ts:Date.now()-864e5*8 },
-  {id:'lost-ark',       name:'로스트아크',   icon:'🚢',tag:'MORPG',  beginner:6000, expert:25000,upVotes:1240,downVotes:310,ts:Date.now()-864e5*5 },
-  {id:'maplestory',     name:'메이플스토리', icon:'🍁',tag:'MMORPG', beginner:3000, expert:15000,upVotes:934, downVotes:402,ts:Date.now()-864e5*7 },
-  {id:'baramland',      name:'바람의나라',   icon:'🌬️',tag:'MMORPG', beginner:5000, expert:28000,upVotes:387, downVotes:67, ts:Date.now()-864e5*12},
-  {id:'fc-online',      name:'FC온라인',     icon:'⚽',tag:'스포츠', beginner:3000, expert:20000,upVotes:763, downVotes:220,ts:Date.now()-864e5*3 },
-  {id:'dnf',            name:'던전앤파이터', icon:'🗡️',tag:'MORPG',  beginner:4000, expert:18000,upVotes:555, downVotes:180,ts:Date.now()-864e5*6 },
-  {id:'diablo4',        name:'디아블로4',    icon:'💀',tag:'MORPG',  beginner:2000, expert:8000, upVotes:445, downVotes:310,ts:Date.now()-864e5*2 },
-  {id:'genshin',        name:'원신',         icon:'🌸',tag:'소셜',   beginner:1000, expert:5000, upVotes:892, downVotes:750,ts:Date.now()-864e5*4 },
-  {id:'pubg',           name:'배틀그라운드', icon:'🔫',tag:'FPS',    beginner:0,    expert:2000, upVotes:330, downVotes:420,ts:Date.now()-864e5*1 },
+  {id:'lineage-classic',name:'리니지 클래식', icon:'⚔️',tag:'MMORPG', beginner:8000, expert:32000,upVotes:723, downVotes:124,ts:Date.now()-864e5*10,reportCount:1000},
+  {id:'lineage-m',      name:'리니지M',      icon:'🏰',tag:'MMORPG', beginner:5000, expert:45000,upVotes:512, downVotes:98, ts:Date.now()-864e5*8, reportCount:1000},
+  {id:'lost-ark',       name:'로스트아크',   icon:'🚢',tag:'MORPG',  beginner:6000, expert:25000,upVotes:1240,downVotes:310,ts:Date.now()-864e5*5, reportCount:1000},
+  {id:'maplestory',     name:'메이플스토리', icon:'🍁',tag:'MMORPG', beginner:3000, expert:15000,upVotes:934, downVotes:402,ts:Date.now()-864e5*7, reportCount:1000},
+  {id:'baramland',      name:'바람의나라',   icon:'🌬️',tag:'MMORPG', beginner:5000, expert:28000,upVotes:387, downVotes:67, ts:Date.now()-864e5*12,reportCount:1000},
+  {id:'fc-online',      name:'FC온라인',     icon:'⚽',tag:'스포츠', beginner:3000, expert:20000,upVotes:763, downVotes:220,ts:Date.now()-864e5*3, reportCount:1000},
+  {id:'dnf',            name:'던전앤파이터', icon:'🗡️',tag:'MORPG',  beginner:4000, expert:18000,upVotes:555, downVotes:180,ts:Date.now()-864e5*6, reportCount:1000},
+  {id:'diablo4',        name:'디아블로4',    icon:'💀',tag:'MORPG',  beginner:2000, expert:8000, upVotes:445, downVotes:310,ts:Date.now()-864e5*2, reportCount:1000},
+  {id:'genshin',        name:'원신',         icon:'🌸',tag:'소셜',   beginner:1000, expert:5000, upVotes:892, downVotes:750,ts:Date.now()-864e5*4, reportCount:1000},
+  {id:'pubg',           name:'배틀그라운드', icon:'🔫',tag:'FPS',    beginner:0,    expert:2000, upVotes:330, downVotes:420,ts:Date.now()-864e5*1, reportCount:1000},
 ];
 const SEED_POSTS={
   'lineage-classic':[
@@ -437,6 +466,23 @@ const trustPct=g=>{const t=g.upVotes+g.downVotes;return t?Math.round(g.upVotes/t
 const isMob=()=>window.innerWidth<520;
 const randNick=()=>NICK_ADJ[Math.floor(Math.random()*NICK_ADJ.length)]+NICK_NOUN[Math.floor(Math.random()*NICK_NOUN.length)];
 const randColor=()=>COLORS[Math.floor(Math.random()*COLORS.length)];
+
+// 브라우저 fingerprint (IP 대체 — 기기+브라우저 조합)
+function getFingerprint(){
+  const s=[navigator.userAgent,navigator.language,screen.width+'x'+screen.height,new Date().getTimezoneOffset()].join('|');
+  let h=0;
+  for(let i=0;i<s.length;i++){h=Math.imul(31,h)+s.charCodeAt(i)|0;}
+  return Math.abs(h).toString(36);
+}
+
+// 제보 수 뱃지
+function reportBadge(rc){
+  if(!rc||rc<=1) return {label:'최초 제보',color:'#f87171',bg:'rgba(248,113,113,.12)'};
+  if(rc<10)      return {label:`제보 ${rc}명`,color:'#fbbf24',bg:'rgba(251,191,36,.12)'};
+  if(rc<50)      return {label:`제보 ${rc}명`,color:'#a3e635',bg:'rgba(163,230,53,.12)'};
+  if(rc<200)     return {label:`제보 ${rc}명`,color:'#4ade80',bg:'rgba(74,222,128,.12)'};
+  return {label:`제보 ${rc>=1000?Math.floor(rc/1000)+'K+':rc+'명'}`,color:'#22d3ee',bg:'rgba(34,211,238,.12)'};
+}
 function timeAgo(ts){
   const s=Math.floor((Date.now()-ts)/1000);
   if(s<60)return '방금';
@@ -542,33 +588,48 @@ function renderChart(){
     }
   });
 }
+function latestQuote(gid){
+  const list=posts[gid]||[];
+  if(!list.length)return '';
+  const body=[...list].sort((a,b)=>b.ts-a.ts)[0].body;
+  const max=16;
+  return '\u201c'+(body.length>max?body.slice(0,max)+'\u2026':body)+'\u201d';
+}
+function checkAutoDelete(){
+  const now=Date.now(),TWO_DAYS=172800000;
+  const batch=db.batch();let changed=false;
+  games=games.filter(g=>{
+    const total=g.upVotes+g.downVotes;if(!total)return true;
+    const dp=g.downVotes/total;
+    if(dp>0.4){
+      if(!g.warnedAt){g.warnedAt=now;batch.update(db.collection('games').doc(g.id),{warnedAt:now});changed=true;}
+      else if(now-g.warnedAt>TWO_DAYS){batch.delete(db.collection('games').doc(g.id));changed=true;return false;}
+    }else if(g.warnedAt){g.warnedAt=null;batch.update(db.collection('games').doc(g.id),{warnedAt:null});changed=true;}
+    return true;
+  });
+  if(changed)batch.commit().catch(()=>{});
+}
 function renderCards(){
+  checkAutoDelete();
   const list=getSorted();
   const grid=document.getElementById('gameGrid');
   grid.innerHTML='';
   const sk=document.getElementById('sortSelect').value==='beginner'?'beginner':'expert';
   const maxW=Math.max(...list.map(g=>g[sk]),1);
   list.forEach((g,i)=>{
-    // ★ 광고 슬롯 2 : 카드 6개마다 피드형 광고 삽입
     if(i===6){
       const adEl=document.createElement('div');
       adEl.className='ad-banner ad-feed';
-      adEl.innerHTML=`
-        <!-- 애드센스 승인 후 아래 주석을 해제하고 슬롯 ID를 교체하세요
-        <ins class="adsbygoogle"
-          style="display:block"
-          data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-          data-ad-slot="XXXXXXXXXX"
-          data-ad-format="fluid"
-          data-ad-layout-key="-6t+ed+2i-1n-4w"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>
-        -->
-        <div class="ad-tag">Advertisement</div>
-        <div class="ad-text">광고 영역 — 피드형</div>`;
+      adEl.innerHTML=`<div class="ad-tag">Advertisement</div><div class="ad-text">광고 영역 — 피드형</div>`;
       grid.appendChild(adEl);
     }
     const tp=trustPct(g),job=getJob(g.expert),totalV=g.upVotes+g.downVotes,myV=myVotes[g.id];
     const pc=postCount(g.id),act=actLevel(pc);
+    const rb=reportBadge(g.reportCount||1);
+    const quote=latestQuote(g.id);
+    const dp=totalV>0?g.downVotes/totalV:0;
+    const dDay=g.warnedAt?Math.ceil((Date.now()-g.warnedAt)/864e5):0;
+    const warnHtml=dp>0.4?`<div class="warn-badge ${dDay>0?'':'lv1'}"><span>⚠️</span><span class="warn-txt">${dDay>0?'아닌듯 '+Math.round(dp*100)+'% — '+dDay+'일째 유지 중. 자동 삭제 예정':'아닌듯 '+Math.round(dp*100)+'% 초과 — 재검토 권장'}</span></div>`:'';
     const el=document.createElement('div');
     el.className='game-card';
     el.innerHTML=`
@@ -578,25 +639,24 @@ function renderCards(){
         <div class="game-info">
           <div class="name-row">
             <div class="game-name">${g.name}</div>
-            <button class="comm-btn act-${act}" onclick="openComm('${g.id}')">
-              <span class="cb-icon">${actIcon(pc)}</span>
-              <span class="cb-count">${fmtCount(pc)}</span>
-            </button>
+            <div class="comm-area">
+              ${quote?`<span class="inline-quote">${escHtml(quote)}</span>`:''}
+              <button class="comm-btn act-${act}" onclick="openComm('${g.id}')">
+                <span class="cb-icon">💬</span>
+                <span class="cb-count">${fmtCount(pc)}</span>
+              </button>
+            </div>
           </div>
-          <span class="game-tag">${g.tag}</span>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:3px;">
+            <span class="game-tag">${g.tag}</span>
+            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:${rb.bg};color:${rb.color}">${rb.label}</span>
+          </div>
         </div>
       </div>
+      ${warnHtml}
       <div class="wage-section">
-        <div class="wage-row">
-          <span class="wage-lbl">초보</span>
-          <div class="bar-wrap"><div class="bar beg" style="width:${Math.round(g.beginner/maxW*100)}%"></div></div>
-          <span class="wage-val">${fmtW(g.beginner)}</span>
-        </div>
-        <div class="wage-row">
-          <span class="wage-lbl">고수</span>
-          <div class="bar-wrap"><div class="bar exp" style="width:${Math.round(g.expert/maxW*100)}%"></div></div>
-          <span class="wage-val exp">${fmtW(g.expert)}</span>
-        </div>
+        <div class="wage-row"><span class="wage-lbl">초보</span><div class="bar-wrap"><div class="bar beg" style="width:${Math.round(g.beginner/maxW*100)}%"></div></div><span class="wage-val">${fmtW(g.beginner)}</span></div>
+        <div class="wage-row"><span class="wage-lbl">고수</span><div class="bar-wrap"><div class="bar exp" style="width:${Math.round(g.expert/maxW*100)}%"></div></div><span class="wage-val exp">${fmtW(g.expert)}</span></div>
       </div>
       <div class="job-box">
         <span class="job-icon">${job.icon}</span>
@@ -610,12 +670,8 @@ function renderCards(){
         <span class="vote-cnt">${totalV.toLocaleString()}표</span>
       </div>
       <div class="vote-row">
-        <button class="vote-btn ${myV==='up'?'voted-up':''}" onclick="vote('${g.id}','up')">
-          <span class="vote-icon">👍</span><span>${g.upVotes.toLocaleString()} 맞아요</span>
-        </button>
-        <button class="vote-btn ${myV==='down'?'voted-down':''}" onclick="vote('${g.id}','down')">
-          <span class="vote-icon">👎</span><span>${g.downVotes.toLocaleString()} 아닌듯</span>
-        </button>
+        <button class="vote-btn ${myV==='up'?'voted-up':''}" onclick="vote('${g.id}','up')"><span class="vote-icon">👍</span><span>${g.upVotes.toLocaleString()} 맞아요</span></button>
+        <button class="vote-btn ${myV==='down'?'voted-down':''}" onclick="vote('${g.id}','down')"><span class="vote-icon">👎</span><span>${g.downVotes.toLocaleString()} 아닌듯</span></button>
       </div>`;
     grid.appendChild(el);
   });
@@ -644,30 +700,96 @@ async function vote(id,dir){
 }
 
 // ── 제보 모달 ──
-function openReportModal(){document.getElementById('reportOverlay').classList.add('open');document.body.style.overflow='hidden';}
+const EMOJI_LIST=['🎮','⚔️','🏰','🚢','🍁','🌬️','⚽','🗡️','💀','🌸','🔫','🧙','🏆','🛡️','🐉','🎯','🎲','🃏','💎','🏹','🔮','⚡','🌍','🚀','🧪','🎭','👑','🦁'];
+
+function initEmojiGrid(){
+  const grid=document.getElementById('emojiGrid');
+  grid.innerHTML='';
+  const current=document.getElementById('fIcon').value||'🎮';
+  EMOJI_LIST.forEach(em=>{
+    const btn=document.createElement('button');
+    btn.type='button';btn.textContent=em;
+    btn.style.cssText=`font-size:22px;padding:6px;border-radius:8px;border:2px solid ${em===current?'var(--accent)':'var(--border)'};background:${em===current?'rgba(198,241,53,.1)':'var(--bg3)'};cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;`;
+    btn.onclick=()=>{
+      document.getElementById('fIcon').value=em;
+      document.getElementById('selectedEmoji').textContent=em;
+      grid.querySelectorAll('button').forEach(b=>{b.style.borderColor='var(--border)';b.style.background='var(--bg3)';});
+      btn.style.borderColor='var(--accent)';btn.style.background='rgba(198,241,53,.1)';
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function populateGameSel(){
+  const sel=document.getElementById('fGameSel');
+  sel.innerHTML='<option value="">게임을 선택하세요...</option>';
+  games.forEach(g=>{
+    const opt=document.createElement('option');
+    opt.value=g.id;opt.textContent=g.name;sel.appendChild(opt);
+  });
+  const newOpt=document.createElement('option');
+  newOpt.value='NEW';newOpt.textContent='＋ 신규 게임 등록';sel.appendChild(newOpt);
+}
+
+function onGameSelChange(){
+  const val=document.getElementById('fGameSel').value;
+  const isNew=val==='NEW';
+  document.getElementById('fNewGameRow').style.display=isNew?'block':'none';
+  document.getElementById('fTagRow').style.display=isNew?'flex':'none';
+  if(isNew)document.getElementById('fName').focus();
+}
+
+function openReportModal(){
+  populateGameSel();
+  document.getElementById('fGameSel').value='';
+  document.getElementById('fNewGameRow').style.display='none';
+  document.getElementById('fTagRow').style.display='none';
+  document.getElementById('fIcon').value='🎮';
+  document.getElementById('selectedEmoji').textContent='🎮';
+  initEmojiGrid();
+  document.getElementById('reportOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
 function closeReportModal(){document.getElementById('reportOverlay').classList.remove('open');document.body.style.overflow='';}
 function closeReportOut(e){if(e.target===document.getElementById('reportOverlay'))closeReportModal();}
 async function submitReport(){
-  const name=document.getElementById('fName').value.trim();
-  const tag=document.getElementById('fTag').value;
+  const selVal=document.getElementById('fGameSel').value;
   const beg=parseInt(document.getElementById('fBeg').value)||0;
   const exp=parseInt(document.getElementById('fExp').value)||0;
   const icon=document.getElementById('fIcon').value.trim()||'🎮';
-  if(!name){showToast('⚠️ 게임 이름을 입력해주세요.');return;}
+  if(!selVal){showToast('⚠️ 게임을 선택하거나 신규 등록을 선택해주세요.');return;}
   if(exp<=0){showToast('⚠️ 고수 시급을 입력해주세요.');return;}
-  const existing=games.find(g=>g.name===name);
-  if(existing){
-    existing.beginner=Math.round((existing.beginner+beg)/2);
-    existing.expert=Math.round((existing.expert+exp)/2);
-    await db.collection('games').doc(existing.id).update({beginner:existing.beginner,expert:existing.expert});
-    showToast('✅ 기존 데이터에 반영됐습니다!');
-  }else{
-    const newGame={id:'u-'+Date.now(),name,icon,tag,beginner:beg,expert:exp,upVotes:1,downVotes:0,ts:Date.now()};
+
+  if(selVal==='NEW'){
+    const name=document.getElementById('fName').value.trim();
+    const tag=document.getElementById('fTag').value;
+    if(!name){showToast('⚠️ 신규 게임명을 입력해주세요.');return;}
+    const reportKey='report_new_'+name;
+    if(lsGet(reportKey,false)){showToast('⚠️ 이미 이 게임을 제보하셨습니다.');return;}
+    const newGame={id:'u-'+Date.now(),name,icon,tag,beginner:beg,expert:exp,upVotes:1,downVotes:0,ts:Date.now(),reportCount:1};
     games.push(newGame);
     await db.collection('games').doc(newGame.id).set(newGame);
-    showToast('🌾 제보 등록 완료!');
+    lsSet(reportKey,true);
+    showToast('🌾 신규 게임 제보 등록 완료!');
+  }else{
+    const existing=games.find(g=>g.id===selVal);
+    if(!existing)return;
+    const reportKey='report_'+existing.id;
+    if(lsGet(reportKey,false)){showToast('⚠️ 이미 이 게임에 제보하셨습니다.');return;}
+    const expertDiff=Math.abs(exp-existing.expert)/existing.expert;
+    const begDiff=existing.beginner>0?Math.abs(beg-existing.beginner)/existing.beginner:0;
+    let weight=1;
+    if(expertDiff>0.3||begDiff>0.3){showToast('⚠️ 현재 평균 대비 30% 이상 차이 — 반영 비중이 낮게 적용됩니다.');weight=0.1;}
+    const rc=existing.reportCount||1;
+    existing.beginner=Math.round((existing.beginner*rc+beg*weight)/(rc+weight));
+    existing.expert=Math.round((existing.expert*rc+exp*weight)/(rc+weight));
+    existing.reportCount=rc+1;
+    await db.collection('games').doc(existing.id).update({beginner:existing.beginner,expert:existing.expert,reportCount:existing.reportCount});
+    lsSet(reportKey,true);
+    showToast(weight<1?'⚠️ 반영 비중 낮게 적용됐습니다.':'✅ 기존 데이터에 반영됐습니다!');
   }
-  ['fName','fBeg','fExp','fIcon'].forEach(id=>document.getElementById(id).value='');
+  ['fName','fBeg','fExp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fIcon').value='🎮';
   closeReportModal();renderAll();
 }
 
