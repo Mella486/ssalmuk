@@ -76,6 +76,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script>Chart.register(ChartDataLabels);</script>
 <style>
 :root{
   --bg:#0b0c0e;--bg2:#13141a;--bg3:#1c1e27;--bg4:#22242f;
@@ -596,20 +597,21 @@ async function loadData(){
     }
     const pSnap=await db.collection('posts').get();
     posts={};
-    if(pSnap.empty){
-      const batch=db.batch();
-      Object.entries(SEED_POSTS).forEach(([gid,list])=>{
+    pSnap.docs.forEach(d=>{
+      const data={...d.data(),id:d.id};
+      if(!posts[data.gameId])posts[data.gameId]=[];
+      posts[data.gameId].push(data);
+    });
+    // 게임별로 시드 게시글이 없으면 추가
+    const batch=db.batch();let needSeed=false;
+    Object.entries(SEED_POSTS).forEach(([gid,list])=>{
+      if(!posts[gid]||posts[gid].length===0){
         list.forEach(p=>batch.set(db.collection('posts').doc(p.id),{...p,gameId:gid}));
-      });
-      await batch.commit();
-      posts=JSON.parse(JSON.stringify(SEED_POSTS));
-    }else{
-      pSnap.docs.forEach(d=>{
-        const data={...d.data(),id:d.id};
-        if(!posts[data.gameId])posts[data.gameId]=[];
-        posts[data.gameId].push(data);
-      });
-    }
+        posts[gid]=list.map(p=>({...p}));
+        needSeed=true;
+      }
+    });
+    if(needSeed)await batch.commit();
     // pending 게임 로드
     const pgSnap=await db.collection('pending_games').get();
     pendingGames={};
