@@ -551,36 +551,102 @@ let games=[],posts={},myVotes={},myPostLikes={},pendingGames={},chart=null,commG
 
 // ── 유사도 검사 ──
 const normName=s=>s.toLowerCase().replace(/[\s\-\_\.]/g,'');
-function similarGames(input){
-  if(!input||input.length<2)return[];
-  const inp=normName(input);
-  return games.filter(g=>{
-    const gn=normName(g.name);
-    return gn.includes(inp)||inp.includes(gn)||inp.slice(0,3)===gn.slice(0,3);
-  });
+function isSimilar(a,b){
+  const na=normName(a), nb=normName(b);
+  if(na===nb)return true;
+  if(na.includes(nb)||nb.includes(na))return true;
+  if(na.length>=3&&nb.length>=3&&na.slice(0,3)===nb.slice(0,3))return true;
+  return false;
 }
+function similarGames(input){
+  if(!input||input.length<2)return{games:[],pending:[]};
+  const simGames=games.filter(g=>isSimilar(input,g.name));
+  const simPending=Object.values(pendingGames).filter(p=>isSimilar(input,p.name));
+  return{games:simGames,pending:simPending};
+}
+
+// DB에 쌓인 pending 중 유사한 것들을 자동 병합
+async function mergeSimilarPending(){
+  const pList=Object.values(pendingGames);
+  if(pList.length<2)return;
+  const merged=new Set();
+  const batch=db.batch();let changed=false;
+  for(let i=0;i<pList.length;i++){
+    if(merged.has(pList[i].id))continue;
+    for(let j=i+1;j<pList.length;j++){
+      if(merged.has(pList[j].id))continue;
+      if(isSimilar(pList[i].name,pList[j].name)){
+        // j를 i로 합침
+        const ni=pList[i],nj=pList[j];
+        const newCount=ni.count+nj.count;
+        const newBegSum=ni.beginner_sum+nj.beginner_sum;
+        const newExpSum=ni.expert_sum+nj.expert_sum;
+        batch.update(db.collection('pending_games').doc(ni.id),{
+          count:newCount,beginner_sum:newBegSum,expert_sum:newExpSum
+        });
+        batch.delete(db.collection('pending_games').doc(nj.id));
+        pendingGames[ni.id]={...ni,count:newCount,beginner_sum:newBegSum,expert_sum:newExpSum};
+        delete pendingGames[nj.id];
+        merged.add(nj.id);changed=true;
+        // 3표 달성 시 자동 등록
+        if(newCount>=3){
+          const newGame={id:'p-'+Date.now(),name:ni.name,icon:'🎮',tag:ni.tag||'기타',
+            beginner:Math.round(newBegSum/newCount),expert:Math.round(newExpSum/newCount),
+            upVotes:newCount,downVotes:0,ts:Date.now(),reportCount:newCount};
+          games.push(newGame);
+          batch.set(db.collection('games').doc(newGame.id),newGame);
+          batch.delete(db.collection('pending_games').doc(ni.id));
+          delete pendingGames[ni.id];
+        }
+      }
+    }
+  }
+  if(changed)await batch.commit().catch(()=>{});
+}
+
 function onNewGameInput(val){
   const box=document.getElementById('fSimilarBox');
   const list=document.getElementById('fSimilarList');
-  const similar=similarGames(val);
-  if(!similar.length){box.style.display='none';return;}
+  const{games:sg,pending:sp}=similarGames(val);
+  if(!sg.length&&!sp.length){box.style.display='none';return;}
   box.style.display='block';
-  list.innerHTML=similar.map(g=>`
+  const gameRows=sg.map(g=>`
     <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;"
-      onclick="redirectToPending('${g.id}')">
+      onclick="redirectToGame('${g.id}')">
       <span style="font-size:16px;">${g.icon||'🎮'}</span>
       <span style="font-size:13px;color:#f0f0f2;flex:1;">${g.name}</span>
       <span style="font-size:10px;font-weight:700;color:#c6f135;background:rgba(198,241,53,.1);border-radius:4px;padding:2px 7px;">이 게임에 제보</span>
     </div>`).join('');
+  const pendingRows=sp.map(p=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-top:1px solid rgba(255,255,255,.06);cursor:pointer;"
+      onclick="redirectToPendingGame('${p.id}')">
+      <span style="font-size:14px;">📋</span>
+      <span style="font-size:13px;color:#f0f0f2;flex:1;">${p.name} <span style="color:#7a7d8a;font-size:11px;">(${p.count}표 진행 중)</span></span>
+      <span style="font-size:10px;font-weight:700;color:#fb923c;background:rgba(251,146,60,.1);border-radius:4px;padding:2px 7px;">합치기</span>
+    </div>`).join('');
+  list.innerHTML=gameRows+pendingRows;
+}
+function redirectToGame(gid){
+  document.getElementById('fGameSel').value=gid;
+  onGameSelChange();
+  document.getElementById('fSimilarBox').style.display='none';
+}
+function redirectToPendingGame(pid){
+  // pending 항목에 직접 제보하도록 hidden input 세팅
+  document.getElementById('fGameSel').value='NEW';
+  onGameSelChange();
+  const p=pendingGames[pid];
+  if(p){
+    document.getElementById('fName').value=p.name;
+    document.getElementById('fSimilarBox').style.display='none';
+  }
 }
 function redirectToPending(gid){
-  closeReportModal();
   const g=games.find(x=>x.id===gid);
   if(!g)return;
   document.getElementById('fGameSel').value=gid;
   onGameSelChange();
-  openReportModal();
-  setTimeout(()=>{document.getElementById('fGameSel').value=gid;onGameSelChange();},100);
+  document.getElementById('fSimilarBox').style.display='none';
 }
 
 // ── FIRESTORE 데이터 로드 ──
@@ -616,6 +682,8 @@ async function loadData(){
     const pgSnap=await db.collection('pending_games').get();
     pendingGames={};
     pgSnap.docs.forEach(d=>{pendingGames[d.id]={...d.data(),id:d.id};});
+    // 유사한 pending 자동 병합
+    await mergeSimilarPending();
 
     myVotes=lsGet('ssalmuk_votes',{});
     myPostLikes=lsGet('ssalmuk_postlikes',{});
