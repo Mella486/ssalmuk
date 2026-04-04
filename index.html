@@ -884,7 +884,6 @@ function renderCards(){
           </div>
           <div style="display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap;">
             <span class="game-tag">${g.tag}</span>
-            <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:${rb.bg};color:${rb.color}">${rb.label}</span>
             ${rcHtml}
           </div>
         </div>
@@ -930,7 +929,7 @@ async function vote(id,dir){
     myVotes[id]=dir;
   }
   lsSet('ssalmuk_votes',myVotes);
-  // Firestore 업데이트
+  trackEvent('vote_click',{game_name:g.name,direction:dir});
   await db.collection('games').doc(id).update({upVotes:g.upVotes,downVotes:g.downVotes});
   renderAll();
 }
@@ -985,6 +984,7 @@ function openReportModal(){
   initEmojiGrid();
   document.getElementById('reportOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+  trackEvent('report_open');
 }
 function closeReportModal(){document.getElementById('reportOverlay').classList.remove('open');document.body.style.overflow='';}
 function closeReportOut(e){if(e.target===document.getElementById('reportOverlay'))closeReportModal();}
@@ -1065,13 +1065,17 @@ async function submitReport(){
   }
   ['fName','fBeg','fExp'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('fIcon').value='🎮';
+  trackEvent('report_submit',{is_new:selVal==='NEW'});
   closeReportModal();renderAll();
 }
 
 // ── 커뮤니티 ──
+function trackEvent(name,params={}){if(typeof gtag==='function')gtag('event',name,params);}
+
 function openComm(gid){
   commGameId=gid;
   const g=games.find(x=>x.id===gid);if(!g)return;
+  trackEvent('comm_open',{game_name:g.name});
   document.getElementById('cIcon').textContent=g.icon||'🎮';
   document.getElementById('cTitle').textContent=g.name+' 커뮤니티';
   renderCommStats(gid);renderPosts(gid);
@@ -1234,6 +1238,7 @@ async function submitPost(){
   if(!posts[gid])posts[gid]=[];
   posts[gid].push(newPost);
   await db.collection('posts').doc(newPost.id).set(newPost);
+  trackEvent('post_submit',{game_name:games.find(x=>x.id===gid)?.name||gid});
   lsSet('ssalmuk_nick',nick);
   ta.value='';ta.style.height='';
   document.getElementById('writePin').value='';
