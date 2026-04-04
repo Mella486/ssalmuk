@@ -241,7 +241,39 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .post-like-btn:active{transform:scale(.96);}
 .post-like-btn.liked{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--red);}
 .post-like-count{font-family:'Bebas Neue',sans-serif;font-size:13px;}
-.comm-write{flex-shrink:0;padding:12px var(--px) calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--bg2);}
+.post-reply-btn{background:transparent;border:none;font-size:11px;color:var(--muted);cursor:pointer;padding:3px 6px;font-family:'Noto Sans KR',sans-serif;-webkit-tap-highlight-color:transparent;}
+.post-reply-btn:hover{color:var(--text);}
+.post-mine-btn{background:transparent;border:none;font-size:10px;color:var(--muted);cursor:pointer;padding:3px 6px;font-family:'Noto Sans KR',sans-serif;}
+.post-mine-btn:hover{color:var(--red);}
+/* 답글 */
+.reply-list{margin-top:6px;padding-left:14px;border-left:2px solid rgba(255,255,255,.08);}
+.reply-item{padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.reply-item:last-child{border-bottom:none;}
+/* 답글 작성 인라인 */
+.reply-write{display:none;flex-direction:column;gap:6px;margin-top:6px;padding-left:14px;}
+.reply-write.open{display:flex;}
+.reply-input-row{display:flex;gap:6px;align-items:flex-end;}
+.reply-nick-pin{display:flex;gap:5px;margin-bottom:3px;}
+.rni{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;font-family:'Noto Sans KR',sans-serif;-webkit-appearance:none;}
+.rni:focus{border-color:rgba(198,241,53,.35);}
+.reply-ta{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;resize:none;outline:none;font-family:'Noto Sans KR',sans-serif;max-height:60px;-webkit-appearance:none;}
+.reply-ta:focus{border-color:rgba(198,241,53,.35);}
+.reply-send{flex-shrink:0;width:36px;height:36px;background:var(--accent);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.reply-send svg{width:14px;height:14px;fill:none;stroke:#0b0c0e;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+/* 닉네임/PIN 입력 */
+.write-nick-row{display:flex;gap:6px;margin-bottom:6px;}
+.wni{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;font-family:'Noto Sans KR',sans-serif;-webkit-appearance:none;}
+.wni:focus{border-color:rgba(198,241,53,.35);}
+/* 주간 랭킹 변동 뱃지 */
+.rank-change{font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;flex-shrink:0;}
+.rank-up{background:rgba(74,222,128,.12);color:#4ade80;}
+.rank-down{background:rgba(248,113,113,.12);color:#f87171;}
+.rank-new{background:rgba(198,241,53,.12);color:#c6f135;}
+/* 시급 변동 뱃지 */
+.wage-change{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px;flex-shrink:0;}
+.wage-up{background:rgba(74,222,128,.12);color:#4ade80;}
+.wage-down{background:rgba(248,113,113,.12);color:#f87171;}
+.comm-write{flex-shrink:0;padding:10px var(--px) calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--border);background:var(--bg2);}
 .write-row{display:flex;gap:8px;align-items:flex-end;}
 .write-ta{flex:1;min-width:0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;resize:none;outline:none;line-height:1.5;max-height:90px;overflow-y:auto;-webkit-appearance:none;}
 .write-ta:focus{border-color:rgba(198,241,53,.35);}
@@ -393,13 +425,17 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     </div>
     <div class="comm-posts" id="commPosts"></div>
     <div class="comm-write">
+      <div class="write-nick-row">
+        <input class="wni" id="writeNick" placeholder="닉네임" maxlength="12"/>
+        <input class="wni" id="writePin" type="password" placeholder="PIN 4자리" maxlength="4" inputmode="numeric" style="width:100px;flex:none;"/>
+      </div>
       <div class="write-row">
         <textarea class="write-ta" id="writeTa" rows="1" placeholder="자유롭게 떠들어보세요 👋" oninput="autoResize(this)"></textarea>
         <button class="write-send" onclick="submitPost()">
           <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
-      <div class="write-anon">익명으로 작성됩니다</div>
+      <div class="write-anon" id="writeAnonHint">닉네임·PIN은 수정/삭제에 사용됩니다</div>
     </div>
   </div>
 </div>
@@ -547,7 +583,37 @@ function fmtCount(n){return n>=1000?(n/1000).toFixed(1)+'K':String(n);}
 function lsGet(k,fb){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fb;}catch(e){return fb;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
-let games=[],posts={},myVotes={},myPostLikes={},pendingGames={},chart=null,commGameId=null;
+// ── PIN 해시 (간단 해시) ──
+function hashPin(pin){let h=0;for(let i=0;i<pin.length;i++){h=Math.imul(31,h)+pin.charCodeAt(i)|0;}return Math.abs(h).toString(36);}
+
+// ── 주간 스냅샷 저장/조회 ──
+async function saveWeeklySnapshot(){
+  const WEEK=7*864e5;
+  const snap=lsGet('weekly_snapshot',null);
+  if(snap&&Date.now()-snap.ts<WEEK)return;
+  const data={ts:Date.now(),ranks:{}};
+  getSorted().forEach((g,i)=>{data.ranks[g.id]={rank:i+1,expert:g.expert};});
+  lsSet('weekly_snapshot',data);
+  try{await db.collection('snapshots').doc('weekly').set(data);}catch(e){}
+}
+function getWeeklySnap(){return lsGet('weekly_snapshot',null);}
+function getRankChange(gid,currentRank){
+  const snap=getWeeklySnap();if(!snap||!snap.ranks[gid])return null;
+  const prev=snap.ranks[gid].rank;
+  const diff=prev-currentRank;
+  if(diff>0)return{type:'up',val:diff};
+  if(diff<0)return{type:'down',val:Math.abs(diff)};
+  return{type:'same'};
+}
+function getWageChange(gid,currentExpert){
+  const snap=getWeeklySnap();if(!snap||!snap.ranks[gid])return null;
+  const prev=snap.ranks[gid].expert;if(!prev)return null;
+  const pct=Math.round((currentExpert-prev)/prev*100);
+  if(Math.abs(pct)<5)return null;
+  return{pct,type:pct>0?'up':'down'};
+}
+
+let games=[],posts={},myVotes={},myPostLikes={},pendingGames={},chart=null,commGameId=null,replyTarget=null;
 
 // ── 유사도 검사 ──
 const normName=s=>s.toLowerCase().replace(/[\s\-\_\.]/g,'');
@@ -793,6 +859,12 @@ function renderCards(){
     const dp=totalV>0?g.downVotes/totalV:0;
     const dDay=g.warnedAt?Math.ceil((Date.now()-g.warnedAt)/864e5):0;
     const warnHtml=dp>0.4?`<div class="warn-badge ${dDay>0?'':'lv1'}"><span>⚠️</span><span class="warn-txt">${dDay>0?'아닌듯 '+Math.round(dp*100)+'% — '+dDay+'일째 유지 중. 자동 삭제 예정':'아닌듯 '+Math.round(dp*100)+'% 초과 — 재검토 권장'}</span></div>`:'';
+    // 주간 랭킹 변동
+    const rc=getRankChange(g.id,i+1);
+    const rcHtml=rc&&rc.type!=='same'?`<span class="rank-change rank-${rc.type}">${rc.type==='up'?'▲':'▼'}${rc.val}</span>`:(!rc?'<span class="rank-change rank-new">NEW</span>':'');
+    // 시급 변동
+    const wc=getWageChange(g.id,g.expert);
+    const wcHtml=wc?`<span class="wage-change wage-${wc.type}">${wc.type==='up'?'▲':'▼'}${Math.abs(wc.pct)}%</span>`:'';
     const el=document.createElement('div');
     el.className='game-card';
     el.innerHTML=`
@@ -810,16 +882,17 @@ function renderCards(){
               </button>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:5px;margin-top:3px;">
+          <div style="display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap;">
             <span class="game-tag">${g.tag}</span>
             <span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;background:${rb.bg};color:${rb.color}">${rb.label}</span>
+            ${rcHtml}
           </div>
         </div>
       </div>
       ${warnHtml}
       <div class="wage-section">
         <div class="wage-row"><span class="wage-lbl">초보</span><div class="bar-wrap"><div class="bar beg" style="width:${Math.round(g.beginner/maxW*100)}%"></div></div><span class="wage-val">${fmtW(g.beginner)}</span></div>
-        <div class="wage-row"><span class="wage-lbl">고수</span><div class="bar-wrap"><div class="bar exp" style="width:${Math.round(g.expert/maxW*100)}%"></div></div><span class="wage-val exp">${fmtW(g.expert)}</span></div>
+        <div class="wage-row"><span class="wage-lbl">고수</span><div class="bar-wrap"><div class="bar exp" style="width:${Math.round(g.expert/maxW*100)}%"></div></div><span class="wage-val exp">${fmtW(g.expert)}${wcHtml}</span></div>
       </div>
       <div class="job-box">
         <span class="job-icon">${job.icon}</span>
@@ -839,7 +912,7 @@ function renderCards(){
     grid.appendChild(el);
   });
 }
-function renderAll(){renderStats();renderChart();renderCards();}
+function renderAll(){renderStats();renderChart();renderCards();saveWeeklySnapshot();}
 
 // ── 투표 ──
 async function vote(id,dir){
@@ -1003,6 +1076,9 @@ function openComm(gid){
   document.getElementById('cTitle').textContent=g.name+' 커뮤니티';
   renderCommStats(gid);renderPosts(gid);
   document.getElementById('writeTa').value='';
+  const savedNick=lsGet('ssalmuk_nick','');
+  document.getElementById('writeNick').value=savedNick;
+  document.getElementById('writePin').value='';
   document.getElementById('commOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -1017,27 +1093,122 @@ function renderCommStats(gid){
     ${hot?'<span class="comm-hot-tag">🔥 HOT</span>':''}`;
 }
 function renderPosts(gid){
-  const list=[...(posts[gid]||[])].sort((a,b)=>b.ts-a.ts);
+  const allPosts=[...(posts[gid]||[])];
+  const roots=allPosts.filter(p=>!p.parentId).sort((a,b)=>b.ts-a.ts);
   const container=document.getElementById('commPosts');
-  if(!list.length){container.innerHTML='<div class="comm-empty">아직 글이 없어요.<br>첫 번째로 떠들어보세요 👋</div>';return;}
-  container.innerHTML=list.map(p=>{
+  if(!roots.length){container.innerHTML='<div class="comm-empty">아직 글이 없어요.<br>첫 번째로 떠들어보세요 👋</div>';return;}
+  const myNick=lsGet('ssalmuk_nick','');
+  container.innerHTML=roots.map(p=>{
     const liked=!!myPostLikes[p.id];
-    return `<div class="post-item">
+    const isMine=myNick&&p.nick===myNick;
+    const replies=allPosts.filter(r=>r.parentId===p.id).sort((a,b)=>a.ts-b.ts);
+    const replyHtml=replies.length?`<div class="reply-list">${replies.map(r=>{
+      const rLiked=!!myPostLikes[r.id];
+      const rMine=myNick&&r.nick===myNick;
+      return `<div class="reply-item">
+        <div class="post-meta">
+          <div class="post-avatar" style="background:${r.color}22;color:${r.color};font-size:10px;">${r.nick.slice(-1)}</div>
+          <span class="post-nick" style="color:${r.color};font-size:11px;">${escHtml(r.nick)}</span>
+          <span class="post-time">${timeAgo(r.ts)}</span>
+        </div>
+        <div class="post-body" style="font-size:12px;">${escHtml(r.body)}</div>
+        <div class="post-actions">
+          <button class="post-like-btn ${rLiked?'liked':''}" onclick="likePost('${r.id}')">
+            <span>${rLiked?'❤️':'🤍'}</span><span class="post-like-count">${r.likes}</span>
+          </button>
+          ${rMine?`<button class="post-mine-btn" onclick="editPost('${r.id}')">수정</button><button class="post-mine-btn" onclick="deletePost('${r.id}')">삭제</button>`:''}
+        </div>
+      </div>`;}).join('')}</div>`:'';
+    return `<div class="post-item" id="post-${p.id}">
       <div class="post-meta">
         <div class="post-avatar" style="background:${p.color}22;color:${p.color};">${p.nick.slice(-1)}</div>
-        <span class="post-nick" style="color:${p.color}">${p.nick}</span>
+        <span class="post-nick" style="color:${p.color}">${escHtml(p.nick)}</span>
         <span class="post-time">${timeAgo(p.ts)}</span>
       </div>
       <div class="post-body">${escHtml(p.body)}</div>
       <div class="post-actions">
         <button class="post-like-btn ${liked?'liked':''}" onclick="likePost('${p.id}')">
-          <span>${liked?'❤️':'🤍'}</span>
-          <span class="post-like-count">${p.likes}</span>
+          <span>${liked?'❤️':'🤍'}</span><span class="post-like-count">${p.likes}</span>
         </button>
+        <button class="post-reply-btn" onclick="toggleReply('${p.id}')">💬 답글</button>
+        ${isMine?`<button class="post-mine-btn" onclick="editPost('${p.id}')">수정</button><button class="post-mine-btn" onclick="deletePost('${p.id}')">삭제</button>`:''}
+      </div>
+      ${replyHtml}
+      <div class="reply-write" id="reply-write-${p.id}">
+        <div class="reply-nick-pin">
+          <input class="rni" id="reply-nick-${p.id}" placeholder="닉네임" maxlength="12" value="${escHtml(myNick)}"/>
+          <input class="rni" id="reply-pin-${p.id}" type="password" placeholder="PIN 4자리" maxlength="4" inputmode="numeric" style="width:90px;flex:none;"/>
+        </div>
+        <div class="reply-input-row">
+          <textarea class="reply-ta" id="reply-ta-${p.id}" placeholder="답글을 입력하세요..." rows="1" oninput="autoResize(this)"></textarea>
+          <button class="reply-send" onclick="submitReply('${p.id}')">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
+
+function toggleReply(pid){
+  const el=document.getElementById('reply-write-'+pid);
+  if(!el)return;
+  const isOpen=el.classList.contains('open');
+  document.querySelectorAll('.reply-write.open').forEach(e=>e.classList.remove('open'));
+  if(!isOpen){el.classList.add('open');el.querySelector('textarea').focus();}
+}
+
+async function submitReply(parentId){
+  const gid=commGameId;if(!gid)return;
+  const nick=document.getElementById('reply-nick-'+parentId).value.trim()||'익명';
+  const pin=document.getElementById('reply-pin-'+parentId).value.trim();
+  const ta=document.getElementById('reply-ta-'+parentId);
+  const body=ta.value.trim();
+  if(!body){showToast('내용을 입력해주세요.');return;}
+  if(pin.length!==4){showToast('PIN 4자리를 입력해주세요.');return;}
+  const color=randColor();
+  const newReply={id:'r-'+Date.now(),nick,color,body,ts:Date.now(),likes:0,gameId:gid,parentId,pinHash:hashPin(pin)};
+  if(!posts[gid])posts[gid]=[];
+  posts[gid].push(newReply);
+  await db.collection('posts').doc(newReply.id).set(newReply);
+  lsSet('ssalmuk_nick',nick);
+  ta.value='';ta.style.height='';
+  document.getElementById('reply-write-'+parentId).classList.remove('open');
+  renderCommStats(gid);renderPosts(gid);renderCards();
+  showToast('✅ 답글이 등록됐습니다!');
+}
+
+async function deletePost(pid){
+  const gid=commGameId;if(!gid)return;
+  const list=posts[gid]||[];
+  const post=list.find(p=>p.id===pid);if(!post)return;
+  const pin=prompt('PIN 4자리를 입력하세요');
+  if(!pin)return;
+  if(hashPin(pin)!==post.pinHash){showToast('⚠️ PIN이 맞지 않습니다.');return;}
+  posts[gid]=list.filter(p=>p.id!==pid&&p.parentId!==pid);
+  const batch=db.batch();
+  batch.delete(db.collection('posts').doc(pid));
+  list.filter(p=>p.parentId===pid).forEach(r=>batch.delete(db.collection('posts').doc(r.id)));
+  await batch.commit();
+  renderCommStats(gid);renderPosts(gid);renderCards();
+  showToast('🗑️ 삭제됐습니다.');
+}
+
+async function editPost(pid){
+  const gid=commGameId;if(!gid)return;
+  const list=posts[gid]||[];
+  const post=list.find(p=>p.id===pid);if(!post)return;
+  const pin=prompt('PIN 4자리를 입력하세요');
+  if(!pin)return;
+  if(hashPin(pin)!==post.pinHash){showToast('⚠️ PIN이 맞지 않습니다.');return;}
+  const newBody=prompt('수정할 내용을 입력하세요',post.body);
+  if(!newBody||!newBody.trim())return;
+  post.body=newBody.trim();
+  await db.collection('posts').doc(pid).update({body:post.body});
+  renderCommStats(gid);renderPosts(gid);
+  showToast('✅ 수정됐습니다.');
+}
+
 async function likePost(pid){
   const gid=commGameId;if(!gid)return;
   const list=posts[gid]||[];
@@ -1048,17 +1219,24 @@ async function likePost(pid){
   await db.collection('posts').doc(pid).update({likes:post.likes});
   renderCommStats(gid);renderPosts(gid);renderCards();
 }
+
 async function submitPost(){
   const gid=commGameId;if(!gid)return;
+  const nick=document.getElementById('writeNick').value.trim()||'익명';
+  const pin=document.getElementById('writePin').value.trim();
   const ta=document.getElementById('writeTa');
   const body=ta.value.trim();
   if(!body){showToast('내용을 입력해주세요.');return;}
   if(body.length>300){showToast('300자 이내로 작성해주세요.');return;}
-  const newPost={id:'p-'+Date.now(),nick:randNick(),color:randColor(),body,ts:Date.now(),likes:0,gameId:gid};
+  if(pin.length!==4){showToast('PIN 4자리를 입력해주세요.');return;}
+  const color=randColor();
+  const newPost={id:'p-'+Date.now(),nick,color,body,ts:Date.now(),likes:0,gameId:gid,pinHash:hashPin(pin)};
   if(!posts[gid])posts[gid]=[];
   posts[gid].push(newPost);
   await db.collection('posts').doc(newPost.id).set(newPost);
+  lsSet('ssalmuk_nick',nick);
   ta.value='';ta.style.height='';
+  document.getElementById('writePin').value='';
   renderCommStats(gid);renderPosts(gid);renderCards();
   document.getElementById('commPosts').scrollTop=0;
   showToast('✅ 글이 등록됐습니다!');
