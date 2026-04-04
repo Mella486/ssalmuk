@@ -548,7 +548,7 @@ const COLORS=['#fb923c','#60a5fa','#a78bfa','#4ade80','#f87171','#22d3ee','#c6f1
 
 const getJob=w=>JOBS.find(j=>w<=j.max)||JOBS.at(-1);
 const tColor=p=>p>=80?'#4ade80':p>=60?'#a3e635':p>=40?'#fbbf24':'#f87171';
-const fmtW=v=>v===0?'수익없음':v>=10000?(v/10000).toFixed(v%10000===0?0:1)+'만원':v.toLocaleString()+'원';
+const fmtW=v=>v===0?'수익없음':v>=10000?(v/10000).toFixed(v%10000===0?0:1)+'만원/h':v.toLocaleString()+'원/h';
 const trustPct=g=>{const t=g.upVotes+g.downVotes;return t?Math.round(g.upVotes/t*100):50;};
 const isMob=()=>window.innerWidth<520;
 const randNick=()=>NICK_ADJ[Math.floor(Math.random()*NICK_ADJ.length)]+NICK_NOUN[Math.floor(Math.random()*NICK_NOUN.length)];
