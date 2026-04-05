@@ -636,7 +636,6 @@ const SEED_POSTS={
     {id:'mu2',nick:'위저드',color:'#60a5fa',body:'날개 아이템 시세가 제일 높음. 그게 뜨는 날이 대박날',ts:Date.now()-3600e3*9,likes:17},
     {id:'mu3',nick:'뮤고수',color:'#a78bfa',body:'서버 통합 이후 유저 풀이 늘어서 거래량도 늘었음. 타이밍 좋아졌음',ts:Date.now()-3600e3*21,likes:28},
   ],
-  'odin':['o1','o2','o3','o4','o5'].map(id=>null).filter(x=>x),
   'sudden-attack':[
     {id:'sa1',nick:'스나이퍼',color:'#f87171',body:'서든어택은 쌀먹이 거의 없다고 봐야 함. 가끔 아이디 거래 정도',ts:Date.now()-3600e3*5,likes:31},
     {id:'sa2',nick:'저격수',color:'#60a5fa',body:'FPS 특성상 아이템 거래 시스템 자체가 약해서 쌀먹 환경이 열악함',ts:Date.now()-3600e3*14,likes:22},
@@ -669,69 +668,6 @@ const SEED_POSTS={
     {id:'th1',nick:'왕좌유저',color:'#fb923c',body:'왕좌의 게임은 전략형이라 쌀먹 방식이 다름. 동맹 운영 잘하면 수익 나는 구조',ts:Date.now()-3600e3*5,likes:14},
     {id:'th2',nick:'성주',color:'#60a5fa',body:'이벤트 아이템 선점해서 파는 게 주요 루트. 전략 게임 이해도가 필요함',ts:Date.now()-3600e3*14,likes:22},
     {id:'th3',nick:'기사단장',color:'#a78bfa',body:'과금 게임이라 쌀먹보다 쓰는 돈이 더 많은 경우가 있음. 주의',ts:Date.now()-3600e3*28,likes:31},
-  ],
-};
-const SEED_POSTS={
-  'lineage-classic':[
-    {id:'s1',nick:'불꽃전사',color:'#fb923c',body:'클래식 혈맹전 직후 아이템 시세 폭등해서 실질 시급 올랐음. 지금 타이밍 좋아요',ts:Date.now()-3600e3*2,likes:18},
-    {id:'s2',nick:'야행성쌀먹',color:'#60a5fa',body:'노가다 뛰면 30은 충분히 나오는데 반자동 매크로 없으면 솔직히 힘듬 ㅋㅋ',ts:Date.now()-3600e3*5,likes:34},
-    {id:'s3',nick:'용사르바이',color:'#a78bfa',body:'초보는 8만원도 힘든 날 많음. 저 수치는 최소보장이라 생각하세요',ts:Date.now()-3600e3*11,likes:9},
-    {id:'s4',nick:'황금손',color:'#4ade80',body:'아덴 거래소 타이밍 잘 보면 고수 기준 40도 가능. 오더보드 보는 눈 필요',ts:Date.now()-3600e3*26,likes:27},
-  ],
-  'lineage-m':[
-    {id:'s5',nick:'모바일장인',color:'#fb923c',body:'리니지M은 진짜 고렙 위주라서 초반엔 거의 못벎. 최소 3개월 키워야 본전',ts:Date.now()-3600e3*3,likes:41},
-    {id:'s6',nick:'쌀먹고수',color:'#f87171',body:'4만5천은 옛날 얘기고 요즘은 운영진 가격 개입으로 좀 내려간듯',ts:Date.now()-3600e3*8,likes:15},
-  ],
-  'lost-ark':[
-    {id:'s8',nick:'아브렐',color:'#22d3ee',body:'군단장 레이드 4인 파티 기준 시급 25는 나오는데 찾는 파티 시간 포함하면 반토막',ts:Date.now()-3600e3*1,likes:56},
-    {id:'s9',nick:'골드파머',color:'#c6f135',body:'인장 숙제 + 거래소 잘 보면 초보도 10만원 이상 뽑는 날 있음',ts:Date.now()-3600e3*4,likes:31},
-  ],
-  'maplestory':[
-    {id:'s10',nick:'메이플러',color:'#4ade80',body:'스타포스 터지면 오히려 마이너스... 기대값으로 따지면 저 수치가 맞긴 함',ts:Date.now()-3600e3*6,likes:88},
-    {id:'s11',nick:'빅뱅이전세대',color:'#60a5fa',body:'메소 시세가 워낙 바닥이라 초보는 5천원도 쉽지 않음. 보스 파밍 가능해야 의미 있음',ts:Date.now()-3600e3*14,likes:22},
-    {id:'s12',nick:'아케인유저',color:'#fb923c',body:'아케인심볼 팔이가 그나마 안정적. 매일 꾸준히 하면 월 30 이상 가능',ts:Date.now()-3600e3*30,likes:17},
-  ],
-  'baramland':[
-    {id:'b1',nick:'바람전설',color:'#60a5fa',body:'바람의나라는 아이템 거래 자체가 오래된 게임이라 시세 파악이 핵심임. 레어템 하나 잘 팔면 하루 30도 가능',ts:Date.now()-3600e3*4,likes:23},
-    {id:'b2',nick:'고대유저',color:'#a78bfa',body:'진검 류 무기 시세가 요즘 다시 오르는 중. 장기 투자 개념으로 파밍하는 게 맞음',ts:Date.now()-3600e3*9,likes:31},
-    {id:'b3',nick:'새벽파머',color:'#4ade80',body:'새벽 시간대 무인 사냥터 독점하면 시급 확 올라감. 경쟁 없는 타이밍이 핵심',ts:Date.now()-3600e3*18,likes:14},
-    {id:'b4',nick:'바람고수',color:'#fb923c',body:'초보는 현실적으로 5천원도 쉽지 않음. 20만원 이상 투자해서 세팅 갖춰야 본격 쌀먹 가능',ts:Date.now()-3600e3*36,likes:19},
-    {id:'b5',nick:'황금상인',color:'#f87171',body:'거래소 작업만 잘해도 초보 기준 8천원은 나옴. 파밍보단 매매로 접근하는 게 효율적',ts:Date.now()-3600e3*52,likes:8},
-  ],
-  'fc-online':[
-    {id:'f1',nick:'FC장인',color:'#22d3ee',body:'챔피언십 시즌에 선수 카드 트레이드 집중하면 시급 20 이상 나옴. 타이밍이 전부임',ts:Date.now()-3600e3*3,likes:45},
-    {id:'f2',nick:'카드트레이더',color:'#c6f135',body:'이벤트 카드 풀리는 날 미리 세팅해놓고 바로 사서 올리면 한 방에 꽤 뽑음 ㅋㅋ',ts:Date.now()-3600e3*7,likes:38},
-    {id:'f3',nick:'골드파머FC',color:'#fb923c',body:'FUT 시장은 실시간이라 놓치면 끝. 알림 세팅하고 빠르게 대응하는 게 핵심',ts:Date.now()-3600e3*15,likes:27},
-    {id:'f4',nick:'FPS아니고FC',color:'#a78bfa',body:'초보는 3천원도 쉽지 않음 솔직히. 시장 읽는 눈 기르는 데 한 달은 걸림',ts:Date.now()-3600e3*28,likes:12},
-    {id:'f5',nick:'선수장사',color:'#4ade80',body:'레전드 카드 방출 시즌이 진짜 황금기. 그때 물량 확보해두면 한 달 내내 먹고 살 수 있음',ts:Date.now()-3600e3*44,likes:33},
-    {id:'f6',nick:'마켓고수',color:'#f87171',body:'축구 실력이랑 쌀먹은 별개임 ㅋㅋ 시장 분석만 잘하면 실력 없어도 돈 벌 수 있음',ts:Date.now()-3600e3*60,likes:51},
-  ],
-  'dnf':[
-    {id:'d1',nick:'던파장인',color:'#fb923c',body:'에픽 경매장 타이밍만 잘 잡으면 시급 20은 기본. 주말 오후가 거래 제일 활발함',ts:Date.now()-3600e3*2,likes:29},
-    {id:'d2',nick:'골드사냥꾼',color:'#60a5fa',body:'시즌 초반이 진짜 황금기임. 신규 에픽 나오면 바로 파밍해서 올리면 한 방에 뽑음',ts:Date.now()-3600e3*8,likes:44},
-    {id:'d3',nick:'던전달인',color:'#4ade80',body:'초보는 솔직히 4천원도 빠듯함. 레이드 입장 가능한 레벨까지 올리는 데 시간이 걸림',ts:Date.now()-3600e3*16,likes:17},
-    {id:'d4',nick:'에픽파머',color:'#a78bfa',body:'크리처 경매장이 의외로 수익 잘 나옴. 다들 무기 에픽에만 집중할 때 크리처 독점하면 됨',ts:Date.now()-3600e3*30,likes:22},
-    {id:'d5',nick:'새벽파밍',color:'#f87171',body:'패치 직후 밸런스 변화로 시세 급변하는 타이밍이 있음. 공식 카페 팔로우 필수',ts:Date.now()-3600e3*48,likes:36},
-  ],
-  'diablo4':[
-    {id:'di1',nick:'디아하드',color:'#a78bfa',body:'시즌제라 시작 직후 레이스 뛰면 희귀 아이템 가격이 천장인데 그때가 유일한 황금기',ts:Date.now()-3600e3*5,likes:19},
-    {id:'di2',nick:'지옥파머',color:'#f87171',body:'솔직히 디아4는 쌀먹 환경이 좋지 않음. 유니크 드랍률이 낮아서 시간 대비 효율이 애매함',ts:Date.now()-3600e3*11,likes:33},
-    {id:'di3',nick:'시즌플레이어',color:'#60a5fa',body:'트레이드 제한이 워낙 빡세서 골드 거래 위주로 가야 하는데 이것도 리스크 있음',ts:Date.now()-3600e3*22,likes:14},
-    {id:'di4',nick:'이단냥꾼',color:'#4ade80',body:'8천원은 최상위 파머 기준이고 일반 유저는 2~3천원 수준이 현실적. 과장 좀 있는 수치임',ts:Date.now()-3600e3*40,likes:28},
-  ],
-  'genshin':[
-    {id:'g1',nick:'원신현실러',color:'#f87171',body:'원신 쌀먹은 거의 불가능에 가까움. 계정 거래 빼면 딱히 수익 루트가 없음',ts:Date.now()-3600e3*3,likes:67},
-    {id:'g2',nick:'모라파머',color:'#60a5fa',body:'계정 거래는 약관 위반이고 인게임 거래 자체가 막혀있음. 저 수치도 좀 과한 것 같음',ts:Date.now()-3600e3*9,likes:44},
-    {id:'g3',nick:'풍원소',color:'#a78bfa',body:'콘텐츠 공략 영상 찍으면 유튜브 수익은 가능하지만 그게 쌀먹인지는 모르겠음 ㅋㅋ',ts:Date.now()-3600e3*20,likes:31},
-    {id:'g4',nick:'리세마라고수',color:'#4ade80',body:'고성능 계정 리세마라해서 파는 루트가 그나마 있는데 시급으로 치면 처참한 수준',ts:Date.now()-3600e3*38,likes:22},
-    {id:'g5',nick:'가이아',color:'#fb923c',body:'정직하게 말하면 원신은 쌀먹 게임이 아님. 재미로 하는 게임임',ts:Date.now()-3600e3*60,likes:89},
-  ],
-  'pubg':[
-    {id:'p1',nick:'배그현실파',color:'#f87171',body:'배그는 사실상 쌀먹이 없다고 보면 됨. 스킨 거래가 유일한데 스팀 마켓 수수료 빼면 남는 게 없음',ts:Date.now()-3600e3*2,likes:52},
-    {id:'p2',nick:'치킨먹기전에',color:'#60a5fa',body:'한정판 스킨 갖고 있으면 장기 보유 후 비싸게 팔 수 있긴 한데 그게 쌀먹인가 싶음',ts:Date.now()-3600e3*7,likes:28},
-    {id:'p3',nick:'에란겔장인',color:'#4ade80',body:'대회 입상하면 상금 있긴 한데 일반 유저가 노리기엔 현실적으로 불가능',ts:Date.now()-3600e3*18,likes:19},
-    {id:'p4',nick:'PUBG고인물',color:'#a78bfa',body:'2천원도 꾸준히 뽑으려면 진짜 스킨 시세 공부해야 함. 그냥 게임 즐기는 게 정신건강에 이로움',ts:Date.now()-3600e3*34,likes:41},
-    {id:'p5',nick:'배틀로얄러',color:'#fb923c',body:'솔직히 배그는 쌀먹 목적으로 하면 안 되는 게임임 ㅋㅋ 스팀 창고나 정리하는 수준',ts:Date.now()-3600e3*55,likes:63},
   ],
 };
 const JOBS=[
@@ -928,6 +864,15 @@ async function loadData(){
       games=JSON.parse(JSON.stringify(DEFAULT));
     }else{
       games=gSnap.docs.map(d=>({...d.data(),id:d.id}));
+      // DB에 없는 신규 게임 자동 추가
+      const existingIds=new Set(games.map(g=>g.id));
+      const missing=DEFAULT.filter(g=>!existingIds.has(g.id));
+      if(missing.length>0){
+        const b=db.batch();
+        missing.forEach(g=>b.set(db.collection('games').doc(g.id),g));
+        await b.commit();
+        games=[...games,...missing];
+      }
     }
     const pSnap=await db.collection('posts').get();
     posts={};
@@ -936,16 +881,22 @@ async function loadData(){
       if(!posts[data.gameId])posts[data.gameId]=[];
       posts[data.gameId].push(data);
     });
-    // 게임별로 시드 게시글이 없으면 추가
-    const batch=db.batch();let needSeed=false;
+    // 게임별로 시드 게시글이 없으면 추가 (배치 500개 한도 분할)
+    const seedItems=[];
     Object.entries(SEED_POSTS).forEach(([gid,list])=>{
       if(!posts[gid]||posts[gid].length===0){
-        list.forEach(p=>batch.set(db.collection('posts').doc(p.id),{...p,gameId:gid}));
+        list.forEach(p=>seedItems.push({ref:db.collection('posts').doc(p.id),data:{...p,gameId:gid}}));
         posts[gid]=list.map(p=>({...p}));
-        needSeed=true;
       }
     });
-    if(needSeed)await batch.commit();
+    if(seedItems.length>0){
+      const CHUNK=400;
+      for(let i=0;i<seedItems.length;i+=CHUNK){
+        const b=db.batch();
+        seedItems.slice(i,i+CHUNK).forEach(({ref,data})=>b.set(ref,data));
+        await b.commit();
+      }
+    }
     // pending 게임 로드
     const pgSnap=await db.collection('pending_games').get();
     pendingGames={};
