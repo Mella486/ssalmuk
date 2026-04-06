@@ -352,19 +352,15 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   <div class="chart-canvas-wrap" id="chartWrap"><canvas id="mainChart"></canvas></div>
 </div>
 
-<!-- ★ 광고 슬롯 1 : 차트 아래 — 가로형 배너 (320x50 모바일 / 728x90 PC) -->
+<!-- ★ 광고 슬롯 1 : 차트 아래 — 가로형 배너 -->
 <div class="ad-banner" id="adSlot1">
-  <!-- 애드센스 승인 후 아래 주석을 해제하고 슬롯 ID를 교체하세요
   <ins class="adsbygoogle"
     style="display:block"
-    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-    data-ad-slot="XXXXXXXXXX"
+    data-ad-client="ca-pub-3692243854038260"
+    data-ad-slot="6810799042"
     data-ad-format="auto"
     data-full-width-responsive="true"></ins>
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  -->
-  <div class="ad-tag">Advertisement</div>
-  <div class="ad-text">광고 영역 — 애드센스 승인 후 활성화</div>
 </div>
 
 <div class="grid" id="gameGrid"></div>
@@ -1023,7 +1019,14 @@ function renderCards(){
     if(i===6){
       const adEl=document.createElement('div');
       adEl.className='ad-banner ad-feed';
-      adEl.innerHTML=`<div class="ad-tag">Advertisement</div><div class="ad-text">광고 영역 — 피드형</div>`;
+      adEl.innerHTML=`
+        <ins class="adsbygoogle"
+          style="display:block"
+          data-ad-format="fluid"
+          data-ad-layout-key="-6t+ed+2i-1n-4w"
+          data-ad-client="ca-pub-3692243854038260"
+          data-ad-slot="9924047547"></ins>
+        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>`;
       grid.appendChild(adEl);
     }
     const tp=trustPct(g),job=getJob(g.expert),totalV=g.upVotes+g.downVotes,myV=myVotes[g.id];
