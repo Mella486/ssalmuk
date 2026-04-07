@@ -127,8 +127,10 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
 .chart-canvas-wrap{position:relative;width:100%;}
 
-.ad-banner{margin:0 var(--px) 14px;background:var(--bg2);border:1px dashed rgba(255,255,255,.1);border-radius:var(--cr);min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px;}
+.ad-banner{margin:0 var(--px) 14px;background:var(--bg2);border:1px dashed rgba(255,255,255,.1);border-radius:var(--cr);min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;overflow:hidden;}
+.ad-banner:empty,.ad-banner.ad-empty{display:none;}
 .ad-banner ins{width:100%;}
+.ad-banner ins[data-ad-status="unfilled"]{display:none!important;height:0!important;min-height:0!important;}
 .ad-tag{font-size:9px;letter-spacing:1.8px;color:rgba(255,255,255,.16);font-weight:700;text-transform:uppercase;}
 .ad-text{font-size:12px;color:rgba(255,255,255,.16);}
 
@@ -362,6 +364,13 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     data-ad-format="auto"
     data-full-width-responsive="true"></ins>
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <script>
+  // 정적 광고 슬롯: 미채움시 숨김
+  setTimeout(()=>{
+    const s1=document.getElementById('adSlot1');
+    if(s1){const ins=s1.querySelector('ins');if(ins&&(!ins.innerHTML.trim()||ins.dataset.adStatus==='unfilled'))s1.classList.add('ad-empty');}
+  },3000);
+  </script>
 </div>
 
 <div class="grid" id="gameGrid"></div>
@@ -1028,8 +1037,8 @@ function renderCards(){
       insEl.setAttribute('data-ad-client','ca-pub-3692243854038260');
       insEl.setAttribute('data-ad-slot','9924047547');
       adEl.appendChild(insEl);
-      setTimeout(()=>{try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}},100);
       grid.appendChild(adEl);
+      setTimeout(()=>{try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){} insEl.dataset.adPushed='1';},150);
     }
     const tp=trustPct(g),job=getJob(g.expert),totalV=g.upVotes+g.downVotes,myV=myVotes[g.id];
     const pc=postCount(g.id),act=actLevel(pc);
@@ -1089,11 +1098,14 @@ function renderCards(){
       </div>`;
     grid.appendChild(el);
   });
+  // 광고가 안 채워진 ad-banner 숨기기
   setTimeout(()=>{
-    document.querySelectorAll('.adsbygoogle').forEach(()=>{
-      try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}
+    document.querySelectorAll('.ad-banner').forEach(el=>{
+      const ins=el.querySelector('ins.adsbygoogle');
+      if(ins && ins.dataset.adStatus==='unfilled'){el.classList.add('ad-empty');}
+      if(!ins || (!ins.innerHTML.trim() && !ins.childElementCount)){el.classList.add('ad-empty');}
     });
-  },200);
+  },3000);
 }
 function renderAll(){renderStats();renderChart();renderCards();saveWeeklySnapshot();}
 
