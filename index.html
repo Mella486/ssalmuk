@@ -127,7 +127,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
 .chart-canvas-wrap{position:relative;width:100%;}
 
-.ad-banner{margin:0 var(--px) 14px;background:var(--bg2);border:1px dashed rgba(255,255,255,.1);border-radius:var(--cr);min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px;}
+.ad-banner{margin:0 var(--px) 14px;background:var(--bg2);border:1px dashed rgba(255,255,255,.1);border-radius:var(--cr);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px;}
 .ad-banner ins{width:100%;}
 .ad-tag{font-size:9px;letter-spacing:1.8px;color:rgba(255,255,255,.16);font-weight:700;text-transform:uppercase;}
 .ad-text{font-size:12px;color:rgba(255,255,255,.16);}
@@ -1020,14 +1020,15 @@ function renderCards(){
     if(i===6){
       const adEl=document.createElement('div');
       adEl.className='ad-banner ad-feed';
-      adEl.innerHTML=`
-        <ins class="adsbygoogle"
-          style="display:block"
-          data-ad-format="fluid"
-          data-ad-layout-key="-6t+ed+2i-1n-4w"
-          data-ad-client="ca-pub-3692243854038260"
-          data-ad-slot="9924047547"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});<\/script>`;
+      const insEl=document.createElement('ins');
+      insEl.className='adsbygoogle';
+      insEl.style.display='block';
+      insEl.setAttribute('data-ad-format','fluid');
+      insEl.setAttribute('data-ad-layout-key','-6t+ed+2i-1n-4w');
+      insEl.setAttribute('data-ad-client','ca-pub-3692243854038260');
+      insEl.setAttribute('data-ad-slot','9924047547');
+      adEl.appendChild(insEl);
+      setTimeout(()=>{try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}},100);
       grid.appendChild(adEl);
     }
     const tp=trustPct(g),job=getJob(g.expert),totalV=g.upVotes+g.downVotes,myV=myVotes[g.id];
