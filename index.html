@@ -377,10 +377,6 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   </div>
 </div>
 
-<div class="search-wrap">
-  <input class="search-input" id="gameSearch" type="text" placeholder="게임 이름 검색..." oninput="filterCards()">
-</div>
-
 <div class="controls">
   <span class="sort-label">정렬</span>
   <select class="sort-select" id="sortSelect" onchange="renderAll()">
@@ -415,6 +411,10 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     data-full-width-responsive="true"></ins>
   <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   <script>setTimeout(()=>{const s=document.getElementById('adSlot1');if(s){const ins=s.querySelector('ins');if(ins&&(!ins.innerHTML.trim()||ins.dataset.adStatus==='unfilled'))s.classList.add('ad-empty');}},3000);</script>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" id="gameSearch" type="text" placeholder="게임 이름 검색..." oninput="filterCards()">
 </div>
 
 <div class="grid" id="gameGrid"></div>
