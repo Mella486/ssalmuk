@@ -467,36 +467,36 @@ const db = firebase.firestore();
 
 // ── 기본 데이터 ──
 const DEFAULT=[
-  {id:'lineage-classic',name:'리니지 클래식',  icon:'⚔️',tag:'MMORPG', beginner:8000, expert:32000,upVotes:74,  downVotes:13, ts:Date.now()-864e5*10,reportCount:1000},
-  {id:'lineage-m',      name:'리니지M',        icon:'🏰',tag:'MMORPG', beginner:5000, expert:45000,upVotes:58,  downVotes:11, ts:Date.now()-864e5*8, reportCount:1000},
-  {id:'lineage2m',      name:'리니지2M',       icon:'🗡️',tag:'MMORPG', beginner:4000, expert:38000,upVotes:47,  downVotes:9,  ts:Date.now()-864e5*9, reportCount:1000},
-  {id:'lineage-w',      name:'리니지W',        icon:'🌙',tag:'MMORPG', beginner:4000, expert:35000,upVotes:38,  downVotes:7,  ts:Date.now()-864e5*7, reportCount:1000},
-  {id:'lost-ark',       name:'로스트아크',     icon:'🚢',tag:'MORPG',  beginner:6000, expert:25000,upVotes:143, downVotes:36, ts:Date.now()-864e5*5, reportCount:1000},
-  {id:'maplestory',     name:'메이플스토리',   icon:'🍁',tag:'MMORPG', beginner:3000, expert:15000,upVotes:98,  downVotes:43, ts:Date.now()-864e5*7, reportCount:1000},
-  {id:'maplestory-m',   name:'메이플스토리M',  icon:'🌿',tag:'MMORPG', beginner:2000, expert:10000,upVotes:46,  downVotes:21, ts:Date.now()-864e5*6, reportCount:1000},
-  {id:'maple-grow',     name:'메이플 키우기',  icon:'🌱',tag:'방치형', beginner:1000, expert:6000, upVotes:22,  downVotes:5,  ts:Date.now()-864e5*3, reportCount:1000},
-  {id:'baramland',      name:'바람의나라',     icon:'🌬️',tag:'MMORPG', beginner:5000, expert:28000,upVotes:43,  downVotes:8,  ts:Date.now()-864e5*12,reportCount:1000},
-  {id:'fc-online',      name:'FC온라인',       icon:'⚽',tag:'스포츠', beginner:3000, expert:20000,upVotes:81,  downVotes:24, ts:Date.now()-864e5*3, reportCount:1000},
-  {id:'dnf',            name:'던전앤파이터',   icon:'🛡️',tag:'MORPG',  beginner:4000, expert:18000,upVotes:62,  downVotes:20, ts:Date.now()-864e5*6, reportCount:1000},
-  {id:'diablo4',        name:'디아블로4',      icon:'💀',tag:'MORPG',  beginner:2000, expert:8000, upVotes:49,  downVotes:34, ts:Date.now()-864e5*2, reportCount:1000},
-  {id:'genshin',        name:'원신',           icon:'🌸',tag:'소셜',   beginner:1000, expert:5000, upVotes:91,  downVotes:77, ts:Date.now()-864e5*4, reportCount:1000},
-  {id:'pubg',           name:'배틀그라운드',   icon:'🔫',tag:'FPS',    beginner:0,    expert:2000, upVotes:34,  downVotes:44, ts:Date.now()-864e5*1, reportCount:1000},
-  {id:'odin',           name:'오딘',           icon:'⚡',tag:'MMORPG', beginner:5000, expert:35000,upVotes:33,  downVotes:6,  ts:Date.now()-864e5*11,reportCount:1000},
-  {id:'bns',            name:'블레이드앤소울', icon:'🥋',tag:'MORPG',  beginner:2000, expert:12000,upVotes:29,  downVotes:10, ts:Date.now()-864e5*14,reportCount:1000},
-  {id:'blackdesert',    name:'검은사막',       icon:'🏜️',tag:'MMORPG', beginner:4000, expert:22000,upVotes:48,  downVotes:15, ts:Date.now()-864e5*8, reportCount:1000},
-  {id:'blackdesert-m',  name:'검은사막 모바일',icon:'🌑',tag:'MMORPG', beginner:3000, expert:18000,upVotes:34,  downVotes:11, ts:Date.now()-864e5*7, reportCount:1000},
-  {id:'rf-online',      name:'RF온라인',       icon:'🤖',tag:'MMORPG', beginner:6000, expert:30000,upVotes:21,  downVotes:4,  ts:Date.now()-864e5*15,reportCount:1000},
-  {id:'aion-classic',   name:'아이온2',        icon:'👼',tag:'MMORPG', beginner:4000, expert:20000,upVotes:24,  downVotes:7,  ts:Date.now()-864e5*13,reportCount:1000},
-  {id:'mabinogi',       name:'마비노기',       icon:'🎵',tag:'MMORPG', beginner:2000, expert:14000,upVotes:36,  downVotes:16, ts:Date.now()-864e5*9, reportCount:1000},
-  {id:'mabinogi-m',     name:'마비노기 모바일',icon:'🎶',tag:'MMORPG', beginner:1000, expert:8000, upVotes:19,  downVotes:5,  ts:Date.now()-864e5*4, reportCount:1000},
-  {id:'ragnarok',       name:'라그나로크',     icon:'🌀',tag:'MMORPG', beginner:3000, expert:16000,upVotes:31,  downVotes:9,  ts:Date.now()-864e5*10,reportCount:1000},
-  {id:'archage',        name:'아키에이지',     icon:'⛵',tag:'MMORPG', beginner:5000, expert:26000,upVotes:21,  downVotes:5,  ts:Date.now()-864e5*12,reportCount:1000},
-  {id:'mu-origin',      name:'뮤 오리진',      icon:'💎',tag:'MMORPG', beginner:3000, expert:19000,upVotes:23,  downVotes:8,  ts:Date.now()-864e5*8, reportCount:1000},
-  {id:'sudden-attack',  name:'서든어택',       icon:'🎯',tag:'FPS',    beginner:0,    expert:1500, upVotes:17,  downVotes:22, ts:Date.now()-864e5*3, reportCount:1000},
-  {id:'kartrider',      name:'카트라이더',     icon:'🏎️',tag:'레이싱', beginner:0,    expert:1000, upVotes:13,  downVotes:22, ts:Date.now()-864e5*2, reportCount:1000},
-  {id:'diablo-immortal',name:'디아블로 이모탈',icon:'👹',tag:'MORPG',  beginner:1000, expert:7000, upVotes:31,  downVotes:22, ts:Date.now()-864e5*4, reportCount:1000},
-  {id:'wemade-mir',     name:'미르4',          icon:'🐉',tag:'MMORPG', beginner:5000, expert:29000,upVotes:37,  downVotes:10, ts:Date.now()-864e5*7, reportCount:1000},
-  {id:'vampyr',         name:'뱀피르',         icon:'🧛',tag:'MMORPG', beginner:3000, expert:22000,upVotes:18,  downVotes:4,  ts:Date.now()-864e5*5, reportCount:1000},
+  {id:'lineage-classic',name:'리니지 클래식',  icon:'⚔️',tag:'MMORPG', beginner:8000, expert:32000,upVotes:74,  downVotes:13, ts:Date.now()-864e5*10,reportCount:100},
+  {id:'lineage-m',      name:'리니지M',        icon:'🏰',tag:'MMORPG', beginner:5000, expert:45000,upVotes:58,  downVotes:11, ts:Date.now()-864e5*8, reportCount:100},
+  {id:'lineage2m',      name:'리니지2M',       icon:'🗡️',tag:'MMORPG', beginner:4000, expert:38000,upVotes:47,  downVotes:9,  ts:Date.now()-864e5*9, reportCount:100},
+  {id:'lineage-w',      name:'리니지W',        icon:'🌙',tag:'MMORPG', beginner:4000, expert:35000,upVotes:38,  downVotes:7,  ts:Date.now()-864e5*7, reportCount:100},
+  {id:'lost-ark',       name:'로스트아크',     icon:'🚢',tag:'MORPG',  beginner:6000, expert:25000,upVotes:143, downVotes:36, ts:Date.now()-864e5*5, reportCount:100},
+  {id:'maplestory',     name:'메이플스토리',   icon:'🍁',tag:'MMORPG', beginner:3000, expert:15000,upVotes:98,  downVotes:43, ts:Date.now()-864e5*7, reportCount:100},
+  {id:'maplestory-m',   name:'메이플스토리M',  icon:'🌿',tag:'MMORPG', beginner:2000, expert:10000,upVotes:46,  downVotes:21, ts:Date.now()-864e5*6, reportCount:100},
+  {id:'maple-grow',     name:'메이플 키우기',  icon:'🌱',tag:'방치형', beginner:1000, expert:6000, upVotes:22,  downVotes:5,  ts:Date.now()-864e5*3, reportCount:100},
+  {id:'baramland',      name:'바람의나라',     icon:'🌬️',tag:'MMORPG', beginner:5000, expert:28000,upVotes:43,  downVotes:8,  ts:Date.now()-864e5*12,reportCount:100},
+  {id:'fc-online',      name:'FC온라인',       icon:'⚽',tag:'스포츠', beginner:3000, expert:20000,upVotes:81,  downVotes:24, ts:Date.now()-864e5*3, reportCount:100},
+  {id:'dnf',            name:'던전앤파이터',   icon:'🛡️',tag:'MORPG',  beginner:4000, expert:18000,upVotes:62,  downVotes:20, ts:Date.now()-864e5*6, reportCount:100},
+  {id:'diablo4',        name:'디아블로4',      icon:'💀',tag:'MORPG',  beginner:2000, expert:8000, upVotes:49,  downVotes:34, ts:Date.now()-864e5*2, reportCount:100},
+  {id:'genshin',        name:'원신',           icon:'🌸',tag:'소셜',   beginner:1000, expert:5000, upVotes:91,  downVotes:77, ts:Date.now()-864e5*4, reportCount:100},
+  {id:'pubg',           name:'배틀그라운드',   icon:'🔫',tag:'FPS',    beginner:0,    expert:2000, upVotes:34,  downVotes:44, ts:Date.now()-864e5*1, reportCount:100},
+  {id:'odin',           name:'오딘',           icon:'⚡',tag:'MMORPG', beginner:5000, expert:35000,upVotes:33,  downVotes:6,  ts:Date.now()-864e5*11,reportCount:100},
+  {id:'bns',            name:'블레이드앤소울', icon:'🥋',tag:'MORPG',  beginner:2000, expert:12000,upVotes:29,  downVotes:10, ts:Date.now()-864e5*14,reportCount:100},
+  {id:'blackdesert',    name:'검은사막',       icon:'🏜️',tag:'MMORPG', beginner:4000, expert:22000,upVotes:48,  downVotes:15, ts:Date.now()-864e5*8, reportCount:100},
+  {id:'blackdesert-m',  name:'검은사막 모바일',icon:'🌑',tag:'MMORPG', beginner:3000, expert:18000,upVotes:34,  downVotes:11, ts:Date.now()-864e5*7, reportCount:100},
+  {id:'rf-online',      name:'RF온라인',       icon:'🤖',tag:'MMORPG', beginner:6000, expert:30000,upVotes:21,  downVotes:4,  ts:Date.now()-864e5*15,reportCount:100},
+  {id:'aion-classic',   name:'아이온2',        icon:'👼',tag:'MMORPG', beginner:4000, expert:20000,upVotes:24,  downVotes:7,  ts:Date.now()-864e5*13,reportCount:100},
+  {id:'mabinogi',       name:'마비노기',       icon:'🎵',tag:'MMORPG', beginner:2000, expert:14000,upVotes:36,  downVotes:16, ts:Date.now()-864e5*9, reportCount:100},
+  {id:'mabinogi-m',     name:'마비노기 모바일',icon:'🎶',tag:'MMORPG', beginner:1000, expert:8000, upVotes:19,  downVotes:5,  ts:Date.now()-864e5*4, reportCount:100},
+  {id:'ragnarok',       name:'라그나로크',     icon:'🌀',tag:'MMORPG', beginner:3000, expert:16000,upVotes:31,  downVotes:9,  ts:Date.now()-864e5*10,reportCount:100},
+  {id:'archage',        name:'아키에이지',     icon:'⛵',tag:'MMORPG', beginner:5000, expert:26000,upVotes:21,  downVotes:5,  ts:Date.now()-864e5*12,reportCount:100},
+  {id:'mu-origin',      name:'뮤 오리진',      icon:'💎',tag:'MMORPG', beginner:3000, expert:19000,upVotes:23,  downVotes:8,  ts:Date.now()-864e5*8, reportCount:100},
+  {id:'sudden-attack',  name:'서든어택',       icon:'🎯',tag:'FPS',    beginner:0,    expert:1500, upVotes:17,  downVotes:22, ts:Date.now()-864e5*3, reportCount:100},
+  {id:'kartrider',      name:'카트라이더',     icon:'🏎️',tag:'레이싱', beginner:0,    expert:1000, upVotes:13,  downVotes:22, ts:Date.now()-864e5*2, reportCount:100},
+  {id:'diablo-immortal',name:'디아블로 이모탈',icon:'👹',tag:'MORPG',  beginner:1000, expert:7000, upVotes:31,  downVotes:22, ts:Date.now()-864e5*4, reportCount:100},
+  {id:'wemade-mir',     name:'미르4',          icon:'🐉',tag:'MMORPG', beginner:5000, expert:29000,upVotes:37,  downVotes:10, ts:Date.now()-864e5*7, reportCount:100},
+  {id:'vampyr',         name:'뱀피르',         icon:'🧛',tag:'MMORPG', beginner:3000, expert:22000,upVotes:18,  downVotes:4,  ts:Date.now()-864e5*5, reportCount:100},
 ];
 const SEED_POSTS={
   'lineage-classic':[
@@ -1277,7 +1277,7 @@ async function submitReport(){
     const expertDiff=Math.abs(exp-existing.expert)/existing.expert;
     const begDiff=existing.beginner>0?Math.abs(beg-existing.beginner)/existing.beginner:0;
     let weight=1;
-    if(expertDiff>0.3||begDiff>0.3){showToast('⚠️ 현재 평균 대비 30% 이상 차이 — 반영 비중이 낮게 적용됩니다.');weight=0.1;}
+    if(expertDiff>0.3||begDiff>0.3){showToast('⚠️ 제보하신 금액이 현재 쌀먹지수와 편차가 너무 큽니다. 신뢰도를 고려하여 반영됩니다.');weight=0.01;}
     const rc=existing.reportCount||1;
     existing.beginner=Math.round((existing.beginner*rc+beg*weight)/(rc+weight));
     existing.expert=Math.round((existing.expert*rc+exp*weight)/(rc+weight));
