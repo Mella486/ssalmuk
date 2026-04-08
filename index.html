@@ -335,14 +335,11 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .search-input:focus{border-color:rgba(198,241,53,.4);}
 .search-input::placeholder{color:var(--muted);}
 
-/* ── 히어로 접기 ── */
-.hero-toggle{display:none;background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:4px 0;font-family:'Noto Sans KR',sans-serif;-webkit-tap-highlight-color:transparent;}
-.hero.collapsed .hero-title,.hero.collapsed .hero-desc,.hero.collapsed .hero-stats{display:none;}
-.hero.collapsed .hero-toggle{display:block;}
-.hero:not(.collapsed) .hero-toggle.expand{display:none;}
-.hero.collapsed .hero-toggle.collapse{display:none;}
-.hero.collapsed .hero-toggle.expand{display:block;}
-.hero:not(.collapsed) .hero-toggle.collapse{display:block;margin-top:4px;}
+/* ── 차트 접기 ── */
+.chart-toggle{background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:4px 8px;font-family:'Noto Sans KR',sans-serif;-webkit-tap-highlight-color:transparent;}
+.chart-toggle:active{opacity:.7;}
+.chart-wrap.collapsed .chart-body{display:none;}
+.chart-wrap.collapsed{padding:14px 10px 10px;}
 
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
@@ -368,7 +365,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   </div>
 </header>
 
-<div class="hero" id="heroSection">
+<div class="hero">
   <div>
     <div class="hero-title">지금 어느 게임이<br><span>가장 잘 벌어요?</span></div>
     <div class="hero-desc">실제 유저 투표로 만들어지는 쌀먹 지표 · 시급순 실시간 정렬</div>
@@ -378,8 +375,6 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     <div class="stat-pill"><div class="stat-val" id="statVotes">0</div><div class="stat-label">총 투표</div><div class="stat-change same" id="statVotesChg">—</div></div>
     <div class="stat-pill"><div class="stat-val" id="statTop">—</div><div class="stat-label">최고 시급</div><div class="stat-change same" id="statTopChg">—</div></div>
   </div>
-  <button class="hero-toggle collapse" onclick="toggleHero()">▲ 접기</button>
-  <button class="hero-toggle expand" onclick="toggleHero()">▼ 펼치기 — 지금 어느 게임이 가장 잘 벌어요?</button>
 </div>
 
 <div class="search-wrap">
@@ -396,13 +391,18 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   </select>
 </div>
 
-<div class="chart-wrap">
-  <div class="section-label">시급 비교 차트</div>
-  <div class="chart-legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#c6f135;"></div>고수</div>
-    <div class="legend-item"><div class="legend-dot" style="background:rgba(198,241,53,.3);"></div>초보</div>
+<div class="chart-wrap" id="chartSection">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+    <div class="section-label" style="margin-bottom:0;">시급 비교 차트</div>
+    <button class="chart-toggle" onclick="toggleChart()">▲ 접기</button>
   </div>
-  <div class="chart-canvas-wrap" id="chartWrap"><canvas id="mainChart"></canvas></div>
+  <div class="chart-body">
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#c6f135;"></div>고수</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(198,241,53,.3);"></div>초보</div>
+    </div>
+    <div class="chart-canvas-wrap" id="chartWrap"><canvas id="mainChart"></canvas></div>
+  </div>
 </div>
 
 <!-- ★ 광고 슬롯 1 : 차트 아래 — 가로형 배너 -->
@@ -1552,15 +1552,22 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2600);
 }
-// ── 히어로 접기/펼치기 (재방문자 자동 접기) ──
-function toggleHero(){
-  const hero=document.getElementById('heroSection');
-  hero.classList.toggle('collapsed');
-  lsSet('hero_collapsed',hero.classList.contains('collapsed'));
+// ── 차트 접기/펼치기 (재방문자 자동 접기) ──
+function toggleChart(){
+  const sec=document.getElementById('chartSection');
+  const btn=sec.querySelector('.chart-toggle');
+  sec.classList.toggle('collapsed');
+  const collapsed=sec.classList.contains('collapsed');
+  btn.textContent=collapsed?'▼ 펼치기':'▲ 접기';
+  lsSet('chart_collapsed',collapsed);
 }
-function initHero(){
+function initChart(){
   const visited=lsGet('ssalmuk_visited',false);
-  if(visited){document.getElementById('heroSection').classList.add('collapsed');}
+  if(visited&&lsGet('chart_collapsed',false)){
+    const sec=document.getElementById('chartSection');
+    sec.classList.add('collapsed');
+    sec.querySelector('.chart-toggle').textContent='▼ 펼치기';
+  }
   lsSet('ssalmuk_visited',true);
 }
 
@@ -1682,7 +1689,7 @@ window.addEventListener('popstate',()=>{
   await seedDailyChat();
   document.getElementById('loadingScreen').style.display='none';
   renderAll();
-  initHero();
+  initChart();
   if(!navigator.onLine)showOfflineNotice();
 })();
 </script>
