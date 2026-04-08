@@ -1286,7 +1286,7 @@ async function submitReport(){
     existing.reportCount=rc+1;
     await db.collection('games').doc(existing.id).update({beginner:existing.beginner,expert:existing.expert,reportCount:existing.reportCount});
     lsSet(reportKey,true);
-    showToast('✅ 제보가 반영됐습니다!');
+    if(weight>=1)showToast('✅ 제보가 반영됐습니다!');
   }
   ['fName','fBeg','fExp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   trackEvent('report_submit',{is_new:selVal==='NEW'});
