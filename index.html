@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b0c0e">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230b0c0e' width='100' height='100'/><text y='.9em' font-size='90'>🌾</text></svg>">
 <meta name="google-site-verification" content="SXVf-m8jIWeAUG0y9I19GzX5hSdY1vUqVhLyyeK1V_g" />
 
 <!-- ════════════════════════════════════
@@ -24,6 +27,9 @@
 <meta property="og:description" content="실제 유저 투표로 만들어지는 게임 쌀먹 시급 랭킹. 지금 어느 게임이 가장 잘 벌어요?">
 <meta property="og:url" content="https://ssalmukindex.com/">
 <meta property="og:locale" content="ko_KR">
+<meta property="og:image" content="https://ssalmukindex.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 
 <!-- ════════════════════════════════════
      Twitter Card (트위터·X 공유 시 표시)
@@ -31,6 +37,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="쌀먹지수 — 게임별 쌀먹 시급 랭킹">
 <meta name="twitter:description" content="리니지·로스트아크·메이플 등 게임별 쌀먹 시급을 유저 투표로 확인하세요.">
+<meta name="twitter:image" content="https://ssalmukindex.com/og-image.png">
 
 <!-- ════════════════════════════════════
      구조화 데이터 JSON-LD
@@ -316,6 +323,27 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   .hero{flex-direction:row;align-items:flex-start;justify-content:space-between;}
   .hero-stats{min-width:280px;}
 }
+/* ── 푸터 ── */
+.site-footer{padding:24px var(--px) calc(24px + env(safe-area-inset-bottom));text-align:center;border-top:1px solid var(--border);margin-top:20px;}
+.footer-logo{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--accent);margin-bottom:4px;}
+.footer-copy{font-size:10px;color:var(--muted);line-height:1.6;}
+.footer-copy a{color:var(--muted);text-decoration:underline;}
+
+/* ── 게임 검색 ── */
+.search-wrap{padding:0 var(--px) 10px;}
+.search-input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:9px 12px 9px 34px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:13px;outline:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237a7d8a' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cline x1='11' y1='11' x2='14' y2='14'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;background-size:16px;}
+.search-input:focus{border-color:rgba(198,241,53,.4);}
+.search-input::placeholder{color:var(--muted);}
+
+/* ── 히어로 접기 ── */
+.hero-toggle{display:none;background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;padding:4px 0;font-family:'Noto Sans KR',sans-serif;-webkit-tap-highlight-color:transparent;}
+.hero.collapsed .hero-title,.hero.collapsed .hero-desc,.hero.collapsed .hero-stats{display:none;}
+.hero.collapsed .hero-toggle{display:block;}
+.hero:not(.collapsed) .hero-toggle.expand{display:none;}
+.hero.collapsed .hero-toggle.collapse{display:none;}
+.hero.collapsed .hero-toggle.expand{display:block;}
+.hero:not(.collapsed) .hero-toggle.collapse{display:block;margin-top:4px;}
+
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
 </style>
@@ -340,7 +368,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   </div>
 </header>
 
-<div class="hero">
+<div class="hero" id="heroSection">
   <div>
     <div class="hero-title">지금 어느 게임이<br><span>가장 잘 벌어요?</span></div>
     <div class="hero-desc">실제 유저 투표로 만들어지는 쌀먹 지표 · 시급순 실시간 정렬</div>
@@ -350,6 +378,12 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     <div class="stat-pill"><div class="stat-val" id="statVotes">0</div><div class="stat-label">총 투표</div><div class="stat-change same" id="statVotesChg">—</div></div>
     <div class="stat-pill"><div class="stat-val" id="statTop">—</div><div class="stat-label">최고 시급</div><div class="stat-change same" id="statTopChg">—</div></div>
   </div>
+  <button class="hero-toggle collapse" onclick="toggleHero()">▲ 접기</button>
+  <button class="hero-toggle expand" onclick="toggleHero()">▼ 펼치기 — 지금 어느 게임이 가장 잘 벌어요?</button>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" id="gameSearch" type="text" placeholder="게임 이름 검색..." oninput="filterCards()">
 </div>
 
 <div class="controls">
@@ -448,6 +482,15 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     </div>
   </div>
 </div>
+
+<footer class="site-footer">
+  <div class="footer-logo">🌾 쌀먹지수</div>
+  <div class="footer-copy">
+    © 2026 쌀먹지수 · 게임별 쌀먹 시급 커뮤니티 랭킹<br>
+    문의: <a href="mailto:ssalmukindex@gmail.com">ssalmukindex@gmail.com</a><br>
+    본 사이트의 시급 정보는 유저 제보 기반이며, 실제 수익을 보장하지 않습니다.
+  </div>
+</footer>
 
 <div class="toast" id="toast"></div>
 
@@ -1152,17 +1195,29 @@ function renderAll(){renderStats();renderChart();renderCards();saveWeeklySnapsho
 // ── 투표 ──
 async function vote(id,dir){
   const g=games.find(x=>x.id===id);if(!g)return;
+  const fp=getFingerprint();
+  // 서버 중복 투표 방지
+  try{
+    const voteDoc=await db.collection('votes').doc(fp+'_'+id).get();
+    if(voteDoc.exists&&!myVotes[id]){
+      myVotes[id]=voteDoc.data().dir;
+      lsSet('ssalmuk_votes',myVotes);
+      showToast('⚠️ 이미 투표한 게임입니다.');renderAll();return;
+    }
+  }catch(e){}
   const prev=myVotes[id];
   if(prev===dir){
     if(dir==='up')g.upVotes=Math.max(0,g.upVotes-1);
     else g.downVotes=Math.max(0,g.downVotes-1);
     delete myVotes[id];showToast('투표를 취소했습니다.');
+    try{await db.collection('votes').doc(fp+'_'+id).delete();}catch(e){}
   }else{
     if(prev==='up')g.upVotes=Math.max(0,g.upVotes-1);
     if(prev==='down')g.downVotes=Math.max(0,g.downVotes-1);
     if(dir==='up'){g.upVotes++;showToast('👍 신뢰 +1 반영됐습니다!');}
     else{g.downVotes++;showToast('👎 의심 +1 반영됐습니다.');}
     myVotes[id]=dir;
+    try{await db.collection('votes').doc(fp+'_'+id).set({dir,ts:Date.now(),fp});}catch(e){}
   }
   lsSet('ssalmuk_votes',myVotes);
   trackEvent('vote_click',{game_name:g.name,direction:dir});
@@ -1497,6 +1552,41 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2600);
 }
+// ── 히어로 접기/펼치기 (재방문자 자동 접기) ──
+function toggleHero(){
+  const hero=document.getElementById('heroSection');
+  hero.classList.toggle('collapsed');
+  lsSet('hero_collapsed',hero.classList.contains('collapsed'));
+}
+function initHero(){
+  const visited=lsGet('ssalmuk_visited',false);
+  if(visited){document.getElementById('heroSection').classList.add('collapsed');}
+  lsSet('ssalmuk_visited',true);
+}
+
+// ── 게임 검색 필터 ──
+function filterCards(){
+  const q=document.getElementById('gameSearch').value.trim().toLowerCase();
+  document.querySelectorAll('.game-card').forEach(card=>{
+    const name=card.querySelector('.card-game-name');
+    if(!name)return;
+    card.style.display=(!q||name.textContent.toLowerCase().includes(q))?'':'none';
+  });
+}
+
+// ── 오프라인 감지 ──
+function showOfflineNotice(){
+  if(document.getElementById('offlineNotice'))return;
+  const d=document.createElement('div');
+  d.id='offlineNotice';
+  d.style.cssText='position:fixed;top:52px;left:0;right:0;z-index:150;background:#f87171;color:#fff;text-align:center;padding:6px;font-size:11px;font-weight:700;';
+  d.textContent='⚠️ 오프라인 상태입니다. 일부 기능이 제한됩니다.';
+  document.body.appendChild(d);
+}
+function hideOfflineNotice(){const d=document.getElementById('offlineNotice');if(d)d.remove();}
+window.addEventListener('offline',showOfflineNotice);
+window.addEventListener('online',hideOfflineNotice);
+
 let rTimer;
 window.addEventListener('resize',()=>{clearTimeout(rTimer);rTimer=setTimeout(renderChart,180);});
 
@@ -1592,6 +1682,8 @@ window.addEventListener('popstate',()=>{
   await seedDailyChat();
   document.getElementById('loadingScreen').style.display='none';
   renderAll();
+  initHero();
+  if(!navigator.onLine)showOfflineNotice();
 })();
 </script>
 </body>
