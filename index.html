@@ -180,6 +180,10 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .card-chat-btn .chat-count{position:absolute;top:-4px;right:-6px;background:var(--accent);color:#0b0c0e;font-size:8px;font-weight:700;padding:1px 4px;border-radius:8px;line-height:1.2;min-width:14px;text-align:center;}
 .card-quote{flex:1;min-width:0;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .3s;}
 .card-quote.fade{opacity:0;}
+.card-cta{flex-shrink:0;display:flex;align-items:center;gap:3px;background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.18);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:10px;font-weight:700;color:var(--accent);white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.card-cta:active{opacity:.7;transform:scale(.96);}
+.card-say-btn{flex-shrink:0;display:flex;align-items:center;gap:3px;background:rgba(198,241,53,.06);border:1px solid rgba(198,241,53,.15);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;color:var(--accent);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.card-say-btn:active{transform:scale(.95);opacity:.7;}
 
 .game-tag{display:inline-block;background:var(--bg3);border:1px solid var(--border);color:var(--muted);font-size:9px;padding:1px 6px;border-radius:4px;}
 
@@ -200,11 +204,17 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .wage-val.exp{color:var(--accent);}
 
 .vote-row{display:flex;gap:7px;padding-top:9px;border-top:1px solid var(--border);}
-.vote-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 4px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;word-break:keep-all;line-height:1.3;text-align:center;}
+.vote-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 4px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;word-break:keep-all;line-height:1.3;text-align:center;}
 .vote-btn:active{transform:scale(.97);}
+.vote-btn .vote-icon{display:inline-flex;width:16px;height:16px;border:1.5px solid var(--muted);border-radius:4px;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:10px;line-height:1;color:transparent;}
+.vote-btn.vt-down .vote-icon{color:var(--muted);}
+.vote-btn.vt-down .vote-icon::after{content:'✕';}
 .vote-btn.voted-up{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3);color:var(--green);}
+.vote-btn.voted-up .vote-icon{border-color:var(--green);background:var(--green);color:#fff;}
+.vote-btn.voted-up .vote-icon::after{content:'✓';}
 .vote-btn.voted-down{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);color:var(--red);}
-.vote-icon{font-size:13px;flex-shrink:0;}
+.vote-btn.voted-down .vote-icon{border-color:var(--red);background:var(--red);color:#fff;}
+.vote-btn.voted-down .vote-icon::after{content:'✕';}
 
 .modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.82);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
@@ -402,13 +412,6 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     <div class="frow">
       <div class="fg"><label class="fl">초보 시급 (원)</label><input class="fi" id="fBeg" type="number" placeholder="8000" min="0" inputmode="numeric"/></div>
       <div class="fg"><label class="fl">고수 시급 (원)</label><input class="fi" id="fExp" type="number" placeholder="32000" min="0" inputmode="numeric"/></div>
-    </div>
-    <div class="fg">
-      <label class="fl">게임 아이콘 선택</label>
-      <input type="hidden" id="fIcon" value="🎮"/>
-      <div id="emojiGrid" style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:2px;">
-      </div>
-      <div style="margin-top:8px;font-size:11px;color:var(--muted);">선택된 아이콘: <span id="selectedEmoji" style="font-size:18px;">🎮</span></div>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeReportModal()">취소</button>
@@ -697,6 +700,7 @@ const SEED_POSTS={
     {id:'vp4',nick:'신규진입',color:'#4ade80',body:'신규 게임이라 데이터가 쌓이는 중. 실제 플레이해보고 제보 부탁드림',ts:Date.now()-3600e3*36,likes:2},
   ],
 };
+
 const JOBS=[
   {max:4000,    icon:'🤷',name:'무직 수준',   desc:'최저임금 이하',          color:'#f87171',bg:'rgba(248,113,113,.12)'},
   {max:10000,   icon:'🏪',name:'편의점 알바', desc:'시급 약 9,860~10,500원', color:'#fb923c',bg:'rgba(251,146,60,.12)' },
@@ -1126,10 +1130,11 @@ function renderCards(){
       <div class="card-chat-row">
         <button class="card-chat-btn g-${act}" onclick="openComm('${g.id}')">💬<span class="chat-count">${fmtCount(pc)}</span></button>
         <span class="card-quote" data-gid="${g.id}">${allQuotes(g.id,0)}</span>
+        <button class="card-say-btn" onclick="openComm('${g.id}')">한마디 하기</button>
       </div>
       <div class="vote-row">
-        <button class="vote-btn ${myV==='up'?'voted-up':''}" onclick="vote('${g.id}','up')"><span class="vote-icon">✅</span><span>${g.upVotes.toLocaleString()} 정확해요</span></button>
-        <button class="vote-btn ${myV==='down'?'voted-down':''}" onclick="vote('${g.id}','down')"><span class="vote-icon">❌</span><span>${g.downVotes.toLocaleString()} 틀렸어요</span></button>
+        <button class="vote-btn ${myV==='up'?'voted-up':''}" onclick="vote('${g.id}','up')"><span class="vote-icon"></span><span>${g.upVotes.toLocaleString()} 정확해요</span></button>
+        <button class="vote-btn vt-down ${myV==='down'?'voted-down':''}" onclick="vote('${g.id}','down')"><span class="vote-icon"></span><span>${g.downVotes.toLocaleString()} 틀렸어요</span></button>
       </div>`;
     grid.appendChild(el);
   });
@@ -1166,25 +1171,6 @@ async function vote(id,dir){
 }
 
 // ── 제보 모달 ──
-const EMOJI_LIST=['🎮','⚔️','🏰','🚢','🍁','🌬️','⚽','🗡️','💀','🌸','🔫','🧙','🏆','🛡️','🐉','🎯','🎲','🃏','💎','🏹','🔮','⚡','🌍','🚀','🧪','🎭','👑','🦁'];
-
-function initEmojiGrid(){
-  const grid=document.getElementById('emojiGrid');
-  grid.innerHTML='';
-  const current=document.getElementById('fIcon').value||'🎮';
-  EMOJI_LIST.forEach(em=>{
-    const btn=document.createElement('button');
-    btn.type='button';btn.textContent=em;
-    btn.style.cssText=`font-size:22px;padding:6px;border-radius:8px;border:2px solid ${em===current?'var(--accent)':'var(--border)'};background:${em===current?'rgba(198,241,53,.1)':'var(--bg3)'};cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;`;
-    btn.onclick=()=>{
-      document.getElementById('fIcon').value=em;
-      document.getElementById('selectedEmoji').textContent=em;
-      grid.querySelectorAll('button').forEach(b=>{b.style.borderColor='var(--border)';b.style.background='var(--bg3)';});
-      btn.style.borderColor='var(--accent)';btn.style.background='rgba(198,241,53,.1)';
-    };
-    grid.appendChild(btn);
-  });
-}
 
 function populateGameSel(){
   const sel=document.getElementById('fGameSel');
@@ -1210,9 +1196,6 @@ function openReportFor(gid){
   const sel=document.getElementById('fGameSel');
   sel.value=gid;
   onGameSelChange();
-  document.getElementById('fIcon').value='🎮';
-  document.getElementById('selectedEmoji').textContent='🎮';
-  initEmojiGrid();
   document.getElementById('reportOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   trackEvent('report_open',{from:'card',game_id:gid});
@@ -1222,9 +1205,6 @@ function openReportModal(){
   document.getElementById('fGameSel').value='';
   document.getElementById('fNewGameRow').style.display='none';
   document.getElementById('fTagRow').style.display='none';
-  document.getElementById('fIcon').value='🎮';
-  document.getElementById('selectedEmoji').textContent='🎮';
-  initEmojiGrid();
   document.getElementById('reportOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   trackEvent('report_open');
@@ -1235,7 +1215,7 @@ async function submitReport(){
   const selVal=document.getElementById('fGameSel').value;
   const beg=parseInt(document.getElementById('fBeg').value)||0;
   const exp=parseInt(document.getElementById('fExp').value)||0;
-  const icon=document.getElementById('fIcon').value.trim()||'🎮';
+  const icon='🎮';
   if(!selVal){showToast('⚠️ 게임을 선택하거나 신규 등록을 선택해주세요.');return;}
   if(exp<=0){showToast('⚠️ 고수 시급을 입력해주세요.');return;}
 
@@ -1306,8 +1286,7 @@ async function submitReport(){
     lsSet(reportKey,true);
     showToast(weight<1?'⚠️ 반영 비중 낮게 적용됐습니다.':'✅ 기존 데이터에 반영됐습니다!');
   }
-  ['fName','fBeg','fExp'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('fIcon').value='🎮';
+  ['fName','fBeg','fExp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   trackEvent('report_submit',{is_new:selVal==='NEW'});
   closeReportModal();renderAll();
 }
@@ -1354,7 +1333,7 @@ function renderPosts(gid){
       const rMine=myNick&&r.nick===myNick;
       return `<div class="reply-item">
         <div class="post-meta">
-          <div class="post-avatar" style="background:${r.color}22;color:${r.color};font-size:10px;">${r.nick.slice(-1)}</div>
+          <div class="post-avatar" style="background:${r.color}22;color:${r.color};font-size:10px;">👤</div>
           <span class="post-nick" style="color:${r.color};font-size:11px;">${escHtml(r.nick)}</span>
           <span class="post-time">${timeAgo(r.ts)}</span>
         </div>
@@ -1368,7 +1347,7 @@ function renderPosts(gid){
       </div>`;}).join('')}</div>`:'';
     return `<div class="post-item" id="post-${p.id}">
       <div class="post-meta">
-        <div class="post-avatar" style="background:${p.color}22;color:${p.color};">${p.nick.slice(-1)}</div>
+        <div class="post-avatar" style="background:${p.color}22;color:${p.color};">👤</div>
         <span class="post-nick" style="color:${p.color}">${escHtml(p.nick)}</span>
         <span class="post-time">${timeAgo(p.ts)}</span>
       </div>
@@ -1532,9 +1511,74 @@ setInterval(()=>{
   });
 },3000);
 
+// ── 매일 자동 채팅 (게임별 1개/일) ──
+const DAILY_POOL={
+  'lineage-classic':['클래식 오늘도 혈맹전 떡상 기대중','새벽 파밍 효율이 진짜 다름','요즘 아덴 서버 시세 어때요?','고렙 사냥터 경쟁 심해졌네','오늘 아이템 운이 좋았음 ㅋ','드랍 이벤트 기간이라 시급 올라감','핫타임에 집중하면 확실히 다름','거래소 시세 체크 필수임','오늘 장비 하나 건졌다!','주말이라 사냥터 사람 많네'],
+  'lineage-m':['M 오늘 다이아 시세 변동 있었음','혈석 파밍 루트 공유해요','고렙분들 시급 얼마나 나와요?','요즘 M 시세 좀 떨어진 느낌','스피어 파밍이 그래도 안정적','새벽 사냥이 진짜 효율 좋음','오늘 장비 강화 성공했다!','M 이벤트 시작됐네요','리니지M 시급 현실적으로 얼마?','파밍 세팅 팁 좀 알려주세요'],
+  'lineage2m':['2M 거래소 시세 오늘 좀 올랐네','아덴 서버 상황 어때요?','보스 드랍 시세가 핵심이긴 함','오늘 레이드 수익 괜찮았음','2M 신규 유저 늘어난 느낌?','서버 합치고 시세 변동 생겼네','오크 파밍 아직 괜찮은 편','장기 투자로 접근해야 함','2M 쌀먹 루트 추천 부탁','패치 후에 밸런스 변했어요'],
+  'lineage-w':['W 조용히 파밍하기 좋은 날','PvP 구간 피하면 수익 괜찮아','W 시세 요즘 어떤 추세?','파밍 존 추천 받아요','오늘 운 좋게 레어 떨어짐','W는 꾸준히 하면 나오긴 함','새벽 시간대가 황금타임','W 쌀먹 현실적 시급은?','거래소 수수료가 좀 아쉬움','이벤트 기간 활용하세요'],
+  'lost-ark':['로아 골드 시세 오늘 어때요?','군단장 버스 수익 괜찮네','섬 컨텐츠 초보도 해볼만','오늘 레이드 수익 정산함','숙제 다 돌리면 꽤 나옴','골드 환전 타이밍이 중요','로아 시급 현실적 후기','캐릭 6개 기준 주간 수익은?','이번 패치로 골드 루트 변했음','버스 타이밍 잘 보면 시급 올라감'],
+  'maplestory':['메이플 보스 결정석 시세 체크','스타포스 도박은 하지 마세요','오늘 보스 파밍 수익 괜찮았음','메소 시세가 또 변했네','아케인 심볼 꾸준히 하는 중','메이플 초보 쌀먹 현실은?','이번 패치 영향 있나요?','보스 파밍 루트 공유합니다','환불 사태 이후 안정된 듯','결정석 시세 오르는 중'],
+  'maplestory-m':['메M 자동사냥으로 파밍 중','모바일이라 접근성은 좋음','오늘 거래소 시세 확인했어요','PC보다 낮지만 꾸준히 나옴','이벤트 때 집중하면 효율 올라감','메M 시급 현실 후기','모바일 게임 중엔 나쁘지 않음','거래소 가격 변동 주의','자동사냥 세팅 팁 공유','출퇴근 시간에 파밍 가능'],
+  'odin':['오딘 레이드 수익 정산','크리스탈 환전이 안정적','오딘 시세 요즘 좀 빠졌나?','꾸준히 하면 3만원은 나옴','초보 진입 장벽이 좀 있음','오딘 파밍 루트 추천','레어 아이템 시세 체크','오늘 보스 드랍 운 좋았음','오딘 쌀먹 현실적 수치는?','신규 컨텐츠 업데이트 영향'],
+  'fc-online':['FC 카드 시세 변동 있었음','챔피언십 시즌 황금기 시작','이벤트 카드 타이밍이 전부','오늘 트레이드 수익 괜찮았음','FC 시장 읽는 눈이 필요함','레전드 카드 방출 기다리는 중','초보는 시장 공부부터 해야 함','오늘 선수 카드 시세 체크','FC 쌀먹 팁 공유합니다','마켓 알림 세팅 필수'],
+  'dnf':['던파 에픽 경매장 체크','시즌 초반이 황금기임','크리처 경매장 의외로 수익 남','오늘 에픽 하나 건졌다!','던파 시급 현실 후기','레이드 입장 가능해야 의미 있음','패치 직후 시세 급변 주의','뉴토피아 기준 시급은?','주말 거래 활발한 편','공식 카페 팔로우 필수'],
+  'blackdesert':['검사막 거래소 수수료 아쉽','카프라스 파밍이 꾸준히 수익','오늘 보스 드랍 시세 확인','거래소 매매 팁 공유','검은사막 시급 현실은?','사막 낙시도 은근 수익 됨','주말 파밍 효율 좋았음','신규 지역 파밍 어때요?','시세 안정적인 편이긴 함','자동 파밍 세팅 중요'],
+  'blackdesert-m':['검사막M 모바일 파밍 중','자동사냥 효율 체크','M은 PC보다 접근성 좋음','거래소 시세 변동 있었음','검사막M 시급 후기','이벤트 활용하면 올라감','모바일이라 틈틈이 가능','오늘 파밍 수익 정산','M 초보 가이드 필요','꾸준히 하면 나오긴 함'],
+  'diablo4':['디아4 시즌 시작 레이스','유니크 드랍 운 좋았음','시즌 초반이 유일한 황금기','디아4 쌀먹 현실 후기','트레이드 제한이 빡셈','골드 거래 리스크 주의','시즌 2~3주차가 끝물','디아4는 쌀먹이 애매함','그래도 초반엔 해볼만','시세 체크하고 진입하세요'],
+  'diablo-immortal':['이모탈 오늘 파밍 했어요','모바일로 틈틈이 가능','이모탈 시급 현실 후기','과금 요소가 좀 있긴 함','꾸준히 하면 소소하게 나옴','이벤트 때 집중 파밍','이모탈 거래 시세 체크','초보도 접근 가능한 편','모바일 쌀먹 게임 추천','오늘 운 좋았던 날'],
+  'genshin':['원신은 쌀먹이 거의 안 됨','계정 거래 말고는 루트 없음','그냥 재미로 하는 게 맞음','원신 쌀먹 현실 후기','콘텐츠 영상은 수익 가능','리세마라 계정 팔이도 있긴 함','인게임 거래 막혀있음','원신은 즐겜으로 추천','쌀먹 목적이면 비추','그래도 재밌긴 하다 ㅋ'],
+  'pubg':['배그 스킨 거래 소소함','한정판 스킨 장기 보유 중','배그는 쌀먹 안 됨 현실','스팀 마켓 수수료 빼면 없음','대회 상금은 프로 영역','스킨 시세 공부 필요','배그는 그냥 즐기세요','스팀 창고 정리 수준','배그 쌀먹 현실 후기','그래도 스킨 모으는 재미'],
+  'baramland':['바람 레어템 시세 오름','새벽 사냥터 독점이 핵심','바람 쌀먹 아직 가능함','진검 시세 체크하세요','거래소 매매로도 수익 남','20년 넘은 게임인데 대단함','오늘 파밍 수익 괜찮았음','초보는 세팅 투자 필요','바람 시급 현실 후기','황금 상인 루트 추천'],
+  'bns':['블소 유저풀 줄었지만 아직','단검 아이템 거래 잘 됨','블소 시급 현실적 수치','무한의탑 보상 파밍 중','시즌마다 시세 변동 있음','블소 아직 해볼만한가?','거래량 적어진 건 사실','그래도 꾸준히 하면 나옴','블소 쌀먹 루트 공유','파밍 효율 체크 중'],
+  'archage':['아키에이지 아직 하는 사람?','거래 시세 의외로 괜찮음','아키 쌀먹 현실 후기','노동력 시스템 활용이 핵심','꾸준히 하면 소소하게 나옴','오늘 파밍 수익 정산','아키 신규 유저 있나요?','거래소 체크 필수','아키 시급 현실은?','장기전으로 접근해야 함'],
+  'aion-classic':['아이온 클래식 파밍 중','PvP 지역 시세가 높음','아이온 쌀먹 아직 됨?','클래식 서버 상황 어때요?','파밍 루트 공유합니다','오늘 수익 괜찮았음','아이온 시급 현실 후기','거래소 시세 안정적','꾸준히 하면 나오긴 함','새벽이 황금 시간'],
+  'kartrider':['카트 아이템 거래 소소함','카트 쌀먹 현실은?','이벤트 때 아이템 시세 올라감','카트는 쌀먹보다 재미','그래도 거래 루트 있긴 함','카트 시급 후기 공유','모바일 카트도 있긴 함','아이템 시세 체크 중','카트 쌀먹 추천 비추?','소소한 용돈벌이 수준'],
+  'mabinogi':['마비노기 아직 거래 활발','악기 연주 수익도 있음 ㅋ','마비 쌀먹 현실 후기','의외로 아이템 시세 괜찮음','꾸준히 하면 나오는 게임','마비 거래소 체크','장기 유저가 유리함','오늘 파밍 결과 공유','마비 시급 현실은?','이벤트 활용 팁'],
+  'mabinogi-m':['마비M 파밍 중','모바일이라 접근 쉬움','마비M 시급 현실은?','자동 파밍 세팅 중요','거래소 시세 체크','M은 PC보다 낮지만 꾸준','이벤트 때 집중하세요','마비M 쌀먹 후기','모바일 틈새 파밍 가능','소소하지만 재미있음'],
+  'mu-origin':['뮤 오리진 파밍 중','자동사냥 효율 괜찮음','뮤 시급 현실 후기','옛날 감성으로 하는 중','거래소 시세 체크','뮤 쌀먹 아직 가능?','꾸준히 하면 소소함','모바일이라 편하긴 함','뮤 파밍 루트 공유','이벤트 활용하세요'],
+  'ragnarok':['라그 아직 쌀먹 됨?','카드 드랍이 핵심','라그 시급 현실 후기','클래식 서버 시세 어때요?','파밍 루트 공유합니다','꾸준히 하면 나오긴 함','라그 거래소 체크','MVP 카드가 대박','라그 쌀먹 추천?','옛날 감성 최고'],
+  'rf-online':['RF 아직 하는 사람 있어?','RF 쌀먹 현실 후기','광석 파밍이 핵심','RF 시급은?','꾸준히 하면 소소함','거래 시세 체크','RF 파밍 중','종족전이 재밌음','RF 거래소 활용','옛날 게임인데 아직'],
+  'rohan-m':['로한M 파밍 중','시급 현실 후기','자동사냥 활용','거래소 체크하세요','꾸준히 하면 나옴','모바일이라 편함','로한M 쌀먹 추천?','이벤트 때 집중','파밍 세팅 중요','소소한 수익'],
+  'sudden-attack':['서든 스킨 거래 소소함','서든 쌀먹 현실은?','FPS에서 쌀먹이 되나','아이템 거래 루트','서든 시급 후기','이벤트 스킨이 핵심','서든은 재미로 하세요','거래 시세 낮은 편','소소한 용돈벌이','스킨 시세 체크'],
+  'vampyr':['뱀서 쌀먹 현실은?','거래 루트 있나요?','뱀서 시급 후기','소소한 수익 가능?','꾸준히 하면 나올까','뱀서 파밍 중','거래소 체크','이벤트 활용','뱀서 추천?','재미있긴 함'],
+  'wemade-mir':['미르4 파밍 중','흑철 시세 체크','미르 쌀먹 현실 후기','꾸준히 하면 나옴','자동사냥 세팅 중요','거래소 활용 팁','미르 시급은?','이벤트 때 집중','모바일이라 편함','미르 쌀먹 추천?'],
+  'maple-grow':['메이플 그로우 파밍 중','시급 현실 후기','소소한 수익','꾸준히 하면 됨','거래소 체크','이벤트 활용','그로우 추천?','모바일 편함','파밍 세팅 팁','재밌게 하는 중'],
+};
+const DAILY_NICKS=['쌀먹러','파밍장인','시급계산기','새벽파머','골드마스터','거래소고수','꾸준파밍','현실쌀먹','효율충','시급왕'];
+const DAILY_COLORS=['#fb923c','#60a5fa','#a78bfa','#4ade80','#f87171','#22d3ee','#c6f135','#fbbf24','#e879f9','#38bdf8'];
+async function seedDailyChat(){
+  const todayKey='ssalmuk_daily_'+new Date().toISOString().slice(0,10);
+  if(lsGet(todayKey,false))return;
+  const now=Date.now();
+  const batch=db.batch();
+  let added=false;
+  games.forEach(g=>{
+    const gPosts=posts[g.id]||[];
+    const todayStart=new Date();todayStart.setHours(0,0,0,0);
+    const hasToday=gPosts.some(p=>p.ts>=todayStart.getTime());
+    if(!hasToday){
+      const pool=DAILY_POOL[g.id];
+      if(!pool||!pool.length)return;
+      const msg=pool[Math.floor(Math.random()*pool.length)];
+      const nick=DAILY_NICKS[Math.floor(Math.random()*DAILY_NICKS.length)];
+      const color=DAILY_COLORS[Math.floor(Math.random()*DAILY_COLORS.length)];
+      const hoursAgo=Math.floor(Math.random()*8)+1;
+      const post={id:'daily-'+g.id+'-'+Date.now(),nick,color,body:msg,ts:now-hoursAgo*3600e3,likes:Math.floor(Math.random()*3),gameId:g.id,pinHash:''};
+      if(!posts[g.id])posts[g.id]=[];
+      posts[g.id].push(post);
+      batch.set(db.collection('posts').doc(post.id),post);
+      added=true;
+    }
+  });
+  if(added)await batch.commit().catch(()=>{});
+  lsSet(todayKey,true);
+}
+
 // ── 시작 ──
 (async()=>{
   await loadData();
+  await seedDailyChat();
   document.getElementById('loadingScreen').style.display='none';
   renderAll();
 })();
