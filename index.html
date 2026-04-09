@@ -348,12 +348,15 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .predict-hot{background:#f87171;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px;}
 .predict-scroll{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none;}
 .predict-scroll::-webkit-scrollbar{display:none;}
-.predict-card{flex:0 0 calc(100vw - 44px);max-width:380px;scroll-snap-align:start;background:var(--bg2);border:1px solid var(--border);border-radius:var(--cr);padding:14px;position:relative;}
-.status-badge{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.2);color:var(--accent);}
-.status-badge.countdown{font-family:'Bebas Neue',sans-serif;font-size:14px;}
+.predict-card{flex:0 0 calc(100vw - 44px);max-width:380px;scroll-snap-align:start;scroll-snap-stop:always;background:var(--bg2);border:1px solid var(--border);border-radius:var(--cr);padding:14px;position:relative;}
+.status-badge{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.2);color:var(--accent);line-height:1.4;}
+.status-badge.countdown{font-family:'Bebas Neue',sans-serif;font-size:14px;line-height:1.4;}
 .status-badge.live .status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;}
-.predict-game{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.predict-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg3);border:1px solid var(--border);}
+.predict-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.predict-wage-box{flex-shrink:0;background:linear-gradient(135deg,rgba(198,241,53,.14),rgba(198,241,53,.04));border:1.5px solid rgba(198,241,53,.3);border-radius:10px;padding:6px 10px;text-align:center;min-width:72px;}
+.predict-wage-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);line-height:1;letter-spacing:.5px;}
+.predict-wage-unit{font-size:10px;color:rgba(198,241,53,.55);font-weight:700;margin-top:1px;}
+.predict-wage-old{font-size:10px;color:var(--muted);text-decoration:line-through;margin-bottom:1px;}
 .predict-info{flex:1;min-width:0;}
 .predict-name{font-size:15px;font-weight:700;}
 .predict-meta{font-size:11px;color:var(--muted);}
@@ -371,16 +374,11 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .tag-opt{font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
 .tag-opt:active{transform:scale(.95);}
 .tag-opt.selected{background:rgba(198,241,53,.12);border-color:rgba(198,241,53,.3);color:var(--accent);}
-.wage-report-row{display:flex;align-items:center;gap:6px;}
+.wage-report-row{display:flex;align-items:center;gap:6px;margin-top:6px;}
 .wage-report-row label{font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap;}
 .wage-report-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;outline:none;font-family:'Noto Sans KR',sans-serif;-webkit-appearance:none;max-width:120px;}
 .wage-report-input:focus{border-color:rgba(198,241,53,.4);}
 .wage-report-btn{background:var(--accent);color:#0b0c0e;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.predict-wage{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;padding-top:4px;}
-.predict-wage-label{font-size:11px;color:var(--muted);}
-.predict-wage-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:.5px;line-height:1;}
-.predict-wage-unit{font-size:12px;color:rgba(198,241,53,.55);margin-left:2px;}
-.predict-wage-old{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--muted);text-decoration:line-through;opacity:.5;margin-right:6px;}
 .predict-vote-section{margin-bottom:10px;}
 .predict-vote-info{font-size:10px;color:var(--muted);margin-bottom:5px;}
 .predict-bar-wrap{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;display:flex;}
@@ -1657,7 +1655,7 @@ function renderPredictions(){
   const sec=document.getElementById('predictSection');
   const active=PREDICT_DATA.filter(p=>getPredictStatus(p).type!=='done');
   if(!active.length){sec.innerHTML='';return;}
-  const fmtPW=v=>v>=10000?(v/10000).toFixed(v%10000===0?0:1):''+v.toLocaleString();
+  const fmtPW=v=>v>=10000?(v/10000).toFixed(v%10000===0?0:1):v.toLocaleString();
   const fmtPU=v=>v>=10000?'만원/H':'원/H';
   let html=`<div class="predict-header"><span style="font-size:18px;">🔥</span><span class="predict-title">신작 쌀먹 예측</span><span class="predict-hot">HOT</span></div>`;
   html+=`<div class="predict-scroll" id="predictScroll">`;
@@ -1673,38 +1671,41 @@ function renderPredictions(){
     if(st.type==='live')badgeHtml=`<div class="status-badge live"><div class="status-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;"></div> LIVE</div>`;
     else if(st.type==='countdown')badgeHtml=`<div class="status-badge countdown">${st.label}</div>`;
     else badgeHtml=`<div class="status-badge">${st.label}</div>`;
+    // 시급 박스
+    const displayWage=isLive&&p.actualWage?p.actualWage:p.wage;
+    let wageBoxInner=`<div class="predict-wage-num">${fmtPW(displayWage)}</div><div class="predict-wage-unit">${fmtPU(displayWage)}</div>`;
+    if(isLive&&p.actualWage)wageBoxInner=`<div class="predict-wage-old">예상 ${fmtPW(p.wage)}</div>`+wageBoxInner;
     // 태그
-    const tagsHtml=p.tags.map(t=>`<span class="ptag ptag-${t.c}">${t.t}</span>`).join('')+`<button class="tag-report-btn" onclick="toggleTagPanel('${p.id}')">+ 특징 제보</button>`;
-    // 태그 패널
-    const tagOptsHtml=TAG_OPTIONS.map(t=>`<span class="tag-opt" onclick="toggleTag(this)">${t}</span>`).join('');
-    // 시급
-    let wageHtml;
-    if(isLive&&p.actualWage){
-      wageHtml=`<span class="predict-wage-label">예상 → 실제 시급</span><div><span class="predict-wage-old">${fmtPW(p.wage)}</span><span class="predict-wage-val">${fmtPW(p.actualWage)}</span><span class="predict-wage-unit">${fmtPU(p.actualWage)}</span></div>`;
-    }else{
-      wageHtml=`<span class="predict-wage-label">예상 쌀먹 시급</span><div><span class="predict-wage-val">${fmtPW(p.wage)}</span><span class="predict-wage-unit">${fmtPU(p.wage)}</span></div>`;
-    }
+    const savedTags=lsGet('pred_tags_'+p.id,[]);
+    const allTags=[...p.tags.map(t=>t.t),...savedTags];
+    const uniqueTags=[...new Set(allTags)];
+    const tagColorMap={};p.tags.forEach(t=>{tagColorMap[t.t]=t.c;});
+    const tagsHtml=uniqueTags.map(t=>{const c=tagColorMap[t]||'gray';return`<span class="ptag ptag-${c}">${t}</span>`;}).join('')+`<button class="tag-report-btn" onclick="toggleTagPanel('${p.id}')">+ 특징 제보</button>`;
+    const tagOptsHtml=TAG_OPTIONS.map(t=>`<span class="tag-opt${uniqueTags.includes(t)?' selected':''}" onclick="toggleTag(this)">${t}</span>`).join('');
     // 검증 배너
     let verifiedHtml='';
     if(isLive&&p.actualWage){
       const hit=p.actualWage>=p.wage*0.5;
       verifiedHtml=hit?`<div class="predict-verified hit">✅ 예측 적중 — 쌀먹 가능 확인. "된다" ${yesPct}% 적중!</div>`:`<div class="predict-verified miss">❌ 예측 빗나감 — 예상 대비 실제 시급 크게 하락</div>`;
     }
+    const chatCount=Math.floor(total/4)+1;
     html+=`<div class="predict-card" data-pidx="${i}">
       ${badgeHtml}
-      <div class="predict-game"><div class="predict-icon">${p.icon}</div><div class="predict-info"><div class="predict-name">${p.name}</div><div class="predict-meta">${p.meta}</div></div></div>
+      <div class="predict-head">
+        <div class="predict-wage-box">${wageBoxInner}</div>
+        <div class="predict-info"><div class="predict-name">${p.name}</div><div class="predict-meta">${p.meta}</div></div>
+      </div>
       <div class="predict-tags" id="ptags_${p.id}">${tagsHtml}</div>
       <div class="tag-panel" id="tagPanel_${p.id}">
         <div class="tag-panel-title">특징 태그 제보 (터치로 선택)</div>
         <div class="tag-options">${tagOptsHtml}</div>
         <div class="wage-report-row">
           <label>${isLive?'실제':'예상'} 시급</label>
-          <input class="wage-report-input" type="number" placeholder="${p.wage}" inputmode="numeric">
+          <input class="wage-report-input" type="number" placeholder="${displayWage}" inputmode="numeric">
           <span style="font-size:10px;color:var(--muted);">원/h</span>
-          <button class="wage-report-btn" onclick="submitPredWage(this)">제보</button>
+          <button class="wage-report-btn" onclick="submitPredWage('${p.id}',this)">제보</button>
         </div>
       </div>
-      <div class="predict-wage">${wageHtml}</div>
       <div class="predict-vote-section">
         <div class="predict-vote-info">현재 예측 분포 · ${total}명 참여</div>
         <div class="predict-bar-wrap"><div class="predict-bar-yes" style="width:${yesPct}%"></div><div class="predict-bar-no" style="width:${noPct}%"></div></div>
@@ -1712,22 +1713,20 @@ function renderPredictions(){
       </div>
       ${verifiedHtml}
       <div class="predict-btns" ${isLive&&p.actualWage?'style="opacity:.5;pointer-events:none;"':''}>
-        <button class="predict-btn ${myPV==='yes'?'voted-yes':''}" onclick="votePred('${p.id}','yes',this)"><span>👍</span> 된다</button>
-        <button class="predict-btn ${myPV==='no'?'voted-no':''}" onclick="votePred('${p.id}','no',this)"><span>👎</span> 안된다</button>
+        <button class="predict-btn ${myPV==='yes'?'voted-yes':''}" onclick="votePred('${p.id}','yes')"><span>👍</span> 된다</button>
+        <button class="predict-btn ${myPV==='no'?'voted-no':''}" onclick="votePred('${p.id}','no')"><span>👎</span> 안된다</button>
       </div>
       <div class="predict-chat">
-        <button class="predict-chat-btn" onclick="showToast('💬 신작 토론방 준비 중입니다!')">💬<span class="pc-count">${Math.floor(total/4)+1}</span></button>
+        <button class="predict-chat-btn" onclick="openPredComm('${p.id}')">💬<span class="pc-count">${chatCount}</span></button>
         <span class="predict-quote" data-pidx="${i}">"${p.quotes[0]}"</span>
-        <button class="predict-chat-cta" onclick="showToast('💬 신작 토론방 준비 중입니다!')">토론하기 ›</button>
+        <button class="predict-chat-cta" onclick="openPredComm('${p.id}')">토론하기 ›</button>
       </div>
     </div>`;
   });
   html+=`</div>`;
-  // 도트
   html+=`<div class="scroll-dots" id="scrollDots">${active.map((_,i)=>`<div class="scroll-dot${i===0?' active':''}"></div>`).join('')}</div>`;
   html+=`<div class="predict-hint">← 스와이프하여 다른 신작 보기 →</div>`;
   sec.innerHTML=html;
-  // 스크롤 도트 연동
   const scr=document.getElementById('predictScroll');
   if(scr){
     const dots=document.querySelectorAll('.scroll-dot');
@@ -1740,16 +1739,52 @@ function renderPredictions(){
 }
 function toggleTagPanel(pid){document.getElementById('tagPanel_'+pid).classList.toggle('open');}
 function toggleTag(el){el.classList.toggle('selected');}
-function submitPredWage(btn){
-  const input=btn.parentElement.querySelector('input');
-  if(!input.value){showToast('⚠️ 예상 시급을 입력해주세요.');return;}
-  showToast('✅ 시급 제보가 반영됐습니다!');input.value='';
-}
-function votePred(pid,type,btn){
-  const prev=lsGet('pred_vote_'+pid,null);
-  if(prev===type){lsSet('pred_vote_'+pid,null);showToast('투표를 취소했습니다.');}
-  else{lsSet('pred_vote_'+pid,type);showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');}
+function submitPredWage(pid,btn){
+  const panel=btn.closest('.tag-panel');
+  const input=panel.querySelector('.wage-report-input');
+  if(!input.value){showToast('⚠️ 시급을 입력해주세요.');return;}
+  // 선택된 태그 저장
+  const selected=[];
+  panel.querySelectorAll('.tag-opt.selected').forEach(el=>selected.push(el.textContent));
+  lsSet('pred_tags_'+pid,selected);
+  showToast('✅ 특징 및 시급 제보가 반영됐습니다!');
+  input.value='';
+  panel.classList.remove('open');
   renderPredictions();
+}
+function votePred(pid,type){
+  const prev=lsGet('pred_vote_'+pid,null);
+  const p=PREDICT_DATA.find(x=>x.id===pid);if(!p)return;
+  if(prev===type){
+    // 취소
+    if(type==='yes')p.yes=Math.max(0,p.yes-1); else p.no=Math.max(0,p.no-1);
+    lsSet('pred_vote_'+pid,null);showToast('투표를 취소했습니다.');
+  }else{
+    // 이전 투표 되돌리기
+    if(prev==='yes')p.yes=Math.max(0,p.yes-1);
+    if(prev==='no')p.no=Math.max(0,p.no-1);
+    if(type==='yes')p.yes++; else p.no++;
+    lsSet('pred_vote_'+pid,type);showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
+  }
+  renderPredictions();
+}
+// 신작 토론방 열기
+function openPredComm(pid){
+  const p=PREDICT_DATA.find(x=>x.id===pid);if(!p)return;
+  // 기존 커뮤니티 모달 활용 — pred 전용 gameId 사용
+  const predGid='pred-'+pid;
+  if(!posts[predGid])posts[predGid]=p.quotes.map((q,i)=>({id:'pq-'+pid+'-'+i,nick:DAILY_NICKS[i%DAILY_NICKS.length],color:DAILY_COLORS[i%DAILY_COLORS.length],body:q,ts:Date.now()-3600e3*(i+1),likes:Math.floor(Math.random()*3),gameId:predGid,pinHash:''}));
+  commGameId=predGid;
+  document.getElementById('cIcon').textContent='🔥';
+  document.getElementById('cTitle').textContent=p.name+' 신작 토론';
+  renderCommStats(predGid);renderPosts(predGid);
+  document.getElementById('writeTa').value='';
+  const savedNick=lsGet('ssalmuk_nick','');
+  document.getElementById('writeNick').value=savedNick;
+  document.getElementById('writePin').value='';
+  document.getElementById('commOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  history.pushState('modal','','');
 }
 // 신작 채팅 로테이션
 let _predQI=0;
