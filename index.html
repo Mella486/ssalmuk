@@ -341,6 +341,75 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .chart-wrap.collapsed .chart-body{display:none;}
 .chart-wrap.collapsed{padding:14px 10px 10px;}
 
+/* ══ 신작 쌀먹 예측 ══ */
+.predict-section{padding:0 var(--px) 14px;}
+.predict-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.predict-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.predict-hot{background:#f87171;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px;}
+.predict-scroll{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding-bottom:4px;scrollbar-width:none;}
+.predict-scroll::-webkit-scrollbar{display:none;}
+.predict-card{flex:0 0 calc(100vw - 44px);max-width:380px;scroll-snap-align:start;background:var(--bg2);border:1px solid var(--border);border-radius:var(--cr);padding:14px;position:relative;}
+.status-badge{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.2);color:var(--accent);}
+.status-badge.countdown{font-family:'Bebas Neue',sans-serif;font-size:14px;}
+.status-badge.live .status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;}
+.predict-game{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.predict-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--bg3);border:1px solid var(--border);}
+.predict-info{flex:1;min-width:0;}
+.predict-name{font-size:15px;font-weight:700;}
+.predict-meta{font-size:11px;color:var(--muted);}
+.predict-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.ptag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:1px solid;}
+.ptag-green{color:#4ade80;border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.08);}
+.ptag-yellow{color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08);}
+.ptag-red{color:#f87171;border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.08);}
+.ptag-gray{color:var(--muted);border-color:var(--border);background:var(--bg3);}
+.tag-report-btn{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;border:1px dashed rgba(198,241,53,.3);background:transparent;color:var(--accent);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.tag-panel{display:none;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px;}
+.tag-panel.open{display:block;}
+.tag-panel-title{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.5px;}
+.tag-options{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.tag-opt{font-size:10px;padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.tag-opt:active{transform:scale(.95);}
+.tag-opt.selected{background:rgba(198,241,53,.12);border-color:rgba(198,241,53,.3);color:var(--accent);}
+.wage-report-row{display:flex;align-items:center;gap:6px;}
+.wage-report-row label{font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap;}
+.wage-report-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:6px 8px;color:var(--text);font-size:13px;outline:none;font-family:'Noto Sans KR',sans-serif;-webkit-appearance:none;max-width:120px;}
+.wage-report-input:focus{border-color:rgba(198,241,53,.4);}
+.wage-report-btn{background:var(--accent);color:#0b0c0e;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.predict-wage{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;padding-top:4px;}
+.predict-wage-label{font-size:11px;color:var(--muted);}
+.predict-wage-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);letter-spacing:.5px;line-height:1;}
+.predict-wage-unit{font-size:12px;color:rgba(198,241,53,.55);margin-left:2px;}
+.predict-wage-old{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--muted);text-decoration:line-through;opacity:.5;margin-right:6px;}
+.predict-vote-section{margin-bottom:10px;}
+.predict-vote-info{font-size:10px;color:var(--muted);margin-bottom:5px;}
+.predict-bar-wrap{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;display:flex;}
+.predict-bar-yes{background:linear-gradient(90deg,#4ade80,#22c55e);border-radius:4px 0 0 4px;transition:width .5s;}
+.predict-bar-no{background:linear-gradient(90deg,#fb7185,#f87171);border-radius:0 4px 4px 0;transition:width .5s;}
+.predict-result{display:flex;justify-content:space-between;align-items:center;margin-top:5px;}
+.predict-pct{font-size:12px;font-weight:700;}
+.predict-pct.yes{color:var(--green);}
+.predict-pct.no{color:var(--red);}
+.predict-votes-count{font-size:10px;color:var(--muted);text-align:center;flex:1;}
+.predict-btns{display:flex;gap:7px;margin-bottom:10px;}
+.predict-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:9px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.predict-btn:active{transform:scale(.97);}
+.predict-btn.voted-yes{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--green);}
+.predict-btn.voted-no{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3);color:var(--red);}
+.predict-chat{display:flex;align-items:center;gap:8px;padding-top:9px;border-top:1px solid var(--border);}
+.predict-chat-btn{flex-shrink:0;width:28px;height:28px;border-radius:7px;background:var(--bg3);border:1.5px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;position:relative;line-height:1;animation:glow-cold 2.2s ease-in-out infinite;}
+.predict-chat-btn .pc-count{position:absolute;top:-4px;right:-6px;background:var(--accent);color:#0b0c0e;font-size:8px;font-weight:700;padding:1px 4px;border-radius:8px;line-height:1.2;min-width:14px;text-align:center;}
+.predict-quote{flex:1;min-width:0;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .3s;}
+.predict-quote.fade{opacity:0;}
+.predict-chat-cta{flex-shrink:0;font-size:10px;font-weight:700;color:var(--accent);background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.18);border-radius:6px;padding:4px 8px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
+.predict-verified{display:flex;align-items:center;gap:6px;border-radius:8px;padding:8px 10px;margin-bottom:10px;font-size:11px;font-weight:700;}
+.predict-verified.hit{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);color:var(--green);}
+.predict-verified.miss{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);color:var(--red);}
+.scroll-dots{display:flex;justify-content:center;gap:5px;padding:6px 0 0;}
+.scroll-dot{width:6px;height:6px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);transition:all .2s;}
+.scroll-dot.active{background:var(--accent);border-color:var(--accent);transform:scale(1.2);}
+.predict-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:4px;opacity:.6;}
+
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
 </style>
@@ -376,6 +445,9 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     <div class="stat-pill"><div class="stat-val" id="statTop">—</div><div class="stat-label">최고 시급</div><div class="stat-change same" id="statTopChg">—</div></div>
   </div>
 </div>
+
+<!-- 🔥 신작 쌀먹 예측 -->
+<div class="predict-section" id="predictSection"></div>
 
 <div class="controls">
   <span class="sort-label">정렬</span>
@@ -1552,6 +1624,147 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2600);
 }
+// ══ 신작 쌀먹 예측 ══
+const PREDICT_DATA=[
+  {id:'aion2',name:'아이온2',icon:'⚔️',meta:'MMORPG · PC · 엔씨소프트',releaseDate:'2026-04-15',
+    tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 높음',c:'yellow'},{t:'유저 수 많음',c:'green'},{t:'엔씨소프트',c:'gray'}],
+    wage:35000,yes:92,no:36,
+    quotes:['엔씨 거래소 정책이 관건일듯','작업장 유입 많으면 시세 빨리 떨어질텐데','PvP 보상이 쌀먹 핵심이 될 듯','출시 초반이 황금기 ㅇㅇ','3.5만원은 좀 과한데...']},
+  {id:'rohan2',name:'로한2',icon:'🐉',meta:'MMORPG · 모바일 · 웹젠',releaseDate:null,
+    tags:[{t:'제한 거래',c:'red'},{t:'작업장 중간',c:'yellow'},{t:'웹젠',c:'gray'}],
+    wage:12000,yes:21,no:33,
+    quotes:['웹젠이라 거래 제한 빡셀듯','모바일이라 자동사냥 가능하면 괜찮을수도','1.2만원도 안 될 것 같은데','사전예약 유저 수 보면 꽤 많긴 함','거래 제한이면 쌀먹 힘들지 않나']},
+  {id:'tl',name:'쓰론 앤 리버티',icon:'🏰',meta:'MMORPG · PC/콘솔 · 엔씨소프트',releaseDate:'2026-03-28',actualWage:19000,
+    tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 중간',c:'yellow'},{t:'엔씨소프트',c:'gray'}],
+    wage:28000,yes:132,no:71,
+    quotes:['예상보다 낮지만 그래도 쌀먹 됨','2주 지나봐야 실제 시세 안정화됨','거래소 수수료가 생각보다 높음','버스 시장이 빠르게 형성 중','1.9만원이면 나쁘지 않은 수준']},
+];
+const TAG_OPTIONS=['자유 거래','제한 거래','작업장 유입 높음','작업장 유입 중간','작업장 유입 낮음','유저 수 많음','유저 수 적음','PvP 위주','PvE 위주','과금 필수','무과금 가능','자동사냥','수동사냥'];
+
+function getPredictStatus(p){
+  if(!p.releaseDate)return{type:'pre',label:'사전예약'};
+  const d=new Date(p.releaseDate),now=new Date();
+  const diff=Math.ceil((d-now)/(864e5));
+  if(diff>7)return{type:'pre',label:'사전예약'};
+  if(diff>0)return{type:'countdown',label:'D-'+diff};
+  if(diff===0)return{type:'countdown',label:'D-Day'};
+  // 출시 후
+  if(Math.abs(diff)<=14)return{type:'live',label:'LIVE'};
+  return{type:'done'};
+}
+
+function renderPredictions(){
+  const sec=document.getElementById('predictSection');
+  const active=PREDICT_DATA.filter(p=>getPredictStatus(p).type!=='done');
+  if(!active.length){sec.innerHTML='';return;}
+  const fmtPW=v=>v>=10000?(v/10000).toFixed(v%10000===0?0:1):''+v.toLocaleString();
+  const fmtPU=v=>v>=10000?'만원/H':'원/H';
+  let html=`<div class="predict-header"><span style="font-size:18px;">🔥</span><span class="predict-title">신작 쌀먹 예측</span><span class="predict-hot">HOT</span></div>`;
+  html+=`<div class="predict-scroll" id="predictScroll">`;
+  active.forEach((p,i)=>{
+    const st=getPredictStatus(p);
+    const total=p.yes+p.no;
+    const yesPct=total?Math.round(p.yes/total*100):50;
+    const noPct=100-yesPct;
+    const isLive=st.type==='live';
+    const myPV=lsGet('pred_vote_'+p.id,null);
+    // 상태 뱃지
+    let badgeHtml;
+    if(st.type==='live')badgeHtml=`<div class="status-badge live"><div class="status-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;"></div> LIVE</div>`;
+    else if(st.type==='countdown')badgeHtml=`<div class="status-badge countdown">${st.label}</div>`;
+    else badgeHtml=`<div class="status-badge">${st.label}</div>`;
+    // 태그
+    const tagsHtml=p.tags.map(t=>`<span class="ptag ptag-${t.c}">${t.t}</span>`).join('')+`<button class="tag-report-btn" onclick="toggleTagPanel('${p.id}')">+ 특징 제보</button>`;
+    // 태그 패널
+    const tagOptsHtml=TAG_OPTIONS.map(t=>`<span class="tag-opt" onclick="toggleTag(this)">${t}</span>`).join('');
+    // 시급
+    let wageHtml;
+    if(isLive&&p.actualWage){
+      wageHtml=`<span class="predict-wage-label">예상 → 실제 시급</span><div><span class="predict-wage-old">${fmtPW(p.wage)}</span><span class="predict-wage-val">${fmtPW(p.actualWage)}</span><span class="predict-wage-unit">${fmtPU(p.actualWage)}</span></div>`;
+    }else{
+      wageHtml=`<span class="predict-wage-label">예상 쌀먹 시급</span><div><span class="predict-wage-val">${fmtPW(p.wage)}</span><span class="predict-wage-unit">${fmtPU(p.wage)}</span></div>`;
+    }
+    // 검증 배너
+    let verifiedHtml='';
+    if(isLive&&p.actualWage){
+      const hit=p.actualWage>=p.wage*0.5;
+      verifiedHtml=hit?`<div class="predict-verified hit">✅ 예측 적중 — 쌀먹 가능 확인. "된다" ${yesPct}% 적중!</div>`:`<div class="predict-verified miss">❌ 예측 빗나감 — 예상 대비 실제 시급 크게 하락</div>`;
+    }
+    html+=`<div class="predict-card" data-pidx="${i}">
+      ${badgeHtml}
+      <div class="predict-game"><div class="predict-icon">${p.icon}</div><div class="predict-info"><div class="predict-name">${p.name}</div><div class="predict-meta">${p.meta}</div></div></div>
+      <div class="predict-tags" id="ptags_${p.id}">${tagsHtml}</div>
+      <div class="tag-panel" id="tagPanel_${p.id}">
+        <div class="tag-panel-title">특징 태그 제보 (터치로 선택)</div>
+        <div class="tag-options">${tagOptsHtml}</div>
+        <div class="wage-report-row">
+          <label>${isLive?'실제':'예상'} 시급</label>
+          <input class="wage-report-input" type="number" placeholder="${p.wage}" inputmode="numeric">
+          <span style="font-size:10px;color:var(--muted);">원/h</span>
+          <button class="wage-report-btn" onclick="submitPredWage(this)">제보</button>
+        </div>
+      </div>
+      <div class="predict-wage">${wageHtml}</div>
+      <div class="predict-vote-section">
+        <div class="predict-vote-info">현재 예측 분포 · ${total}명 참여</div>
+        <div class="predict-bar-wrap"><div class="predict-bar-yes" style="width:${yesPct}%"></div><div class="predict-bar-no" style="width:${noPct}%"></div></div>
+        <div class="predict-result"><span class="predict-pct yes">${yesPct}% 된다</span><span class="predict-votes-count">${total}표</span><span class="predict-pct no">${noPct}% 안된다</span></div>
+      </div>
+      ${verifiedHtml}
+      <div class="predict-btns" ${isLive&&p.actualWage?'style="opacity:.5;pointer-events:none;"':''}>
+        <button class="predict-btn ${myPV==='yes'?'voted-yes':''}" onclick="votePred('${p.id}','yes',this)"><span>👍</span> 된다</button>
+        <button class="predict-btn ${myPV==='no'?'voted-no':''}" onclick="votePred('${p.id}','no',this)"><span>👎</span> 안된다</button>
+      </div>
+      <div class="predict-chat">
+        <button class="predict-chat-btn" onclick="showToast('💬 신작 토론방 준비 중입니다!')">💬<span class="pc-count">${Math.floor(total/4)+1}</span></button>
+        <span class="predict-quote" data-pidx="${i}">"${p.quotes[0]}"</span>
+        <button class="predict-chat-cta" onclick="showToast('💬 신작 토론방 준비 중입니다!')">토론하기 ›</button>
+      </div>
+    </div>`;
+  });
+  html+=`</div>`;
+  // 도트
+  html+=`<div class="scroll-dots" id="scrollDots">${active.map((_,i)=>`<div class="scroll-dot${i===0?' active':''}"></div>`).join('')}</div>`;
+  html+=`<div class="predict-hint">← 스와이프하여 다른 신작 보기 →</div>`;
+  sec.innerHTML=html;
+  // 스크롤 도트 연동
+  const scr=document.getElementById('predictScroll');
+  if(scr){
+    const dots=document.querySelectorAll('.scroll-dot');
+    scr.addEventListener('scroll',()=>{
+      const cw=scr.querySelector('.predict-card').offsetWidth+10;
+      const idx=Math.round(scr.scrollLeft/cw);
+      dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+    });
+  }
+}
+function toggleTagPanel(pid){document.getElementById('tagPanel_'+pid).classList.toggle('open');}
+function toggleTag(el){el.classList.toggle('selected');}
+function submitPredWage(btn){
+  const input=btn.parentElement.querySelector('input');
+  if(!input.value){showToast('⚠️ 예상 시급을 입력해주세요.');return;}
+  showToast('✅ 시급 제보가 반영됐습니다!');input.value='';
+}
+function votePred(pid,type,btn){
+  const prev=lsGet('pred_vote_'+pid,null);
+  if(prev===type){lsSet('pred_vote_'+pid,null);showToast('투표를 취소했습니다.');}
+  else{lsSet('pred_vote_'+pid,type);showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');}
+  renderPredictions();
+}
+// 신작 채팅 로테이션
+let _predQI=0;
+setInterval(()=>{
+  _predQI++;
+  document.querySelectorAll('.predict-quote').forEach(el=>{
+    const idx=parseInt(el.dataset.pidx);
+    const active=PREDICT_DATA.filter(p=>getPredictStatus(p).type!=='done');
+    if(!active[idx])return;
+    const qs=active[idx].quotes;
+    el.classList.add('fade');
+    setTimeout(()=>{el.textContent='"'+qs[_predQI%qs.length]+'"';el.classList.remove('fade');},300);
+  });
+},3000);
+
 // ── 차트 접기/펼치기 (재방문자 자동 접기) ──
 function toggleChart(){
   const sec=document.getElementById('chartSection');
@@ -1596,6 +1809,131 @@ window.addEventListener('online',hideOfflineNotice);
 
 let rTimer;
 window.addEventListener('resize',()=>{clearTimeout(rTimer);rTimer=setTimeout(renderChart,180);});
+
+// ── 신작 쌀먹 예측 ──
+const PREDICTIONS=[
+  {id:'aion2',name:'아이온2',icon:'⚔️',meta:'MMORPG · PC · 엔씨소프트',releaseDate:'2026-04-18',
+   wage:35000,yesVotes:92,noVotes:36,
+   tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 높음',c:'yellow'},{t:'유저 수 많음',c:'green'},{t:'엔씨소프트',c:'gray'}],
+   quotes:['엔씨 거래소 정책이 관건일듯','작업장 유입 많으면 시세 빨리 떨어질텐데','PvP 보상이 쌀먹 핵심이 될 듯','출시 초반이 황금기 ㅇㅇ','3.5만원은 좀 과한데...'],chatCount:12},
+  {id:'rohan2',name:'로한2',icon:'🐉',meta:'MMORPG · 모바일 · 웹젠',releaseDate:null,
+   wage:12000,yesVotes:21,noVotes:33,
+   tags:[{t:'제한 거래',c:'red'},{t:'작업장 중간',c:'yellow'},{t:'웹젠',c:'gray'}],
+   quotes:['웹젠이라 거래 제한 빡셀듯','모바일이라 자동사냥 가능하면 괜찮을수도','1.2만원도 안 될 것 같은데','사전예약 유저 수 보면 꽤 많긴 함'],chatCount:6},
+  {id:'tnl',name:'쓰론 앤 리버티',icon:'🏰',meta:'MMORPG · PC/콘솔 · 엔씨소프트',releaseDate:'2026-03-20',actualWage:19000,
+   wage:28000,yesVotes:132,noVotes:71,verified:'hit',
+   tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 중간',c:'yellow'},{t:'엔씨소프트',c:'gray'}],
+   quotes:['예상보다 낮지만 그래도 쌀먹 됨','2주 지나봐야 실제 시세 안정화됨','거래소 수수료가 생각보다 높음','버스 시장이 빠르게 형성 중'],chatCount:28},
+];
+const TAG_OPTIONS=['자유 거래','제한 거래','작업장 유입 높음','작업장 유입 중간','작업장 유입 낮음','유저 수 많음','유저 수 적음','PvP 위주','PvE 위주','과금 필수','무과금 가능','자동사냥','수동사냥'];
+let predVotes=lsGet('ssalmuk_pred_votes',{});
+
+function getPredStatus(p){
+  if(p.verified)return{type:'live',label:'LIVE'};
+  if(!p.releaseDate)return{type:'pre',label:'사전예약'};
+  const diff=Math.ceil((new Date(p.releaseDate)-new Date())/(864e5));
+  if(diff<=0)return{type:'live',label:'LIVE'};
+  if(diff<=7)return{type:'countdown',label:'D-'+diff};
+  return{type:'pre',label:'사전예약'};
+}
+
+function renderPredictions(){
+  const scroll=document.getElementById('predictScroll');
+  const dots=document.getElementById('scrollDots');
+  if(!scroll||!PREDICTIONS.length)return;
+  scroll.innerHTML='';dots.innerHTML='';
+  PREDICTIONS.forEach((p,i)=>{
+    const st=getPredStatus(p);
+    const total=p.yesVotes+p.noVotes;
+    const yesPct=total?Math.round(p.yesVotes/total*100):50;
+    const noPct=100-yesPct;
+    const myV=predVotes[p.id]||'';
+    const isLive=!!p.verified;
+    const wageDisp=p.wage>=10000?(p.wage/10000).toFixed(p.wage%10000===0?0:1):'';
+    const actualDisp=p.actualWage&&p.actualWage>=10000?(p.actualWage/10000).toFixed(p.actualWage%10000===0?0:1):'';
+    const badgeClass=st.type==='countdown'?'countdown':st.type==='live'?'live':'';
+    const badgeDot=st.type==='live'?'<div class="status-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;"></div>':'';
+    const tagsHtml=p.tags.map(t=>`<span class="ptag ptag-${t.c}">${t.t}</span>`).join('')+`<button class="tag-report-btn" onclick="toggleTagPanel('${p.id}')">+ 특징 제보</button>`;
+    const tagOptsHtml=TAG_OPTIONS.map(t=>`<span class="tag-opt" onclick="this.classList.toggle('selected')">${t}</span>`).join('');
+    const verifiedHtml=p.verified?`<div class="predict-verified ${p.verified}">✅ 예측 적중 — 쌀먹 가능 확인. "된다" ${yesPct}% 적중!</div>`:'';
+    const wageHtml=p.actualWage?
+      `<span class="predict-wage-old">${wageDisp}</span><span class="predict-wage-val">${actualDisp}</span><span class="predict-wage-unit">만원/H</span>`:
+      `<span class="predict-wage-val">${wageDisp||p.wage.toLocaleString()}</span><span class="predict-wage-unit">${wageDisp?'만원/H':'원/H'}</span>`;
+    const wageLbl=p.actualWage?'예상 → 실제 시급':'예상 쌀먹 시급';
+    const card=document.createElement('div');
+    card.className='predict-card';
+    card.innerHTML=`
+      <div class="status-badge ${badgeClass}">${badgeDot} ${st.label}</div>
+      <div class="predict-game">
+        <div class="predict-icon">${p.icon}</div>
+        <div class="predict-info"><div class="predict-name">${p.name}</div><div class="predict-meta">${p.meta}</div></div>
+      </div>
+      <div class="predict-tags">${tagsHtml}</div>
+      <div class="tag-panel" id="tagPanel-${p.id}">
+        <div class="tag-panel-title">특징 태그 제보 (터치로 선택)</div>
+        <div class="tag-options">${tagOptsHtml}</div>
+        <div class="wage-report-row">
+          <label>${p.actualWage?'실제':'예상'} 시급</label>
+          <input class="wage-report-input" type="number" placeholder="${p.wage}" inputmode="numeric">
+          <span style="font-size:10px;color:var(--muted);">원/h</span>
+          <button class="wage-report-btn" onclick="submitPredWage(this)">제보</button>
+        </div>
+      </div>
+      <div class="predict-wage"><span class="predict-wage-label">${wageLbl}</span><div>${wageHtml}</div></div>
+      <div class="predict-vote-section">
+        <div class="predict-vote-info">현재 예측 분포 · ${total}명 참여</div>
+        <div class="predict-bar-wrap"><div class="predict-bar-yes" style="width:${yesPct}%"></div><div class="predict-bar-no" style="width:${noPct}%"></div></div>
+        <div class="predict-result"><span class="predict-pct yes">${yesPct}% 된다</span><span class="predict-votes-count">${total}표</span><span class="predict-pct no">${noPct}% 안된다</span></div>
+      </div>
+      ${verifiedHtml}
+      <div class="predict-btns" ${isLive?'style="opacity:.5;pointer-events:none;"':''}>
+        <button class="predict-btn ${myV==='yes'?'voted-yes':''}" onclick="votePred('${p.id}','yes',this)"><span>👍</span> 된다</button>
+        <button class="predict-btn ${myV==='no'?'voted-no':''}" onclick="votePred('${p.id}','no',this)"><span>👎</span> 안된다</button>
+      </div>
+      <div class="predict-chat">
+        <button class="predict-chat-btn" onclick="showToast('💬 토론방 준비 중입니다!')">💬<span class="pc-count">${p.chatCount}</span></button>
+        <span class="predict-quote" data-pidx="${i}">"${p.quotes[0]}"</span>
+        <button class="predict-chat-cta" onclick="showToast('💬 토론방 준비 중입니다!')">토론하기 ›</button>
+      </div>`;
+    scroll.appendChild(card);
+    const dot=document.createElement('div');
+    dot.className='scroll-dot'+(i===0?' active':'');
+    dots.appendChild(dot);
+  });
+  // 스크롤 도트 연동
+  scroll.addEventListener('scroll',()=>{
+    const cardW=scroll.querySelector('.predict-card').offsetWidth+10;
+    const idx=Math.round(scroll.scrollLeft/cardW);
+    dots.querySelectorAll('.scroll-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  });
+}
+function toggleTagPanel(pid){document.getElementById('tagPanel-'+pid).classList.toggle('open');}
+function submitPredWage(btn){
+  const input=btn.parentElement.querySelector('input');
+  if(!input.value){showToast('⚠️ 시급을 입력해주세요.');return;}
+  showToast('✅ 시급 제보가 반영됐습니다!');input.value='';
+}
+function votePred(pid,type,btn){
+  const row=btn.parentElement;
+  row.querySelectorAll('.predict-btn').forEach(b=>{b.classList.remove('voted-yes','voted-no');});
+  btn.classList.add(type==='yes'?'voted-yes':'voted-no');
+  predVotes[pid]=type;
+  lsSet('ssalmuk_pred_votes',predVotes);
+  showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
+}
+
+// 예측 채팅 3초 로테이션
+let _predQi=0;
+setInterval(()=>{
+  _predQi++;
+  document.querySelectorAll('.predict-quote').forEach(el=>{
+    const idx=parseInt(el.dataset.pidx);
+    if(isNaN(idx)||!PREDICTIONS[idx])return;
+    const qs=PREDICTIONS[idx].quotes;
+    el.classList.add('fade');
+    setTimeout(()=>{el.textContent='"'+qs[_predQi%qs.length]+'"';el.classList.remove('fade');},300);
+  });
+},3000);
 
 // ── 채팅 인용문 3초 로테이션 ──
 let _quoteIdx=0;
@@ -1689,6 +2027,7 @@ window.addEventListener('popstate',()=>{
   await seedDailyChat();
   document.getElementById('loadingScreen').style.display='none';
   renderAll();
+  renderPredictions();
   initChart();
   if(!navigator.onLine)showOfflineNotice();
 })();
