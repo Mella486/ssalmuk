@@ -1810,131 +1810,6 @@ window.addEventListener('online',hideOfflineNotice);
 let rTimer;
 window.addEventListener('resize',()=>{clearTimeout(rTimer);rTimer=setTimeout(renderChart,180);});
 
-// ── 신작 쌀먹 예측 ──
-const PREDICTIONS=[
-  {id:'aion2',name:'아이온2',icon:'⚔️',meta:'MMORPG · PC · 엔씨소프트',releaseDate:'2026-04-18',
-   wage:35000,yesVotes:92,noVotes:36,
-   tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 높음',c:'yellow'},{t:'유저 수 많음',c:'green'},{t:'엔씨소프트',c:'gray'}],
-   quotes:['엔씨 거래소 정책이 관건일듯','작업장 유입 많으면 시세 빨리 떨어질텐데','PvP 보상이 쌀먹 핵심이 될 듯','출시 초반이 황금기 ㅇㅇ','3.5만원은 좀 과한데...'],chatCount:12},
-  {id:'rohan2',name:'로한2',icon:'🐉',meta:'MMORPG · 모바일 · 웹젠',releaseDate:null,
-   wage:12000,yesVotes:21,noVotes:33,
-   tags:[{t:'제한 거래',c:'red'},{t:'작업장 중간',c:'yellow'},{t:'웹젠',c:'gray'}],
-   quotes:['웹젠이라 거래 제한 빡셀듯','모바일이라 자동사냥 가능하면 괜찮을수도','1.2만원도 안 될 것 같은데','사전예약 유저 수 보면 꽤 많긴 함'],chatCount:6},
-  {id:'tnl',name:'쓰론 앤 리버티',icon:'🏰',meta:'MMORPG · PC/콘솔 · 엔씨소프트',releaseDate:'2026-03-20',actualWage:19000,
-   wage:28000,yesVotes:132,noVotes:71,verified:'hit',
-   tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 중간',c:'yellow'},{t:'엔씨소프트',c:'gray'}],
-   quotes:['예상보다 낮지만 그래도 쌀먹 됨','2주 지나봐야 실제 시세 안정화됨','거래소 수수료가 생각보다 높음','버스 시장이 빠르게 형성 중'],chatCount:28},
-];
-const TAG_OPTIONS=['자유 거래','제한 거래','작업장 유입 높음','작업장 유입 중간','작업장 유입 낮음','유저 수 많음','유저 수 적음','PvP 위주','PvE 위주','과금 필수','무과금 가능','자동사냥','수동사냥'];
-let predVotes=lsGet('ssalmuk_pred_votes',{});
-
-function getPredStatus(p){
-  if(p.verified)return{type:'live',label:'LIVE'};
-  if(!p.releaseDate)return{type:'pre',label:'사전예약'};
-  const diff=Math.ceil((new Date(p.releaseDate)-new Date())/(864e5));
-  if(diff<=0)return{type:'live',label:'LIVE'};
-  if(diff<=7)return{type:'countdown',label:'D-'+diff};
-  return{type:'pre',label:'사전예약'};
-}
-
-function renderPredictions(){
-  const scroll=document.getElementById('predictScroll');
-  const dots=document.getElementById('scrollDots');
-  if(!scroll||!PREDICTIONS.length)return;
-  scroll.innerHTML='';dots.innerHTML='';
-  PREDICTIONS.forEach((p,i)=>{
-    const st=getPredStatus(p);
-    const total=p.yesVotes+p.noVotes;
-    const yesPct=total?Math.round(p.yesVotes/total*100):50;
-    const noPct=100-yesPct;
-    const myV=predVotes[p.id]||'';
-    const isLive=!!p.verified;
-    const wageDisp=p.wage>=10000?(p.wage/10000).toFixed(p.wage%10000===0?0:1):'';
-    const actualDisp=p.actualWage&&p.actualWage>=10000?(p.actualWage/10000).toFixed(p.actualWage%10000===0?0:1):'';
-    const badgeClass=st.type==='countdown'?'countdown':st.type==='live'?'live':'';
-    const badgeDot=st.type==='live'?'<div class="status-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;"></div>':'';
-    const tagsHtml=p.tags.map(t=>`<span class="ptag ptag-${t.c}">${t.t}</span>`).join('')+`<button class="tag-report-btn" onclick="toggleTagPanel('${p.id}')">+ 특징 제보</button>`;
-    const tagOptsHtml=TAG_OPTIONS.map(t=>`<span class="tag-opt" onclick="this.classList.toggle('selected')">${t}</span>`).join('');
-    const verifiedHtml=p.verified?`<div class="predict-verified ${p.verified}">✅ 예측 적중 — 쌀먹 가능 확인. "된다" ${yesPct}% 적중!</div>`:'';
-    const wageHtml=p.actualWage?
-      `<span class="predict-wage-old">${wageDisp}</span><span class="predict-wage-val">${actualDisp}</span><span class="predict-wage-unit">만원/H</span>`:
-      `<span class="predict-wage-val">${wageDisp||p.wage.toLocaleString()}</span><span class="predict-wage-unit">${wageDisp?'만원/H':'원/H'}</span>`;
-    const wageLbl=p.actualWage?'예상 → 실제 시급':'예상 쌀먹 시급';
-    const card=document.createElement('div');
-    card.className='predict-card';
-    card.innerHTML=`
-      <div class="status-badge ${badgeClass}">${badgeDot} ${st.label}</div>
-      <div class="predict-game">
-        <div class="predict-icon">${p.icon}</div>
-        <div class="predict-info"><div class="predict-name">${p.name}</div><div class="predict-meta">${p.meta}</div></div>
-      </div>
-      <div class="predict-tags">${tagsHtml}</div>
-      <div class="tag-panel" id="tagPanel-${p.id}">
-        <div class="tag-panel-title">특징 태그 제보 (터치로 선택)</div>
-        <div class="tag-options">${tagOptsHtml}</div>
-        <div class="wage-report-row">
-          <label>${p.actualWage?'실제':'예상'} 시급</label>
-          <input class="wage-report-input" type="number" placeholder="${p.wage}" inputmode="numeric">
-          <span style="font-size:10px;color:var(--muted);">원/h</span>
-          <button class="wage-report-btn" onclick="submitPredWage(this)">제보</button>
-        </div>
-      </div>
-      <div class="predict-wage"><span class="predict-wage-label">${wageLbl}</span><div>${wageHtml}</div></div>
-      <div class="predict-vote-section">
-        <div class="predict-vote-info">현재 예측 분포 · ${total}명 참여</div>
-        <div class="predict-bar-wrap"><div class="predict-bar-yes" style="width:${yesPct}%"></div><div class="predict-bar-no" style="width:${noPct}%"></div></div>
-        <div class="predict-result"><span class="predict-pct yes">${yesPct}% 된다</span><span class="predict-votes-count">${total}표</span><span class="predict-pct no">${noPct}% 안된다</span></div>
-      </div>
-      ${verifiedHtml}
-      <div class="predict-btns" ${isLive?'style="opacity:.5;pointer-events:none;"':''}>
-        <button class="predict-btn ${myV==='yes'?'voted-yes':''}" onclick="votePred('${p.id}','yes',this)"><span>👍</span> 된다</button>
-        <button class="predict-btn ${myV==='no'?'voted-no':''}" onclick="votePred('${p.id}','no',this)"><span>👎</span> 안된다</button>
-      </div>
-      <div class="predict-chat">
-        <button class="predict-chat-btn" onclick="showToast('💬 토론방 준비 중입니다!')">💬<span class="pc-count">${p.chatCount}</span></button>
-        <span class="predict-quote" data-pidx="${i}">"${p.quotes[0]}"</span>
-        <button class="predict-chat-cta" onclick="showToast('💬 토론방 준비 중입니다!')">토론하기 ›</button>
-      </div>`;
-    scroll.appendChild(card);
-    const dot=document.createElement('div');
-    dot.className='scroll-dot'+(i===0?' active':'');
-    dots.appendChild(dot);
-  });
-  // 스크롤 도트 연동
-  scroll.addEventListener('scroll',()=>{
-    const cardW=scroll.querySelector('.predict-card').offsetWidth+10;
-    const idx=Math.round(scroll.scrollLeft/cardW);
-    dots.querySelectorAll('.scroll-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
-  });
-}
-function toggleTagPanel(pid){document.getElementById('tagPanel-'+pid).classList.toggle('open');}
-function submitPredWage(btn){
-  const input=btn.parentElement.querySelector('input');
-  if(!input.value){showToast('⚠️ 시급을 입력해주세요.');return;}
-  showToast('✅ 시급 제보가 반영됐습니다!');input.value='';
-}
-function votePred(pid,type,btn){
-  const row=btn.parentElement;
-  row.querySelectorAll('.predict-btn').forEach(b=>{b.classList.remove('voted-yes','voted-no');});
-  btn.classList.add(type==='yes'?'voted-yes':'voted-no');
-  predVotes[pid]=type;
-  lsSet('ssalmuk_pred_votes',predVotes);
-  showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
-}
-
-// 예측 채팅 3초 로테이션
-let _predQi=0;
-setInterval(()=>{
-  _predQi++;
-  document.querySelectorAll('.predict-quote').forEach(el=>{
-    const idx=parseInt(el.dataset.pidx);
-    if(isNaN(idx)||!PREDICTIONS[idx])return;
-    const qs=PREDICTIONS[idx].quotes;
-    el.classList.add('fade');
-    setTimeout(()=>{el.textContent='"'+qs[_predQi%qs.length]+'"';el.classList.remove('fade');},300);
-  });
-},3000);
-
 // ── 채팅 인용문 3초 로테이션 ──
 let _quoteIdx=0;
 setInterval(()=>{
@@ -2023,12 +1898,16 @@ window.addEventListener('popstate',()=>{
 
 // ── 시작 ──
 (async()=>{
-  await loadData();
-  await seedDailyChat();
+  try{
+    await loadData();
+    await seedDailyChat();
+  }catch(e){console.error('startup error:',e);}
   document.getElementById('loadingScreen').style.display='none';
-  renderAll();
-  renderPredictions();
-  initChart();
+  try{
+    renderAll();
+    renderPredictions();
+    initChart();
+  }catch(e){console.error('render error:',e);}
   if(!navigator.onLine)showOfflineNotice();
 })();
 </script>
