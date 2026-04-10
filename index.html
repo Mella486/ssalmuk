@@ -138,10 +138,12 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
 .chart-canvas-wrap{position:relative;width:100%;}
 
-.ad-banner{margin:0 var(--px) 14px;background:var(--bg2);border:1px dashed rgba(255,255,255,.1);border-radius:var(--cr);min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;overflow:hidden;}
-.ad-banner:empty,.ad-banner.ad-empty{display:none;}
+.ad-banner{margin:0 var(--px) 14px;background:var(--bg2);border:1px dashed rgba(255,255,255,.1);border-radius:var(--cr);min-height:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;overflow:hidden;}
+.ad-banner.ad-ready{display:flex;}
+.ad-banner:empty,.ad-banner.ad-empty{display:none!important;}
 .ad-banner ins{width:100%;}
 .ad-banner ins[data-ad-status="unfilled"]{display:none!important;height:0!important;min-height:0!important;}
+.ad-feed{grid-column:1 / -1;margin:0 0 14px;}
 .ad-tag{font-size:9px;letter-spacing:1.8px;color:rgba(255,255,255,.16);font-weight:700;text-transform:uppercase;}
 .ad-text{font-size:12px;color:rgba(255,255,255,.16);}
 
@@ -1187,7 +1189,11 @@ function renderCards(){
       insEl.setAttribute('data-ad-slot','9924047547');
       adEl.appendChild(insEl);
       grid.appendChild(adEl);
-      setTimeout(()=>{try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){} insEl.dataset.adPushed='1';},150);
+      setTimeout(()=>{
+        try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}
+        insEl.dataset.adPushed='1';
+        watchAdSlot(adEl,{tries:24,interval:500});
+      },150);
     }
     const tp=trustPct(g),job=getJob(g.expert),totalV=g.upVotes+g.downVotes,myV=myVotes[g.id];
     const pc=postCount(g.id),act=actLevel(pc);
@@ -1251,16 +1257,40 @@ function renderCards(){
       </div>`;
     grid.appendChild(el);
   });
-  // 광고가 안 채워진 ad-banner 숨기기
-  setTimeout(()=>{
-    document.querySelectorAll('.ad-banner').forEach(el=>{
-      const ins=el.querySelector('ins.adsbygoogle');
-      if(ins && ins.dataset.adStatus==='unfilled'){el.classList.add('ad-empty');}
-      if(!ins || (!ins.innerHTML.trim() && !ins.childElementCount)){el.classList.add('ad-empty');}
-    });
-  },3000);
+  // 광고가 채워졌을 때만 노출
+  requestAnimationFrame(()=>refreshAdVisibility(grid));
 }
 function renderAll(){renderStats();renderChart();renderCards();saveWeeklySnapshot();}
+
+function refreshAdVisibility(scope=document){
+  scope.querySelectorAll('.ad-banner').forEach(el=>{
+    const ins=el.querySelector('ins.adsbygoogle');
+    if(!ins){el.classList.remove('ad-ready');el.classList.add('ad-empty');return;}
+    const status=ins.dataset.adStatus;
+    const hasMarkup=!!(ins.innerHTML && ins.innerHTML.trim()) || ins.childElementCount>0;
+    if(status==='filled' || hasMarkup){
+      el.classList.add('ad-ready');
+      el.classList.remove('ad-empty');
+    }else if(status==='unfilled'){
+      el.classList.remove('ad-ready');
+      el.classList.add('ad-empty');
+    }
+  });
+}
+
+function watchAdSlot(el,{tries=20,interval=500}={}){
+  if(!el) return;
+  let count=0;
+  const timer=setInterval(()=>{
+    refreshAdVisibility(el.parentNode||document);
+    const ins=el.querySelector('ins.adsbygoogle');
+    const status=ins?.dataset?.adStatus;
+    const ready=el.classList.contains('ad-ready');
+    if(ready || status==='unfilled' || ++count>=tries){
+      clearInterval(timer);
+    }
+  },interval);
+}
 
 // ── 투표 ──
 async function vote(id,dir){
@@ -1693,6 +1723,25 @@ function ensurePredCommPosts(p){
   }
   return posts[predGid];
 }
+
+async function loadPredictionVoteSummaries(){
+  try{
+    const snap=await db.collection('predict_vote_summaries').get();
+    const summaryMap={};
+    snap.docs.forEach(d=>{summaryMap[d.id]=d.data()||{};});
+    for(const p of PREDICT_DATA){
+      const saved=summaryMap[p.id];
+      if(saved){
+        p.yes=Number(saved.yes)||0;
+        p.no=Number(saved.no)||0;
+      }else{
+        db.collection('predict_vote_summaries').doc(p.id).set({yes:Number(p.yes)||0,no:Number(p.no)||0,updatedAt:Date.now()},{merge:true}).catch(()=>{});
+      }
+    }
+  }catch(e){
+    console.error('loadPredictionVoteSummaries error:',e);
+  }
+}
 async function syncPredictionMigrations(){
   const now=Date.now();
   for(const p of PREDICT_DATA){
@@ -1868,22 +1917,61 @@ function submitPredWage(pid,btn){
   panel.classList.remove('open');
   renderPredictions();
 }
-function votePred(pid,type){
+const predVoteBusy={};
+async function votePred(pid,type){
   predictCurrentId=pid;
-  const prev=lsGet('pred_vote_'+pid,null);
   const p=PREDICT_DATA.find(x=>x.id===pid);if(!p)return;
-  if(prev===type){
-    // 취소
-    if(type==='yes')p.yes=Math.max(0,p.yes-1); else p.no=Math.max(0,p.no-1);
-    lsSet('pred_vote_'+pid,null);showToast('투표를 취소했습니다.');
-  }else{
-    // 이전 투표 되돌리기
-    if(prev==='yes')p.yes=Math.max(0,p.yes-1);
-    if(prev==='no')p.no=Math.max(0,p.no-1);
-    if(type==='yes')p.yes++; else p.no++;
-    lsSet('pred_vote_'+pid,type);showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
+  if(predVoteBusy[pid]) return;
+  predVoteBusy[pid]=true;
+  const prev=lsGet('pred_vote_'+pid,null);
+  const fp=getFingerprint();
+  const voteRef=db.collection('predict_votes').doc(fp+'_'+pid);
+  const sumRef=db.collection('predict_vote_summaries').doc(pid);
+  try{
+    const result=await db.runTransaction(async(tx)=>{
+      const [voteSnap,sumSnap]=await Promise.all([tx.get(voteRef),tx.get(sumRef)]);
+      let yes=sumSnap.exists?(Number(sumSnap.data().yes)||0):(Number(p.yes)||0);
+      let no=sumSnap.exists?(Number(sumSnap.data().no)||0):(Number(p.no)||0);
+      const serverPrev=voteSnap.exists?(voteSnap.data().type||null):null;
+      const effectivePrev=serverPrev||prev||null;
+      let nextVote=null;
+      let toastMsg='';
+      if(effectivePrev===type){
+        if(type==='yes') yes=Math.max(0,yes-1);
+        else no=Math.max(0,no-1);
+        tx.delete(voteRef);
+        toastMsg='투표를 취소했습니다.';
+      }else{
+        if(effectivePrev==='yes') yes=Math.max(0,yes-1);
+        if(effectivePrev==='no') no=Math.max(0,no-1);
+        if(type==='yes') yes+=1;
+        else no+=1;
+        nextVote=type;
+        tx.set(voteRef,{pid,type,fp,ts:Date.now()},{merge:true});
+        toastMsg=type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!';
+      }
+      tx.set(sumRef,{yes,no,updatedAt:Date.now()},{merge:true});
+      return {yes,no,nextVote,toastMsg};
+    });
+    p.yes=result.yes;
+    p.no=result.no;
+    lsSet('pred_vote_'+pid,result.nextVote);
+    showToast(result.toastMsg);
+  }catch(e){
+    console.error('votePred error:',e);
+    if(prev===type){
+      if(type==='yes')p.yes=Math.max(0,p.yes-1); else p.no=Math.max(0,p.no-1);
+      lsSet('pred_vote_'+pid,null);showToast('투표를 취소했습니다.');
+    }else{
+      if(prev==='yes')p.yes=Math.max(0,p.yes-1);
+      if(prev==='no')p.no=Math.max(0,p.no-1);
+      if(type==='yes')p.yes++; else p.no++;
+      lsSet('pred_vote_'+pid,type);showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
+    }
+  }finally{
+    predVoteBusy[pid]=false;
+    renderPredictions();
   }
-  renderPredictions();
 }
 // 신작 토론방 열기
 function openPredComm(pid){
@@ -2051,6 +2139,7 @@ window.addEventListener('popstate',()=>{
 (async()=>{
   try{
     await loadData();
+    await loadPredictionVoteSummaries();
     await syncPredictionMigrations();
     await seedDailyChat();
     await seedDailyPredChat();
@@ -2061,6 +2150,8 @@ window.addEventListener('popstate',()=>{
     renderPredictions();
     initChart();
   }catch(e){console.error('render error:',e);}
+  refreshAdVisibility(document);
+  watchAdSlot(document.getElementById('adSlot1'),{tries:24,interval:500});
   if(!navigator.onLine)showOfflineNotice();
 })();
 </script>
