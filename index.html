@@ -1905,6 +1905,14 @@ const PREDICT_WAGE_MIN_REPORTS_TO_MOVE=1;
 const PREDICT_WAGE_HARD_MIN=1000;
 const PREDICT_WAGE_HARD_MAX=300000;
 
+function getPredictWageReportWeight(baseWage, submittedWage){
+  const base=clampPredictWage(baseWage);
+  const submitted=clampPredictWage(submittedWage);
+  if(!base || !submitted) return 1;
+  const changeRatio=Math.abs(submitted-base)/base;
+  return changeRatio>0.3 ? 0.1 : 1;
+}
+
 function clampPredictWage(v){
   return Math.max(PREDICT_WAGE_HARD_MIN, Math.min(PREDICT_WAGE_HARD_MAX, Math.round(Number(v)||0)));
 }
