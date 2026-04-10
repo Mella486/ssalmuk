@@ -1899,8 +1899,8 @@ async function loadPredictionVoteSummaries(){
   }
 }
 
-const PREDICT_WAGE_BLEND_MAX=0.5;
-const PREDICT_WAGE_BLEND_STEP=0.03;
+const PREDICT_WAGE_BLEND_MAX=0.8;
+const PREDICT_WAGE_BLEND_STEP=0.12;
 const PREDICT_WAGE_MIN_REPORTS_TO_MOVE=1;
 const PREDICT_WAGE_HARD_MIN=1000;
 const PREDICT_WAGE_HARD_MAX=300000;
@@ -2056,7 +2056,7 @@ function renderPredictions(){
     const displayWage=isLive&&p.actualWage?p.actualWage:p.wage;
     let wageBoxInner=`<div class="predict-wage-num">${fmtPW(displayWage)}</div><div class="predict-wage-unit">${fmtPU(displayWage)}</div>`;
     if(isLive&&p.actualWage)wageBoxInner=`<div class="predict-wage-old">예상 ${fmtPW(p.wage)}</div>`+wageBoxInner;
-    const wageReportInfo=!isLive?`<div class="predict-vote-info" style="margin-top:6px;">시급 제보 ${p.wageReportCount||0}건 · 제보 평균 ${fmtPW(p.avgReportedWage||p.baseWage||displayWage)}${fmtPU(p.avgReportedWage||p.baseWage||displayWage)==='만원/H'?'':'원/H'}</div>`:'';
+    const wageReportInfo='';
     const savedTags=lsGet('pred_tags_'+p.id,[]);
     const allTags=[...p.tags.map(t=>t.t),...savedTags];
     const uniqueTags=[...new Set(allTags)];
@@ -2128,8 +2128,9 @@ function toggleTag(el){el.classList.toggle('selected');}
 async function submitPredWage(pid,btn){
   predictCurrentId=pid;
   const p=PREDICT_DATA.find(x=>x.id===pid); if(!p) return;
-  const panel=btn.closest('.tag-panel');
-  const input=panel.querySelector('.wage-report-input');
+  const panel=btn?.closest('.tag-panel');
+  const input=panel?.querySelector('.wage-report-input');
+  if(!panel || !input){showToast('⚠️ 제보창을 다시 열고 시도해주세요.');return;}
   const rawWage=Number(input.value);
   if(!rawWage){showToast('⚠️ 시급을 입력해주세요.');return;}
   const submittedWage=clampPredictWage(rawWage);
@@ -2140,6 +2141,7 @@ async function submitPredWage(pid,btn){
   const reportRef=db.collection('predict_wage_reports').doc(fp+'_'+pid);
   const sumRef=db.collection('predict_wage_summaries').doc(pid);
   const localSummaryKey='pred_wage_summary_local_'+pid;
+  const from=Math.round(Number(p.wage||p.baseWage||0));
   btn.disabled=true;
   try{
     const result=await db.runTransaction(async(tx)=>{
@@ -2163,11 +2165,10 @@ async function submitPredWage(pid,btn){
     });
     lsSet(localSummaryKey, result);
     applyPredictWageSummaryToItem(p, {baseWage:p.baseWage||p.wage, reportCount:result.reportCount, weightedReportUnits:result.weightedReportUnits, weightedReportedTotal:result.weightedReportedTotal, avgReportedWage:result.avgReportedWage, blendedWage:result.blendedWage});
-    renderPredictions();
-    const from=Math.round(Number(p.baseWage||0));
     const to=Math.round(Number(p.wage||0));
     trackEvent('new_release_report_submit', {predict_id:pid, predict_name:p.name, reported_wage:submittedWage, feature_tags:selected, replaced:result.replaced, outlier_reduced:result.outlierReduced, report_count:result.reportCount});
-    showToast((result.replaced ? '✅ 내 시급 제보를 새 값으로 업데이트했습니다!' : '✅ 특징 및 시급 제보가 반영됐습니다!') + ` ${from.toLocaleString()}원 → ${to.toLocaleString()}원` + (result.outlierReduced ? ' · 큰 변동값은 1/10 반영' : ''));
+    showToast((result.replaced ? '✅ 내 시급 제보를 새 값으로 업데이트했습니다!' : '✅ 시급 제보가 반영됐습니다!') + ` ${from.toLocaleString()}원 → ${to.toLocaleString()}원` + (result.outlierReduced ? ' · 큰 변동값은 1/10 반영' : ''));
+    renderPredictions();
   }catch(e){
     console.error('submitPredWage error:',e);
     const prevLocalReport=lsGet('pred_wage_local_'+pid,null);
@@ -2188,11 +2189,10 @@ async function submitPredWage(pid,btn){
     lsSet('pred_wage_local_weight_'+pid, nextWeight);
     lsSet(localSummaryKey, localSummary);
     applyPredictWageSummaryToItem(p, localSummary);
-    renderPredictions();
-    const from=Math.round(Number(p.baseWage||0));
     const to=Math.round(Number(p.wage||0));
     trackEvent('new_release_report_submit', {predict_id:pid, predict_name:p.name, reported_wage:submittedWage, feature_tags:selected, replaced:prevLocalReport!==null, outlier_reduced:nextWeight<1, report_count:nextCount, mode:'offline_fallback'});
-    showToast(`✅ 제보가 반영되었습니다! ${from.toLocaleString()}원 → ${to.toLocaleString()}원` + (nextWeight<1 ? ' · 큰 변동값은 1/10 반영' : '') + ' (오프라인 보정)');
+    showToast(`✅ 시급 제보가 반영되었습니다! ${from.toLocaleString()}원 → ${to.toLocaleString()}원` + (nextWeight<1 ? ' · 큰 변동값은 1/10 반영' : '') + ' (오프라인 보정)');
+    renderPredictions();
   }finally{
     input.value='';
     panel.classList.remove('open');
