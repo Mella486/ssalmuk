@@ -75,7 +75,147 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-0X8BYRMCX8');
+  gtag('config', 'G-0X8BYRMCX8', {
+    send_page_view: true,
+    anonymize_ip: true
+  });
+
+  const analyticsState = {
+    pageEnteredAt: Date.now(),
+    searchTimer: null,
+    searchLastQuery: '',
+    lastSortValue: '',
+    trackedViews: new Set(),
+    chatEntryTracked: new Set(),
+    reportEntryTracked: new Set()
+  };
+
+  function sanitizeAnalyticsValue(value, maxLen = 100){
+    if(value === undefined || value === null) return undefined;
+    const str = String(value).trim();
+    if(!str) return undefined;
+    return str.slice(0, maxLen);
+  }
+
+  function normalizeAnalyticsParams(params = {}){
+    const cleaned = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if(value === undefined || value === null || value === '') return;
+      if(typeof value === 'string'){
+        const trimmed = value.trim();
+        if(!trimmed) return;
+        cleaned[key] = trimmed.slice(0, 100);
+        return;
+      }
+      if(Array.isArray(value)){
+        if(!value.length) return;
+        cleaned[key] = value.map(v => typeof v === 'string' ? v.trim().slice(0, 50) : v).join('|').slice(0, 100);
+        return;
+      }
+      cleaned[key] = value;
+    });
+    return cleaned;
+  }
+
+  function trackEvent(name, params = {}){
+    if(typeof gtag !== 'function') return;
+    gtag('event', name, normalizeAnalyticsParams(params));
+  }
+
+  function getCurrentSortValue(){
+    const el = document.getElementById('sortSelect');
+    return el ? el.value : undefined;
+  }
+
+  function getSearchQuery(){
+    const el = document.getElementById('gameSearch');
+    return el ? el.value.trim() : '';
+  }
+
+  function trackPageEntry(){
+    trackEvent('page_entry', {
+      page_type: 'ssalmuk_home',
+      referrer_host: sanitizeAnalyticsValue(document.referrer ? new URL(document.referrer).host : 'direct', 60),
+      initial_sort: getCurrentSortValue() || 'expert'
+    });
+  }
+
+  function trackViewOnce(key, params = {}){
+    if(!key || analyticsState.trackedViews.has(key)) return;
+    analyticsState.trackedViews.add(key);
+    trackEvent('content_view', params);
+  }
+
+  function trackChatEntry(kind, id, name){
+    const key = `${kind}:${id}`;
+    if(!analyticsState.chatEntryTracked.has(key)) analyticsState.chatEntryTracked.add(key);
+    trackEvent('chat_entry', {
+      entry_type: kind,
+      item_id: id,
+      item_name: name,
+      sort_type: getCurrentSortValue(),
+      search_query: getSearchQuery() || undefined
+    });
+  }
+
+  function trackReportEntry(kind, id, name, source){
+    const key = `${kind}:${id || 'new'}:${source || 'unknown'}`;
+    if(!analyticsState.reportEntryTracked.has(key)) analyticsState.reportEntryTracked.add(key);
+    trackEvent('report_open', {
+      report_type: kind,
+      game_id: id,
+      game_name: name,
+      source: source || 'unknown',
+      sort_type: getCurrentSortValue(),
+      search_query: getSearchQuery() || undefined
+    });
+  }
+
+  function attachAnalyticsListeners(){
+    const sortEl = document.getElementById('sortSelect');
+    if(sortEl && !sortEl.dataset.analyticsBound){
+      sortEl.dataset.analyticsBound = '1';
+      analyticsState.lastSortValue = sortEl.value;
+      sortEl.addEventListener('change', (e) => {
+        trackEvent('sort_change', {
+          sort_type: e.target.value,
+          previous_sort_type: analyticsState.lastSortValue || undefined,
+          search_query: getSearchQuery() || undefined
+        });
+        analyticsState.lastSortValue = e.target.value;
+      });
+    }
+
+    const searchEl = document.getElementById('gameSearch');
+    if(searchEl && !searchEl.dataset.analyticsBound){
+      searchEl.dataset.analyticsBound = '1';
+      searchEl.addEventListener('input', (e) => {
+        const query = e.target.value.trim();
+        clearTimeout(analyticsState.searchTimer);
+        analyticsState.searchTimer = setTimeout(() => {
+          if(query === analyticsState.searchLastQuery) return;
+          analyticsState.searchLastQuery = query;
+          trackEvent('search_games', {
+            search_query: query || '(empty)',
+            result_count: Number((document.getElementById('gameSearch')||{}).dataset?.visibleCount || 0) || undefined,
+            sort_type: getCurrentSortValue()
+          });
+        }, 500);
+      });
+    }
+
+    if(!window.__ssalmukUnloadTracked){
+      window.__ssalmukUnloadTracked = true;
+      window.addEventListener('beforeunload', () => {
+        const engagedSec = Math.max(1, Math.round((Date.now() - analyticsState.pageEnteredAt) / 1000));
+        trackEvent('page_exit', {
+          engaged_seconds: engagedSec,
+          sort_type: getCurrentSortValue(),
+          search_query: getSearchQuery() || undefined
+        });
+      });
+    }
+  }
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -1257,6 +1397,9 @@ function renderCards(){
       </div>`;
     grid.appendChild(el);
   });
+  list.slice(0, Math.min(list.length, 12)).forEach((g, idx) => {
+    trackViewOnce(`existing_game_card:${g.id}`, {content_type:'existing_game_card', game_id:g.id, game_name:g.name, rank_position:idx+1, sort_type:getCurrentSortValue()});
+  });
   // 광고가 채워졌을 때만 노출
   requestAnimationFrame(()=>refreshAdVisibility(grid));
 }
@@ -1320,7 +1463,7 @@ async function vote(id,dir){
     try{await db.collection('votes').doc(fp+'_'+id).set({dir,ts:Date.now(),fp});}catch(e){}
   }
   lsSet('ssalmuk_votes',myVotes);
-  trackEvent('vote_click',{game_name:g.name,direction:dir});
+  trackEvent('existing_game_vote', {game_id:id, game_name:g.name, vote_direction:dir, vote_state:prev===dir?'cancel':'active', up_votes:g.upVotes, down_votes:g.downVotes, sort_type:getCurrentSortValue(), search_query:getSearchQuery()||undefined});
   await db.collection('games').doc(id).update({upVotes:g.upVotes,downVotes:g.downVotes});
   renderAll();
 }
@@ -1343,6 +1486,7 @@ function onGameSelChange(){
   const isNew=val==='NEW';
   document.getElementById('fNewGameRow').style.display=isNew?'block':'none';
   document.getElementById('fTagRow').style.display=isNew?'flex':'none';
+  trackEvent('report_game_select', {selection_type:isNew?'new_game':'existing_game', game_id:!isNew&&val?val:undefined, game_name:!isNew&&val?(games.find(x=>x.id===val)?.name||undefined):undefined});
   if(isNew)document.getElementById('fName').focus();
 }
 
@@ -1354,7 +1498,8 @@ function openReportFor(gid){
   document.getElementById('reportOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   history.pushState('modal','','');
-  trackEvent('report_open',{from:'card',game_id:gid});
+  const target = games.find(x=>x.id===gid);
+  trackReportEntry('existing_game_price_report', gid, target?.name, 'card');
 }
 function openReportModal(){
   populateGameSel();
@@ -1364,7 +1509,7 @@ function openReportModal(){
   document.getElementById('reportOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   history.pushState('modal','','');
-  trackEvent('report_open');
+  trackReportEntry('price_report', '', '', 'header_cta');
 }
 function closeReportModal(){document.getElementById('reportOverlay').classList.remove('open');document.body.style.overflow='';if(history.state==='modal')history.back();}
 function closeReportOut(e){if(e.target===document.getElementById('reportOverlay'))closeReportModal();}
@@ -1444,17 +1589,24 @@ async function submitReport(){
     if(weight>=1)showToast('✅ 제보가 반영됐습니다!');
   }
   ['fName','fBeg','fExp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  trackEvent('report_submit',{is_new:selVal==='NEW'});
+  trackEvent('price_report_submit', {
+    report_target: selVal==='NEW' ? 'new_game' : 'existing_game',
+    game_id: selVal==='NEW' ? undefined : selVal,
+    game_name: selVal==='NEW' ? document.getElementById('fName').value.trim() || undefined : (games.find(x=>x.id===selVal)?.name || undefined),
+    beginner_wage: beg || undefined,
+    expert_wage: exp || undefined,
+    category: selVal==='NEW' ? document.getElementById('fTag').value : undefined,
+    sort_type: getCurrentSortValue(),
+    search_query: getSearchQuery() || undefined
+  });
   closeReportModal();renderAll();
 }
 
 // ── 커뮤니티 ──
-function trackEvent(name,params={}){if(typeof gtag==='function')gtag('event',name,params);}
-
 function openComm(gid){
   commGameId=gid;
   const g=games.find(x=>x.id===gid);if(!g)return;
-  trackEvent('comm_open',{game_name:g.name});
+  trackChatEntry('existing_game', gid, g.name);
   document.getElementById('cIcon').textContent=g.icon||'🎮';
   document.getElementById('cTitle').textContent=g.name+' 커뮤니티';
   renderCommStats(gid);renderPosts(gid);
@@ -1559,6 +1711,7 @@ async function submitReply(parentId){
   ta.value='';ta.style.height='';
   document.getElementById('reply-write-'+parentId).classList.remove('open');
   renderCommStats(gid);renderPosts(gid);renderCards();
+  trackEvent('reply_submit', {game_id:gid, game_name:games.find(x=>x.id===gid)?.name || gid, parent_post_id:parentId, body_length:body.length});
   showToast('✅ 답글이 등록됐습니다!');
 }
 
@@ -1574,6 +1727,7 @@ async function deletePost(pid){
   batch.delete(db.collection('posts').doc(pid));
   list.filter(p=>p.parentId===pid).forEach(r=>batch.delete(db.collection('posts').doc(r.id)));
   await batch.commit();
+  trackEvent('post_delete', {game_id:gid, post_id:pid});
   renderCommStats(gid);renderPosts(gid);renderCards();
   showToast('🗑️ 삭제됐습니다.');
 }
@@ -1589,6 +1743,7 @@ async function editPost(pid){
   if(!newBody||!newBody.trim())return;
   post.body=newBody.trim();
   await db.collection('posts').doc(pid).update({body:post.body});
+  trackEvent('post_edit', {game_id:gid, post_id:pid, body_length:post.body.length});
   renderCommStats(gid);renderPosts(gid);
   showToast('✅ 수정됐습니다.');
 }
@@ -1601,6 +1756,7 @@ async function likePost(pid){
   else{post.likes++;myPostLikes[pid]=1;}
   lsSet('ssalmuk_postlikes',myPostLikes);
   await db.collection('posts').doc(pid).update({likes:post.likes});
+  trackEvent('post_like_toggle', {game_id:gid, post_id:pid, liked:!!myPostLikes[pid], like_count:post.likes});
   renderCommStats(gid);renderPosts(gid);renderCards();
 }
 
@@ -1618,7 +1774,7 @@ async function submitPost(){
   if(!posts[gid])posts[gid]=[];
   posts[gid].push(newPost);
   await db.collection('posts').doc(newPost.id).set(newPost);
-  trackEvent('post_submit',{game_name:games.find(x=>x.id===gid)?.name||gid});
+  trackEvent('post_submit', {game_id:gid, game_name:games.find(x=>x.id===gid)?.name||gid, body_length:body.length});
   lsSet('ssalmuk_nick',nick);
   ta.value='';ta.style.height='';
   document.getElementById('writePin').value='';
@@ -1785,14 +1941,17 @@ async function loadPredictionWageSummaries(){
     snap.docs.forEach(d=>{summaryMap[d.id]=d.data()||{};});
     for(const p of PREDICT_DATA){
       const defaults=getPredictWageSummaryDefaults(p);
-      applyPredictWageSummaryToItem(p, summaryMap[p.id]||defaults);
-      if(!summaryMap[p.id]){
-        db.collection('predict_wage_summaries').doc(p.id).set({...defaults, updatedAt:Date.now()},{merge:true}).catch(()=>{});
+      const remote=summaryMap[p.id]||null;
+      const local=lsGet('pred_wage_summary_local_'+p.id,null);
+      const chosen=(local&&(!remote || Number(local.updatedAt||Date.now())>=Number(remote.updatedAt||0))) ? local : remote;
+      applyPredictWageSummaryToItem(p, chosen||defaults);
+      if(!remote){
+        db.collection('predict_wage_summaries').doc(p.id).set({...normalizePredictWageSummary(defaults, defaults), updatedAt:Date.now()},{merge:true}).catch(()=>{});
       }
     }
   }catch(e){
     console.error('loadPredictionWageSummaries error:',e);
-    for(const p of PREDICT_DATA){ applyPredictWageSummaryToItem(p, null); }
+    for(const p of PREDICT_DATA){ applyPredictWageSummaryToItem(p, lsGet('pred_wage_summary_local_'+p.id,null)); }
   }
 }
 async function syncPredictionMigrations(){
@@ -1956,7 +2115,7 @@ function renderPredictions(){
     }
   }
 }
-function toggleTagPanel(pid){document.getElementById('tagPanel_'+pid).classList.toggle('open');}
+function toggleTagPanel(pid){const panel=document.getElementById('tagPanel_'+pid);const willOpen=!panel.classList.contains('open');panel.classList.toggle('open');if(willOpen){const p=PREDICT_DATA.find(x=>x.id===pid);trackReportEntry('new_release_feature_price_report', pid, p?.name, 'predict_card');}}
 function toggleTag(el){el.classList.toggle('selected');}
 async function submitPredWage(pid,btn){
   predictCurrentId=pid;
@@ -1972,49 +2131,64 @@ async function submitPredWage(pid,btn){
   const fp=getFingerprint();
   const reportRef=db.collection('predict_wage_reports').doc(fp+'_'+pid);
   const sumRef=db.collection('predict_wage_summaries').doc(pid);
+  const localSummaryKey='pred_wage_summary_local_'+pid;
   btn.disabled=true;
   try{
     const result=await db.runTransaction(async(tx)=>{
       const [reportSnap,sumSnap]=await Promise.all([tx.get(reportRef), tx.get(sumRef)]);
-      const current=applyPredictWageSummaryToItem({...p}, sumSnap.exists?sumSnap.data():null);
-      const prevReport=reportSnap.exists ? clampPredictWage(reportSnap.data().wage) : null;
-      const nextCount=Math.max(0, (Number(current.reportCount)||0) + (prevReport?0:1));
-      let nextAvg=prevReport===null
-        ? Math.round(((current.avgReportedWage||current.baseWage)*current.reportCount + submittedWage) / Math.max(1,nextCount))
-        : Math.round(((current.avgReportedWage||current.baseWage)*(current.reportCount||0) - prevReport + submittedWage) / Math.max(1,current.reportCount||1));
-      nextAvg=clampPredictWage(nextAvg);
-      const nextRatio=Math.min(PREDICT_WAGE_BLEND_MAX, nextCount*PREDICT_WAGE_BLEND_STEP);
+      const current=normalizePredictWageSummary(sumSnap.exists?sumSnap.data():null, getPredictWageSummaryDefaults(p));
+      const prevReport=reportSnap.exists ? reportSnap.data()||{} : null;
+      const prevWage=prevReport ? clampPredictWage(prevReport.wage) : null;
+      const prevWeight=prevReport ? Number(prevReport.weight||getPredictWageReportWeight(current.baseWage, prevWage)) : 0;
+      const nextWeight=getPredictWageReportWeight(current.baseWage, submittedWage);
+      const nextCount=Math.max(0, current.reportCount + (prevReport?0:1));
+      const nextUnits=Math.max(0, (Number(current.weightedReportUnits)||0) - prevWeight + nextWeight);
+      const nextTotal=Math.max(0, (Number(current.weightedReportedTotal)||0) - ((prevWage||0)*prevWeight) + (submittedWage*nextWeight));
+      const nextAvg=clampPredictWage(nextUnits>0 ? Math.round(nextTotal/nextUnits) : current.baseWage);
+      const nextRatio=Math.min(PREDICT_WAGE_BLEND_MAX, nextUnits*PREDICT_WAGE_BLEND_STEP);
       const nextBlended=clampPredictWage(nextCount>=PREDICT_WAGE_MIN_REPORTS_TO_MOVE
         ? Math.round(current.baseWage*(1-nextRatio)+nextAvg*nextRatio)
         : current.baseWage);
-      tx.set(reportRef,{pid, fp, wage:submittedWage, tags:selected, ts:Date.now()},{merge:true});
-      tx.set(sumRef,{baseWage:current.baseWage, reportCount:nextCount, avgReportedWage:nextAvg, blendedWage:nextBlended, updatedAt:Date.now()},{merge:true});
-      return {reportCount:nextCount, avgReportedWage:nextAvg, blendedWage:nextBlended, replaced:prevReport!==null};
+      tx.set(reportRef,{pid, fp, wage:submittedWage, weight:nextWeight, tags:selected, ts:Date.now()},{merge:true});
+      tx.set(sumRef,{baseWage:current.baseWage, reportCount:nextCount, weightedReportUnits:nextUnits, weightedReportedTotal:nextTotal, avgReportedWage:nextAvg, blendedWage:nextBlended, updatedAt:Date.now()},{merge:true});
+      return {reportCount:nextCount, weightedReportUnits:nextUnits, weightedReportedTotal:nextTotal, avgReportedWage:nextAvg, blendedWage:nextBlended, replaced:!!prevReport, outlierReduced:nextWeight<1, updatedAt:Date.now()};
     });
-    applyPredictWageSummaryToItem(p, {baseWage:p.baseWage||p.wage, reportCount:result.reportCount, avgReportedWage:result.avgReportedWage, blendedWage:result.blendedWage});
-    showToast(result.replaced ? '✅ 내 시급 제보를 새 값으로 업데이트했습니다!' : '✅ 특징 및 시급 제보가 반영됐습니다!');
+    lsSet(localSummaryKey, result);
+    applyPredictWageSummaryToItem(p, {baseWage:p.baseWage||p.wage, reportCount:result.reportCount, weightedReportUnits:result.weightedReportUnits, weightedReportedTotal:result.weightedReportedTotal, avgReportedWage:result.avgReportedWage, blendedWage:result.blendedWage});
+    renderPredictions();
+    const from=Math.round(Number(p.baseWage||0));
+    const to=Math.round(Number(p.wage||0));
+    trackEvent('new_release_report_submit', {predict_id:pid, predict_name:p.name, reported_wage:submittedWage, feature_tags:selected, replaced:result.replaced, outlier_reduced:result.outlierReduced, report_count:result.reportCount});
+    showToast((result.replaced ? '✅ 내 시급 제보를 새 값으로 업데이트했습니다!' : '✅ 특징 및 시급 제보가 반영됐습니다!') + ` ${from.toLocaleString()}원 → ${to.toLocaleString()}원` + (result.outlierReduced ? ' · 큰 변동값은 1/10 반영' : ''));
   }catch(e){
     console.error('submitPredWage error:',e);
-    const key='pred_wage_local_'+pid;
-    const prevLocal=lsGet(key,null);
-    const currentCount=Math.max(0, Number(p.wageReportCount)||0);
-    const currentAvg=clampPredictWage(Number(p.avgReportedWage)||Number(p.baseWage)||Number(p.wage)||submittedWage);
-    let nextCount=currentCount;
-    let nextAvg=currentAvg;
-    if(prevLocal===null){
-      nextCount=currentCount+1;
-      nextAvg=clampPredictWage(Math.round((currentAvg*currentCount + submittedWage)/Math.max(1,nextCount)));
-    }else{
-      nextAvg=clampPredictWage(Math.round((currentAvg*Math.max(1,currentCount) - Number(prevLocal) + submittedWage)/Math.max(1,currentCount)));
-    }
-    lsSet(key, submittedWage);
-    applyPredictWageSummaryToItem(p, {baseWage:p.baseWage||p.wage, reportCount:nextCount, avgReportedWage:nextAvg});
-    showToast('✅ 제보가 반영되었습니다! (오프라인 보정)');
+    const prevLocalReport=lsGet('pred_wage_local_'+pid,null);
+    const current=normalizePredictWageSummary(lsGet(localSummaryKey,null), getPredictWageSummaryDefaults(p));
+    const prevWage=prevLocalReport===null ? null : clampPredictWage(prevLocalReport);
+    const prevWeight=prevWage===null ? 0 : Number(lsGet('pred_wage_local_weight_'+pid, getPredictWageReportWeight(current.baseWage, prevWage))||0);
+    const nextWeight=getPredictWageReportWeight(current.baseWage, submittedWage);
+    const nextCount=Math.max(0, current.reportCount + (prevWage===null?1:0));
+    const nextUnits=Math.max(0, (Number(current.weightedReportUnits)||0) - prevWeight + nextWeight);
+    const nextTotal=Math.max(0, (Number(current.weightedReportedTotal)||0) - ((prevWage||0)*prevWeight) + (submittedWage*nextWeight));
+    const nextAvg=clampPredictWage(nextUnits>0 ? Math.round(nextTotal/nextUnits) : current.baseWage);
+    const nextRatio=Math.min(PREDICT_WAGE_BLEND_MAX, nextUnits*PREDICT_WAGE_BLEND_STEP);
+    const nextBlended=clampPredictWage(nextCount>=PREDICT_WAGE_MIN_REPORTS_TO_MOVE
+      ? Math.round(current.baseWage*(1-nextRatio)+nextAvg*nextRatio)
+      : current.baseWage);
+    const localSummary={baseWage:current.baseWage, reportCount:nextCount, weightedReportUnits:nextUnits, weightedReportedTotal:nextTotal, avgReportedWage:nextAvg, blendedWage:nextBlended, updatedAt:Date.now()};
+    lsSet('pred_wage_local_'+pid, submittedWage);
+    lsSet('pred_wage_local_weight_'+pid, nextWeight);
+    lsSet(localSummaryKey, localSummary);
+    applyPredictWageSummaryToItem(p, localSummary);
+    renderPredictions();
+    const from=Math.round(Number(p.baseWage||0));
+    const to=Math.round(Number(p.wage||0));
+    trackEvent('new_release_report_submit', {predict_id:pid, predict_name:p.name, reported_wage:submittedWage, feature_tags:selected, replaced:prevLocalReport!==null, outlier_reduced:nextWeight<1, report_count:nextCount, mode:'offline_fallback'});
+    showToast(`✅ 제보가 반영되었습니다! ${from.toLocaleString()}원 → ${to.toLocaleString()}원` + (nextWeight<1 ? ' · 큰 변동값은 1/10 반영' : '') + ' (오프라인 보정)');
   }finally{
     input.value='';
     panel.classList.remove('open');
     btn.disabled=false;
-    renderPredictions();
   }
 }
 const predVoteBusy={};
@@ -2056,17 +2230,18 @@ async function votePred(pid,type){
     p.yes=result.yes;
     p.no=result.no;
     lsSet('pred_vote_'+pid,result.nextVote);
+    trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:result.nextVote ? 'active' : 'cancel', yes_votes:result.yes, no_votes:result.no});
     showToast(result.toastMsg);
   }catch(e){
     console.error('votePred error:',e);
     if(prev===type){
       if(type==='yes')p.yes=Math.max(0,p.yes-1); else p.no=Math.max(0,p.no-1);
-      lsSet('pred_vote_'+pid,null);showToast('투표를 취소했습니다.');
+      lsSet('pred_vote_'+pid,null);trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:'cancel', yes_votes:p.yes, no_votes:p.no, mode:'offline_fallback'});showToast('투표를 취소했습니다.');
     }else{
       if(prev==='yes')p.yes=Math.max(0,p.yes-1);
       if(prev==='no')p.no=Math.max(0,p.no-1);
       if(type==='yes')p.yes++; else p.no++;
-      lsSet('pred_vote_'+pid,type);showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
+      lsSet('pred_vote_'+pid,type);trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:'active', yes_votes:p.yes, no_votes:p.no, mode:'offline_fallback'});showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
     }
   }finally{
     predVoteBusy[pid]=false;
@@ -2076,6 +2251,7 @@ async function votePred(pid,type){
 // 신작 토론방 열기
 function openPredComm(pid){
   const p=PREDICT_DATA.find(x=>x.id===pid);if(!p)return;
+  trackChatEntry('new_release', pid, p.name);
   const predGid=getPredCommId(pid);
   ensurePredCommPosts(p);
   commGameId=predGid;
@@ -2106,13 +2282,16 @@ setInterval(()=>{
 
 // ── 차트 접기/펼치기 (재방문자 자동 접기) ──
 function toggleChart(){
+  const wasCollapsed=document.getElementById('chartSection').classList.contains('collapsed');
   const sec=document.getElementById('chartSection');
   const btn=sec.querySelector('.chart-toggle');
   sec.classList.toggle('collapsed');
   const collapsed=sec.classList.contains('collapsed');
   btn.textContent=collapsed?'▼ 펼치기':'▲ 접기';
   lsSet('chart_collapsed',collapsed);
+  trackEvent('chart_toggle', {chart_name:'main_wage_chart', action:collapsed?'collapse':'expand', previous_state:wasCollapsed?'collapsed':'expanded'});
 }
+
 function initChart(){
   const visited=lsGet('ssalmuk_visited',false);
   if(visited&&lsGet('chart_collapsed',false)){
@@ -2126,11 +2305,16 @@ function initChart(){
 // ── 게임 검색 필터 ──
 function filterCards(){
   const q=document.getElementById('gameSearch').value.trim().toLowerCase();
+  let visibleCount=0;
   document.querySelectorAll('.game-card').forEach(card=>{
     const name=card.querySelector('.card-game-name');
     if(!name)return;
-    card.style.display=(!q||name.textContent.toLowerCase().includes(q))?'':'none';
+    const visible = (!q||name.textContent.toLowerCase().includes(q));
+    card.style.display=visible?'':'none';
+    if(visible) visibleCount++;
   });
+  const searchEl=document.getElementById('gameSearch');
+  if(searchEl) searchEl.dataset.visibleCount=String(visibleCount);
 }
 
 // ── 오프라인 감지 ──
@@ -2250,6 +2434,10 @@ window.addEventListener('popstate',()=>{
     renderAll();
     renderPredictions();
     initChart();
+    attachAnalyticsListeners();
+    trackPageEntry();
+    trackViewOnce('main_chart', {content_type:'chart', content_name:'main_wage_chart'});
+    trackViewOnce('predict_section', {content_type:'section', content_name:'new_release_predictions'});
   }catch(e){console.error('render error:',e);}
   refreshAdVisibility(document);
   watchAdSlot(document.getElementById('adSlot1'),{tries:24,interval:500});
