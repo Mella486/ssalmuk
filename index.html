@@ -1623,21 +1623,132 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2600);
 }
 // ══ 신작 쌀먹 예측 ══
+let predictCurrentId=null;
+const PREDICT_COMM_TARGET_MIN=28;
+const PREDICT_COMM_TARGET_MAX=34;
 const PREDICT_DATA=[
-  {id:'aion2',name:'아이온2',icon:'⚔️',meta:'MMORPG · PC · 엔씨소프트',releaseDate:'2026-04-15',
-    tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 높음',c:'yellow'},{t:'유저 수 많음',c:'green'},{t:'엔씨소프트',c:'gray'}],
-    wage:35000,yes:92,no:36,
-    quotes:['엔씨 거래소 정책이 관건일듯','작업장 유입 많으면 시세 빨리 떨어질텐데','PvP 보상이 쌀먹 핵심이 될 듯','출시 초반이 황금기 ㅇㅇ','3.5만원은 좀 과한데...']},
-  {id:'rohan2',name:'로한2',icon:'🐉',meta:'MMORPG · 모바일 · 웹젠',releaseDate:null,
-    tags:[{t:'제한 거래',c:'red'},{t:'작업장 중간',c:'yellow'},{t:'웹젠',c:'gray'}],
-    wage:12000,yes:21,no:33,
-    quotes:['웹젠이라 거래 제한 빡셀듯','모바일이라 자동사냥 가능하면 괜찮을수도','1.2만원도 안 될 것 같은데','사전예약 유저 수 보면 꽤 많긴 함','거래 제한이면 쌀먹 힘들지 않나']},
-  {id:'tl',name:'쓰론 앤 리버티',icon:'🏰',meta:'MMORPG · PC/콘솔 · 엔씨소프트',releaseDate:'2026-03-28',actualWage:19000,
-    tags:[{t:'자유 거래',c:'green'},{t:'작업장 유입 중간',c:'yellow'},{t:'엔씨소프트',c:'gray'}],
-    wage:28000,yes:132,no:71,
-    quotes:['예상보다 낮지만 그래도 쌀먹 됨','2주 지나봐야 실제 시세 안정화됨','거래소 수수료가 생각보다 높음','버스 시장이 빠르게 형성 중','1.9만원이면 나쁘지 않은 수준']},
+  {id:'sol-enchant',name:'솔인챈트',icon:'✨',meta:'MMORPG · 모바일/PC · 넷마블 · 사전등록',releaseDate:'2026-06-15',
+    tags:[{t:'자유 거래',c:'green'},{t:'유저 수 많음',c:'green'},{t:'자동사냥',c:'yellow'},{t:'넷마블',c:'gray'}],
+    wage:32000,yes:118,no:44,
+    sourceType:'official-prereg',
+    quotes:['사전등록 화력이 꽤 세서 초반 시세 기대됨','거래소 열리면 초반 쌀먹은 확실히 붙을 듯','넷마블 운영력이 변수긴 함','쇼케이스 보고 기대치가 더 올라감','초기 서버 경쟁이 시급에 직접 영향 줄 듯']},
+  {id:'odin-q',name:'오딘Q',icon:'⚡',meta:'MMORPG · 모바일/PC · 라이온하트/카카오게임즈 · 사전등록',releaseDate:'2026-05-27',
+    tags:[{t:'자유 거래',c:'green'},{t:'유저 수 많음',c:'green'},{t:'작업장 유입 높음',c:'yellow'},{t:'오딘 IP',c:'gray'}],
+    wage:36000,yes:129,no:41,
+    sourceType:'announced-prereg',
+    quotes:['오딘 IP면 작업장도 바로 몰릴 것 같음','초반 서버 오픈 직후가 제일 중요하다','과금 압박이 심하면 일반 유저는 힘들 수도','그래도 거래 활발하면 쌀먹 풀은 커질 듯','북유럽 감성 다시 먹히면 유저 수는 충분함']},
+  {id:'chrono-odyssey',name:'크로노 오디세이',icon:'🕰️',meta:'액션 MMORPG · PC/콘솔 · 카카오게임즈 · 사전등록',releaseDate:'2026-07-22',
+    tags:[{t:'자유 거래',c:'green'},{t:'수동사냥',c:'yellow'},{t:'PvE 위주',c:'yellow'},{t:'오픈월드',c:'gray'}],
+    wage:24000,yes:88,no:39,
+    sourceType:'official-signup',
+    quotes:['손이 좀 가는 타입이면 시급은 상위권만 먹을 듯','글로벌 유저가 붙으면 재화 수요는 꽤 클 것 같음','생활형 콘텐츠가 열리면 파밍 루트가 다양해질 듯','액션성이 강해서 자동사냥형 쌀먹은 약할 수도','초반 희귀 재료 시세가 핵심 포인트']},
 ];
 const TAG_OPTIONS=['자유 거래','제한 거래','작업장 유입 높음','작업장 유입 중간','작업장 유입 낮음','유저 수 많음','유저 수 적음','PvP 위주','PvE 위주','과금 필수','무과금 가능','자동사냥','수동사냥'];
+
+function normalizeGameName(name=''){
+  return String(name).toLowerCase().replace(/[^a-z0-9가-힣]/g,'');
+}
+function slugifyGameName(name=''){
+  return normalizeGameName(name) || ('game-'+Date.now());
+}
+function getPredCommId(pid){return 'pred-'+pid;}
+function getPredCommSeedCount(){
+  return PREDICT_COMM_TARGET_MIN+Math.floor(Math.random()*(PREDICT_COMM_TARGET_MAX-PREDICT_COMM_TARGET_MIN+1));
+}
+function buildPredSeedPosts(p,count=getPredCommSeedCount()){
+  const baseQuotes=(p.quotes&&p.quotes.length?p.quotes:['출시 후 시세 지켜보는 중']);
+  const extra=[
+    `${p.name} 초반 서버 선점이 시급에 꽤 중요할 듯`,
+    `${p.name} 거래소 열리는 시점이 핵심 포인트`,
+    `${p.name} 무과금도 루트 잘 타면 소소하게 가능할 듯`,
+    `${p.name} 초기 재화 공급량이 생각보다 변수임`,
+    `${p.name} 작업장 유입 속도 빨라지면 금방 흔들릴 수도`,
+    `${p.name} 길드 콘텐츠 열리면 재화 수요 더 붙을 듯`,
+    `${p.name} 사전등록 유저 수가 많아서 초반 거래는 활발할 것 같음`,
+    `${p.name} 생활형 파밍이 열리면 일반 유저도 참여 가능할 듯`,
+    `${p.name} 첫 2주가 사실상 쌀먹 피크일 수도`,
+    `${p.name} 서버별 시세 차이 꽤 날 것 같네요`
+  ];
+  const pool=[...baseQuotes,...extra];
+  return Array.from({length:count},(_,i)=>({
+    id:`pq-${p.id}-${i}`,
+    nick:DAILY_NICKS[i%DAILY_NICKS.length],
+    color:DAILY_COLORS[i%DAILY_COLORS.length],
+    body:pool[i%pool.length],
+    ts:Date.now()-(i+1)*((i%6)+1)*3600e3,
+    likes:Math.floor(Math.random()*5),
+    gameId:getPredCommId(p.id),
+    pinHash:''
+  }));
+}
+function ensurePredCommPosts(p){
+  const predGid=getPredCommId(p.id);
+  if(!posts[predGid]||posts[predGid].length<PREDICT_COMM_TARGET_MIN){
+    const existing=posts[predGid]||[];
+    const seen=new Set(existing.map(x=>x.id));
+    const need=Math.max(PREDICT_COMM_TARGET_MIN-existing.length,0);
+    const seeded=buildPredSeedPosts(p, Math.max(need, PREDICT_COMM_TARGET_MIN));
+    seeded.forEach(sp=>{if(!seen.has(sp.id)) existing.push(sp);});
+    posts[predGid]=existing;
+  }
+  return posts[predGid];
+}
+async function syncPredictionMigrations(){
+  const now=Date.now();
+  for(const p of PREDICT_DATA){
+    if(!p.releaseDate||!p.actualWage) continue;
+    const rel=new Date(p.releaseDate).getTime();
+    if(Number.isNaN(rel) || now-rel<14*864e5) continue;
+    const norm=normalizeGameName(p.name);
+    const exists=games.some(g=>normalizeGameName(g.name)===norm);
+    if(exists) continue;
+    const migrated={
+      id:slugifyGameName(p.name),
+      name:p.name,
+      icon:p.icon||'🎮',
+      tag:'MMORPG',
+      beginner:Math.max(0,Math.round((p.actualWage||p.wage||0)*0.45)),
+      expert:p.actualWage||p.wage||0,
+      upVotes:p.yes||0,
+      downVotes:p.no||0,
+      ts:rel,
+      reportCount:100,
+      migratedFromPredict:true
+    };
+    games.push(migrated);
+    try{await db.collection('games').doc(migrated.id).set(migrated,{merge:true});}catch(e){}
+  }
+}
+async function seedDailyPredChat(){
+  const dateKey=new Date().toISOString().slice(0,10);
+  for(const p of PREDICT_DATA.filter(x=>getPredictStatus(x).type!=='done')){
+    const predGid=getPredCommId(p.id);
+    ensurePredCommPosts(p);
+    const dayKey=`ssalmuk_pred_daily_${p.id}_${dateKey}`;
+    if(lsGet(dayKey,false)) continue;
+    const todayStart=new Date();todayStart.setHours(0,0,0,0);
+    const todayPosts=(posts[predGid]||[]).filter(post=>post.ts>=todayStart.getTime());
+    const addCount=todayPosts.length?0:(Math.random()<0.55?1:2);
+    if(addCount===0){lsSet(dayKey,true);continue;}
+    for(let i=0;i<addCount;i++){
+      const pool=p.quotes.concat([
+        `${p.name} 오늘 커뮤니티 반응 꽤 뜨거움`,
+        `${p.name} 정식 론칭 전 기대감 계속 올라가는 중`,
+        `${p.name} 실제 시세는 열리고 나서 봐야 함`,
+        `${p.name} 쌀먹 루트 미리 연구하는 사람 많네요`
+      ]);
+      const msg=pool[Math.floor(Math.random()*pool.length)];
+      const nick=DAILY_NICKS[Math.floor(Math.random()*DAILY_NICKS.length)];
+      const color=DAILY_COLORS[Math.floor(Math.random()*DAILY_COLORS.length)];
+      const post={id:`pred-daily-${p.id}-${dateKey}-${i}`,nick,color,body:msg,ts:Date.now()-((i+1)*3600e3),likes:Math.floor(Math.random()*4),gameId:predGid,pinHash:''};
+      if(!(posts[predGid]||[]).some(x=>x.id===post.id)){
+        posts[predGid].push(post);
+        try{await db.collection('posts').doc(post.id).set(post,{merge:true});}catch(e){}
+      }
+    }
+    lsSet(dayKey,true);
+  }
+}
 
 function getPredictStatus(p){
   if(!p.releaseDate)return{type:'pre',label:'사전예약'};
@@ -1655,41 +1766,39 @@ function renderPredictions(){
   const sec=document.getElementById('predictSection');
   const active=PREDICT_DATA.filter(p=>getPredictStatus(p).type!=='done');
   if(!active.length){sec.innerHTML='';return;}
+  const currentId=predictCurrentId&&active.some(p=>p.id===predictCurrentId)?predictCurrentId:(active[0]?.id||null);
+  predictCurrentId=currentId;
   const fmtPW=v=>v>=10000?(v/10000).toFixed(v%10000===0?0:1):v.toLocaleString();
   const fmtPU=v=>v>=10000?'만원/H':'원/H';
   let html=`<div class="predict-header"><span style="font-size:18px;">🔥</span><span class="predict-title">신작 쌀먹 예측</span><span class="predict-hot">HOT</span></div>`;
   html+=`<div class="predict-scroll" id="predictScroll">`;
   active.forEach((p,i)=>{
+    ensurePredCommPosts(p);
     const st=getPredictStatus(p);
     const total=p.yes+p.no;
     const yesPct=total?Math.round(p.yes/total*100):50;
     const noPct=100-yesPct;
     const isLive=st.type==='live';
     const myPV=lsGet('pred_vote_'+p.id,null);
-    // 상태 뱃지
-    let badgeHtml;
+    let badgeHtml='';
     if(st.type==='live')badgeHtml=`<div class="status-badge live"><div class="status-dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;"></div> LIVE</div>`;
     else if(st.type==='countdown')badgeHtml=`<div class="status-badge countdown">${st.label}</div>`;
     else badgeHtml=`<div class="status-badge">${st.label}</div>`;
-    // 시급 박스
     const displayWage=isLive&&p.actualWage?p.actualWage:p.wage;
     let wageBoxInner=`<div class="predict-wage-num">${fmtPW(displayWage)}</div><div class="predict-wage-unit">${fmtPU(displayWage)}</div>`;
     if(isLive&&p.actualWage)wageBoxInner=`<div class="predict-wage-old">예상 ${fmtPW(p.wage)}</div>`+wageBoxInner;
-    // 태그
     const savedTags=lsGet('pred_tags_'+p.id,[]);
     const allTags=[...p.tags.map(t=>t.t),...savedTags];
     const uniqueTags=[...new Set(allTags)];
     const tagColorMap={};p.tags.forEach(t=>{tagColorMap[t.t]=t.c;});
     const tagsHtml=uniqueTags.map(t=>{const c=tagColorMap[t]||'gray';return`<span class="ptag ptag-${c}">${t}</span>`;}).join('')+`<button class="tag-report-btn" onclick="toggleTagPanel('${p.id}')">+ 특징 제보</button>`;
     const tagOptsHtml=TAG_OPTIONS.map(t=>`<span class="tag-opt${uniqueTags.includes(t)?' selected':''}" onclick="toggleTag(this)">${t}</span>`).join('');
-    // 검증 배너
     let verifiedHtml='';
     if(isLive&&p.actualWage){
-      const hit=p.actualWage>=p.wage*0.5;
-      verifiedHtml=hit?`<div class="predict-verified hit">✅ 예측 적중 — 쌀먹 가능 확인. "된다" ${yesPct}% 적중!</div>`:`<div class="predict-verified miss">❌ 예측 빗나감 — 예상 대비 실제 시급 크게 하락</div>`;
+      verifiedHtml=`<div class="predict-verified hit">✅ ${yesPct}% 된다로 마감! 실제 쌀먹 지수는 아래 게임 랭크에서 앞으로 확인하세요.</div>`;
     }
-    const chatCount=Math.floor(total/4)+1;
-    html+=`<div class="predict-card" data-pidx="${i}">
+    const chatCount=(posts[getPredCommId(p.id)]||[]).length;
+    html+=`<div class="predict-card" data-pidx="${i}" data-pid="${p.id}">
       ${badgeHtml}
       <div class="predict-head">
         <div class="predict-wage-box">${wageBoxInner}</div>
@@ -1724,22 +1833,29 @@ function renderPredictions(){
     </div>`;
   });
   html+=`</div>`;
-  html+=`<div class="scroll-dots" id="scrollDots">${active.map((_,i)=>`<div class="scroll-dot${i===0?' active':''}"></div>`).join('')}</div>`;
+  const activeIndex=Math.max(0,active.findIndex(p=>p.id===predictCurrentId));
+  html+=`<div class="scroll-dots" id="scrollDots">${active.map((_,i)=>`<div class="scroll-dot${i===activeIndex?' active':''}"></div>`).join('')}</div>`;
   html+=`<div class="predict-hint">← 스와이프하여 다른 신작 보기 →</div>`;
   sec.innerHTML=html;
   const scr=document.getElementById('predictScroll');
   if(scr){
     const dots=document.querySelectorAll('.scroll-dot');
-    scr.addEventListener('scroll',()=>{
-      const cw=scr.querySelector('.predict-card').offsetWidth+10;
-      const idx=Math.round(scr.scrollLeft/cw);
-      dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
-    });
+    const firstCard=scr.querySelector('.predict-card');
+    if(firstCard){
+      const cw=firstCard.offsetWidth+10;
+      requestAnimationFrame(()=>{scr.scrollLeft=cw*activeIndex;});
+      scr.addEventListener('scroll',()=>{
+        const idx=Math.max(0,Math.min(active.length-1,Math.round(scr.scrollLeft/cw)));
+        predictCurrentId=active[idx]?.id||predictCurrentId;
+        dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+      },{passive:true});
+    }
   }
 }
 function toggleTagPanel(pid){document.getElementById('tagPanel_'+pid).classList.toggle('open');}
 function toggleTag(el){el.classList.toggle('selected');}
 function submitPredWage(pid,btn){
+  predictCurrentId=pid;
   const panel=btn.closest('.tag-panel');
   const input=panel.querySelector('.wage-report-input');
   if(!input.value){showToast('⚠️ 시급을 입력해주세요.');return;}
@@ -1753,6 +1869,7 @@ function submitPredWage(pid,btn){
   renderPredictions();
 }
 function votePred(pid,type){
+  predictCurrentId=pid;
   const prev=lsGet('pred_vote_'+pid,null);
   const p=PREDICT_DATA.find(x=>x.id===pid);if(!p)return;
   if(prev===type){
@@ -1771,9 +1888,8 @@ function votePred(pid,type){
 // 신작 토론방 열기
 function openPredComm(pid){
   const p=PREDICT_DATA.find(x=>x.id===pid);if(!p)return;
-  // 기존 커뮤니티 모달 활용 — pred 전용 gameId 사용
-  const predGid='pred-'+pid;
-  if(!posts[predGid])posts[predGid]=p.quotes.map((q,i)=>({id:'pq-'+pid+'-'+i,nick:DAILY_NICKS[i%DAILY_NICKS.length],color:DAILY_COLORS[i%DAILY_COLORS.length],body:q,ts:Date.now()-3600e3*(i+1),likes:Math.floor(Math.random()*3),gameId:predGid,pinHash:''}));
+  const predGid=getPredCommId(pid);
+  ensurePredCommPosts(p);
   commGameId=predGid;
   document.getElementById('cIcon').textContent='🔥';
   document.getElementById('cTitle').textContent=p.name+' 신작 토론';
@@ -1935,7 +2051,9 @@ window.addEventListener('popstate',()=>{
 (async()=>{
   try{
     await loadData();
+    await syncPredictionMigrations();
     await seedDailyChat();
+    await seedDailyPredChat();
   }catch(e){console.error('startup error:',e);}
   document.getElementById('loadingScreen').style.display='none';
   try{
