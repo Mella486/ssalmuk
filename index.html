@@ -1742,6 +1742,59 @@ async function loadPredictionVoteSummaries(){
     console.error('loadPredictionVoteSummaries error:',e);
   }
 }
+
+const PREDICT_WAGE_BLEND_MAX=0.5;
+const PREDICT_WAGE_BLEND_STEP=0.03;
+const PREDICT_WAGE_MIN_REPORTS_TO_MOVE=1;
+const PREDICT_WAGE_HARD_MIN=1000;
+const PREDICT_WAGE_HARD_MAX=300000;
+
+function clampPredictWage(v){
+  return Math.max(PREDICT_WAGE_HARD_MIN, Math.min(PREDICT_WAGE_HARD_MAX, Math.round(Number(v)||0)));
+}
+function getPredictWageSummaryDefaults(p){
+  return {
+    baseWage:Number(p.baseWage||p.wage)||0,
+    reportCount:0,
+    avgReportedWage:Number(p.baseWage||p.wage)||0,
+    blendedWage:Number(p.baseWage||p.wage)||0,
+    updatedAt:0
+  };
+}
+function applyPredictWageSummaryToItem(p, saved){
+  const d=getPredictWageSummaryDefaults(p);
+  const merged={...d, ...(saved||{})};
+  merged.baseWage=clampPredictWage(merged.baseWage||d.baseWage);
+  merged.reportCount=Math.max(0, Math.round(Number(merged.reportCount)||0));
+  merged.avgReportedWage=clampPredictWage(merged.avgReportedWage||merged.baseWage);
+  const ratio=Math.min(PREDICT_WAGE_BLEND_MAX, merged.reportCount*PREDICT_WAGE_BLEND_STEP);
+  merged.blendedWage=clampPredictWage(merged.reportCount>=PREDICT_WAGE_MIN_REPORTS_TO_MOVE
+    ? Math.round(merged.baseWage*(1-ratio)+merged.avgReportedWage*ratio)
+    : merged.baseWage);
+  p.baseWage=merged.baseWage;
+  p.avgReportedWage=merged.avgReportedWage;
+  p.wageReportCount=merged.reportCount;
+  p.wageBlendRatio=ratio;
+  p.wage=merged.blendedWage;
+  return merged;
+}
+async function loadPredictionWageSummaries(){
+  try{
+    const snap=await db.collection('predict_wage_summaries').get();
+    const summaryMap={};
+    snap.docs.forEach(d=>{summaryMap[d.id]=d.data()||{};});
+    for(const p of PREDICT_DATA){
+      const defaults=getPredictWageSummaryDefaults(p);
+      applyPredictWageSummaryToItem(p, summaryMap[p.id]||defaults);
+      if(!summaryMap[p.id]){
+        db.collection('predict_wage_summaries').doc(p.id).set({...defaults, updatedAt:Date.now()},{merge:true}).catch(()=>{});
+      }
+    }
+  }catch(e){
+    console.error('loadPredictionWageSummaries error:',e);
+    for(const p of PREDICT_DATA){ applyPredictWageSummaryToItem(p, null); }
+  }
+}
 async function syncPredictionMigrations(){
   const now=Date.now();
   for(const p of PREDICT_DATA){
@@ -1836,6 +1889,7 @@ function renderPredictions(){
     const displayWage=isLive&&p.actualWage?p.actualWage:p.wage;
     let wageBoxInner=`<div class="predict-wage-num">${fmtPW(displayWage)}</div><div class="predict-wage-unit">${fmtPU(displayWage)}</div>`;
     if(isLive&&p.actualWage)wageBoxInner=`<div class="predict-wage-old">예상 ${fmtPW(p.wage)}</div>`+wageBoxInner;
+    const wageReportInfo=!isLive?`<div class="predict-vote-info" style="margin-top:6px;">시급 제보 ${p.wageReportCount||0}건 · 제보 평균 ${fmtPW(p.avgReportedWage||p.baseWage||displayWage)}${fmtPU(p.avgReportedWage||p.baseWage||displayWage)==='만원/H'?'':'원/H'}</div>`:'';
     const savedTags=lsGet('pred_tags_'+p.id,[]);
     const allTags=[...p.tags.map(t=>t.t),...savedTags];
     const uniqueTags=[...new Set(allTags)];
@@ -1868,6 +1922,7 @@ function renderPredictions(){
         <div class="predict-vote-info">현재 예측 분포 · ${total}명 참여</div>
         <div class="predict-bar-wrap"><div class="predict-bar-yes" style="width:${yesPct}%"></div><div class="predict-bar-no" style="width:${noPct}%"></div></div>
         <div class="predict-result"><span class="predict-pct yes">${yesPct}% 된다</span><span class="predict-votes-count">${total}표</span><span class="predict-pct no">${noPct}% 안된다</span></div>
+        ${wageReportInfo}
       </div>
       ${verifiedHtml}
       <div class="predict-btns" ${isLive&&p.actualWage?'style="opacity:.5;pointer-events:none;"':''}>
@@ -1903,19 +1958,64 @@ function renderPredictions(){
 }
 function toggleTagPanel(pid){document.getElementById('tagPanel_'+pid).classList.toggle('open');}
 function toggleTag(el){el.classList.toggle('selected');}
-function submitPredWage(pid,btn){
+async function submitPredWage(pid,btn){
   predictCurrentId=pid;
+  const p=PREDICT_DATA.find(x=>x.id===pid); if(!p) return;
   const panel=btn.closest('.tag-panel');
   const input=panel.querySelector('.wage-report-input');
-  if(!input.value){showToast('⚠️ 시급을 입력해주세요.');return;}
-  // 선택된 태그 저장
+  const rawWage=Number(input.value);
+  if(!rawWage){showToast('⚠️ 시급을 입력해주세요.');return;}
+  const submittedWage=clampPredictWage(rawWage);
   const selected=[];
   panel.querySelectorAll('.tag-opt.selected').forEach(el=>selected.push(el.textContent));
   lsSet('pred_tags_'+pid,selected);
-  showToast('✅ 특징 및 시급 제보가 반영됐습니다!');
-  input.value='';
-  panel.classList.remove('open');
-  renderPredictions();
+  const fp=getFingerprint();
+  const reportRef=db.collection('predict_wage_reports').doc(fp+'_'+pid);
+  const sumRef=db.collection('predict_wage_summaries').doc(pid);
+  btn.disabled=true;
+  try{
+    const result=await db.runTransaction(async(tx)=>{
+      const [reportSnap,sumSnap]=await Promise.all([tx.get(reportRef), tx.get(sumRef)]);
+      const current=applyPredictWageSummaryToItem({...p}, sumSnap.exists?sumSnap.data():null);
+      const prevReport=reportSnap.exists ? clampPredictWage(reportSnap.data().wage) : null;
+      const nextCount=Math.max(0, (Number(current.reportCount)||0) + (prevReport?0:1));
+      let nextAvg=prevReport===null
+        ? Math.round(((current.avgReportedWage||current.baseWage)*current.reportCount + submittedWage) / Math.max(1,nextCount))
+        : Math.round(((current.avgReportedWage||current.baseWage)*(current.reportCount||0) - prevReport + submittedWage) / Math.max(1,current.reportCount||1));
+      nextAvg=clampPredictWage(nextAvg);
+      const nextRatio=Math.min(PREDICT_WAGE_BLEND_MAX, nextCount*PREDICT_WAGE_BLEND_STEP);
+      const nextBlended=clampPredictWage(nextCount>=PREDICT_WAGE_MIN_REPORTS_TO_MOVE
+        ? Math.round(current.baseWage*(1-nextRatio)+nextAvg*nextRatio)
+        : current.baseWage);
+      tx.set(reportRef,{pid, fp, wage:submittedWage, tags:selected, ts:Date.now()},{merge:true});
+      tx.set(sumRef,{baseWage:current.baseWage, reportCount:nextCount, avgReportedWage:nextAvg, blendedWage:nextBlended, updatedAt:Date.now()},{merge:true});
+      return {reportCount:nextCount, avgReportedWage:nextAvg, blendedWage:nextBlended, replaced:prevReport!==null};
+    });
+    applyPredictWageSummaryToItem(p, {baseWage:p.baseWage||p.wage, reportCount:result.reportCount, avgReportedWage:result.avgReportedWage, blendedWage:result.blendedWage});
+    showToast(result.replaced ? '✅ 내 시급 제보를 새 값으로 업데이트했습니다!' : '✅ 특징 및 시급 제보가 반영됐습니다!');
+  }catch(e){
+    console.error('submitPredWage error:',e);
+    const key='pred_wage_local_'+pid;
+    const prevLocal=lsGet(key,null);
+    const currentCount=Math.max(0, Number(p.wageReportCount)||0);
+    const currentAvg=clampPredictWage(Number(p.avgReportedWage)||Number(p.baseWage)||Number(p.wage)||submittedWage);
+    let nextCount=currentCount;
+    let nextAvg=currentAvg;
+    if(prevLocal===null){
+      nextCount=currentCount+1;
+      nextAvg=clampPredictWage(Math.round((currentAvg*currentCount + submittedWage)/Math.max(1,nextCount)));
+    }else{
+      nextAvg=clampPredictWage(Math.round((currentAvg*Math.max(1,currentCount) - Number(prevLocal) + submittedWage)/Math.max(1,currentCount)));
+    }
+    lsSet(key, submittedWage);
+    applyPredictWageSummaryToItem(p, {baseWage:p.baseWage||p.wage, reportCount:nextCount, avgReportedWage:nextAvg});
+    showToast('✅ 제보가 반영되었습니다! (오프라인 보정)');
+  }finally{
+    input.value='';
+    panel.classList.remove('open');
+    btn.disabled=false;
+    renderPredictions();
+  }
 }
 const predVoteBusy={};
 async function votePred(pid,type){
@@ -2140,6 +2240,7 @@ window.addEventListener('popstate',()=>{
   try{
     await loadData();
     await loadPredictionVoteSummaries();
+    await loadPredictionWageSummaries();
     await syncPredictionMigrations();
     await seedDailyChat();
     await seedDailyPredChat();
