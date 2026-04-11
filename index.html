@@ -1579,17 +1579,20 @@ async function submitReport(){
     if(!existing)return;
     const reportKey='report_'+existing.id;
     if(lsGet(reportKey,false)){showToast('이미 제보하였습니다.');return;}
-    const expertDiff=Math.abs(exp-existing.expert)/existing.expert;
-    const begDiff=existing.beginner>0?Math.abs(beg-existing.beginner)/existing.beginner:0;
+    const expertBase=Math.max(1, existing.expert||0);
+    const beginnerBase=Math.max(0, existing.beginner||0);
+    const expertDiff=Math.abs(exp-expertBase)/expertBase;
+    const begDiff=beginnerBase>0?Math.abs(beg-beginnerBase)/beginnerBase:0;
     let weight=1;
-    if(expertDiff>0.3||begDiff>0.3){weight=0.01;}
-    const rc=existing.reportCount||1;
-    existing.beginner=Math.round((existing.beginner*rc+beg*weight)/(rc+weight));
-    existing.expert=Math.round((existing.expert*rc+exp*weight)/(rc+weight));
+    if(expertDiff>0.3||begDiff>0.3){weight=0.1;}
+    const rc=Math.max(1, Number(existing.reportCount)||1);
+    const effectiveRc=Math.min(20, rc);
+    existing.beginner=Math.round((beginnerBase*effectiveRc+beg*weight)/(effectiveRc+weight));
+    existing.expert=Math.round((expertBase*effectiveRc+exp*weight)/(effectiveRc+weight));
     existing.reportCount=rc+1;
     await db.collection('games').doc(existing.id).update({beginner:existing.beginner,expert:existing.expert,reportCount:existing.reportCount});
     lsSet(reportKey,true);
-    if(weight>=1)showToast('✅ 제보가 반영됐습니다!');
+    showToast('시급 제보가 반영되었습니다.');
   }
   ['fName','fBeg','fExp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   trackEvent('price_report_submit', {
