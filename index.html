@@ -1439,28 +1439,34 @@ function watchAdSlot(el,{tries=20,interval=500}={}){
 async function vote(id,dir){
   const g=games.find(x=>x.id===id);if(!g)return;
   const fp=getFingerprint();
-  // 서버 중복 투표 방지
   try{
     const voteDoc=await db.collection('votes').doc(fp+'_'+id).get();
-    if(voteDoc.exists&&!myVotes[id]){
+    if(voteDoc.exists && !myVotes[id]){
       myVotes[id]=voteDoc.data().dir;
       lsSet('ssalmuk_votes',myVotes);
-      showToast('⚠️ 이미 투표한 게임입니다.');renderAll();return;
     }
   }catch(e){}
-  const prev=myVotes[id];
-  if(prev){
-    showToast('이미 제보하였습니다.');
-    renderAll();
-    return;
+  const prev=myVotes[id]||null;
+  let voteState='active';
+  if(prev===dir){
+    if(dir==='up') g.upVotes=Math.max(0,g.upVotes-1);
+    else g.downVotes=Math.max(0,g.downVotes-1);
+    delete myVotes[id];
+    voteState='cancelled';
+    showToast('투표가 반영되었습니다.');
+    try{await db.collection('votes').doc(fp+'_'+id).delete();}catch(e){}
   }else{
-    if(dir==='up'){g.upVotes++;showToast('👍 신뢰 +1 반영됐습니다!');}
-    else{g.downVotes++;showToast('👎 의심 +1 반영됐습니다.');}
+    if(prev==='up') g.upVotes=Math.max(0,g.upVotes-1);
+    if(prev==='down') g.downVotes=Math.max(0,g.downVotes-1);
+    if(dir==='up') g.upVotes++;
+    else g.downVotes++;
     myVotes[id]=dir;
-    try{await db.collection('votes').doc(fp+'_'+id).set({dir,ts:Date.now(),fp});}catch(e){}
+    voteState=prev ? 'changed' : 'active';
+    showToast('투표가 반영되었습니다.');
+    try{await db.collection('votes').doc(fp+'_'+id).set({dir,ts:Date.now(),fp},{merge:true});}catch(e){}
   }
   lsSet('ssalmuk_votes',myVotes);
-  trackEvent('existing_game_vote', {game_id:id, game_name:g.name, vote_direction:dir, vote_state:'active', up_votes:g.upVotes, down_votes:g.downVotes, sort_type:getCurrentSortValue(), search_query:getSearchQuery()||undefined});
+  trackEvent('existing_game_vote', {game_id:id, game_name:g.name, vote_direction:dir, vote_state:voteState, up_votes:g.upVotes, down_votes:g.downVotes, sort_type:getCurrentSortValue(), search_query:getSearchQuery()||undefined});
   await db.collection('games').doc(id).update({upVotes:g.upVotes,downVotes:g.downVotes});
   renderAll();
 }
@@ -2246,36 +2252,48 @@ async function votePred(pid,type){
       let no=sumSnap.exists?(Number(sumSnap.data().no)||0):(Number(p.no)||0);
       const serverPrev=voteSnap.exists?(voteSnap.data().type||null):null;
       const effectivePrev=serverPrev||prev||null;
-      let nextVote=effectivePrev;
-      let toastMsg='';
-      let duplicate=false;
-      if(effectivePrev){
-        duplicate=true;
-        toastMsg='이미 제보하였습니다.';
+      let nextVote=null;
+      let voteState='active';
+      if(effectivePrev===type){
+        if(type==='yes') yes=Math.max(0, yes-1);
+        else no=Math.max(0, no-1);
+        voteState='cancelled';
+        tx.delete(voteRef);
       }else{
+        if(effectivePrev==='yes') yes=Math.max(0, yes-1);
+        if(effectivePrev==='no') no=Math.max(0, no-1);
         if(type==='yes') yes+=1;
         else no+=1;
         nextVote=type;
+        voteState=effectivePrev ? 'changed' : 'active';
         tx.set(voteRef,{pid,type,fp,ts:Date.now()},{merge:true});
-        toastMsg=type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!';
       }
       tx.set(sumRef,{yes,no,updatedAt:Date.now()},{merge:true});
-      return {yes,no,nextVote,toastMsg,duplicate};
+      return {yes,no,nextVote,voteState};
     });
     p.yes=result.yes;
     p.no=result.no;
-    lsSet('pred_vote_'+pid,result.nextVote);
-    trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:result.duplicate ? 'duplicate' : 'active', yes_votes:result.yes, no_votes:result.no});
-    showToast(result.toastMsg);
+    if(result.nextVote) lsSet('pred_vote_'+pid,result.nextVote);
+    else localStorage.removeItem('pred_vote_'+pid);
+    trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:result.voteState, yes_votes:result.yes, no_votes:result.no});
+    showToast('투표가 반영되었습니다.');
   }catch(e){
     console.error('votePred error:',e);
-    if(prev){
-      trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:'duplicate', yes_votes:p.yes, no_votes:p.no, mode:'offline_fallback'});
-      showToast('이미 제보하였습니다.');
+    let voteState='active';
+    if(prev===type){
+      if(type==='yes') p.yes=Math.max(0,p.yes-1);
+      else p.no=Math.max(0,p.no-1);
+      localStorage.removeItem('pred_vote_'+pid);
+      voteState='cancelled';
     }else{
-      if(type==='yes')p.yes++; else p.no++;
-      lsSet('pred_vote_'+pid,type);trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:'active', yes_votes:p.yes, no_votes:p.no, mode:'offline_fallback'});showToast(type==='yes'?'👍 "된다"에 투표했습니다!':'👎 "안된다"에 투표했습니다!');
+      if(prev==='yes') p.yes=Math.max(0,p.yes-1);
+      if(prev==='no') p.no=Math.max(0,p.no-1);
+      if(type==='yes') p.yes++; else p.no++;
+      lsSet('pred_vote_'+pid,type);
+      voteState=prev ? 'changed' : 'active';
     }
+    trackEvent('new_release_vote', {predict_id:pid, predict_name:p.name, vote_type:type, vote_state:voteState, yes_votes:p.yes, no_votes:p.no, mode:'offline_fallback'});
+    showToast('투표가 반영되었습니다.');
   }finally{
     predVoteBusy[pid]=false;
     renderPredictions();
