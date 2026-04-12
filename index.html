@@ -553,6 +553,57 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
+
+/* ── 알림 시스템 ── */
+.notif-btn{position:relative;display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.notif-btn:active{opacity:.7;}
+.notif-btn svg{width:15px;height:15px;stroke:var(--text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:#ef9f27;color:#0b0c0e;font-size:8px;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;border:1.5px solid var(--bg);}
+.notif-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;}
+.notif-overlay.open{display:flex;}
+.notif-sheet{background:var(--bg2);border:1px solid var(--border2);border-radius:16px 16px 0 0;width:100%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;}
+.notif-sheet-header{padding:14px var(--px) 0;flex-shrink:0;}
+.notif-handle{width:36px;height:4px;background:rgba(255,255,255,.14);border-radius:2px;margin:0 auto 12px;}
+.notif-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.notif-title{font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--accent);}
+.notif-read-all{font-size:11px;color:var(--muted);cursor:pointer;padding:4px 0;}
+.notif-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);}
+.ntab{flex:1;text-align:center;font-size:12px;font-weight:700;padding:8px 4px;cursor:pointer;color:var(--muted);border:none;background:transparent;border-bottom:2px solid transparent;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.ntab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.notif-body{flex:1;overflow-y:auto;padding:10px var(--px) 20px;}
+.notif-item{background:var(--bg3);border-radius:10px;padding:11px 13px;margin-bottom:8px;border-left:3px solid transparent;position:relative;}
+.notif-item.unread-wage{border-left-color:#ef9f27;}
+.notif-item.unread-reply{border-left-color:#a78bfa;}
+.notif-item-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.notif-item-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.notif-item-body{font-size:12px;color:var(--muted);line-height:1.5;}
+.notif-item-time{font-size:10px;color:var(--muted);margin-top:5px;}
+.notif-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.ndot-wage{background:#ef9f27;}
+.ndot-reply{background:#a78bfa;}
+.ndot-read{background:rgba(255,255,255,.15);}
+.notif-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;}
+.activity-card{background:var(--bg3);border-radius:10px;padding:11px 13px;margin-bottom:8px;}
+.activity-game-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.activity-icon{font-size:18px;flex-shrink:0;}
+.activity-name{font-size:13px;font-weight:700;}
+.activity-meta{font-size:10px;color:var(--muted);margin-top:1px;}
+.activity-wage-row{display:flex;align-items:center;gap:6px;font-size:12px;}
+.activity-wage-from{color:var(--muted);}
+.activity-wage-to{font-weight:700;}
+.wage-up-text{color:#4ade80;}
+.wage-down-text{color:#f87171;}
+.wage-same-text{color:var(--muted);}
+.activity-pct{font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;}
+.apct-up{background:rgba(74,222,128,.12);color:#4ade80;}
+.apct-down{background:rgba(248,113,113,.12);color:#f87171;}
+.apct-same{background:var(--bg4);color:var(--muted);}
+.mypost-card{background:var(--bg3);border-radius:10px;padding:11px 13px;margin-bottom:8px;}
+.mypost-game{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;}
+.mypost-body{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:6px;}
+.mypost-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
+.reply-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(167,139,250,.12);color:#a78bfa;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+@media(min-width:600px){.notif-sheet{max-width:500px;border-radius:16px;margin-bottom:20px;}}
 </style>
 </head>
 <body>
@@ -571,6 +622,10 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   </div>
   <div class="hdr-right">
     <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <div class="notif-btn" id="notifBtn" onclick="openNotif()">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div class="notif-badge" id="notifBadge" style="display:none">0</div>
+    </div>
     <button class="btn-submit" onclick="openReportModal()">+ 제보</button>
   </div>
 </header>
@@ -693,6 +748,25 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
       </div>
       <div class="write-anon" id="writeAnonHint">닉네임·PIN은 수정/삭제에 사용됩니다</div>
     </div>
+  </div>
+</div>
+
+<!-- 알림 시트 -->
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotifOut(event)">
+  <div class="notif-sheet">
+    <div class="notif-sheet-header">
+      <div class="notif-handle"></div>
+      <div class="notif-title-row">
+        <div class="notif-title">📬 나의 쌀먹 다이어리</div>
+        <span class="notif-read-all" onclick="markAllRead()">모두 읽음</span>
+      </div>
+      <div class="notif-tabs">
+        <button class="ntab active" onclick="switchNotifTab('notifs')">알림</button>
+        <button class="ntab" onclick="switchNotifTab('votes')">투표한 게임</button>
+        <button class="ntab" onclick="switchNotifTab('myposts')">내가 쓴 글</button>
+      </div>
+    </div>
+    <div class="notif-body" id="notifBody"></div>
   </div>
 </div>
 
@@ -1467,6 +1541,17 @@ async function vote(id,dir){
     try{await db.collection('votes').doc(fp+'_'+id).set({dir,ts:Date.now(),fp},{merge:true});}catch(e){}
   }
   lsSet('ssalmuk_votes',myVotes);
+  // 활동 기록
+  if(voteState!=='cancelled'){
+    const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+    act.votes=act.votes||{};
+    act.votes[id]={gameId:id,gameName:g.name,gameIcon:g.icon||'🎮',dir,ts:Date.now(),expertAtVote:g.expert,beginnerAtVote:g.beginner};
+    lsSet('ssalmuk_activity',act);
+  }else{
+    const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+    if(act.votes)delete act.votes[id];
+    lsSet('ssalmuk_activity',act);
+  }
   trackEvent('existing_game_vote', {game_id:id, game_name:g.name, vote_direction:dir, vote_state:voteState, up_votes:g.upVotes, down_votes:g.downVotes, sort_type:getCurrentSortValue(), search_query:getSearchQuery()||undefined});
   await db.collection('games').doc(id).update({upVotes:g.upVotes,downVotes:g.downVotes});
   renderAll();
@@ -1715,6 +1800,18 @@ async function submitReply(parentId){
   posts[gid].push(newReply);
   await db.collection('posts').doc(newReply.id).set(newReply);
   lsSet('ssalmuk_nick',nick);
+  // 원글 작성자가 나인 경우 → 답글 알림 생성
+  const actR=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+  const myPost=(actR.posts||[]).find(p=>p.postId===parentId);
+  if(myPost){
+    const notifs=lsGet('ssalmuk_notifs',[]);
+    const alreadyHas=notifs.find(n=>n.type==='reply'&&n.replyId===newReply.id);
+    if(!alreadyHas){
+      notifs.unshift({id:'rn-'+newReply.id,type:'reply',postId:parentId,gameId:gid,gameName:myPost.gameName,replyId:newReply.id,replyBody:body.slice(0,60),replyNick:nick,ts:Date.now(),read:false});
+      lsSet('ssalmuk_notifs',notifs.slice(0,50));
+      updateNotifBadge();
+    }
+  }
   ta.value='';ta.style.height='';
   document.getElementById('reply-write-'+parentId).classList.remove('open');
   renderCommStats(gid);renderPosts(gid);renderCards();
@@ -1782,6 +1879,13 @@ async function submitPost(){
   posts[gid].push(newPost);
   await db.collection('posts').doc(newPost.id).set(newPost);
   trackEvent('post_submit', {game_id:gid, game_name:games.find(x=>x.id===gid)?.name||gid, body_length:body.length});
+  // 내 글 활동 기록
+  const actP=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+  actP.posts=actP.posts||[];
+  actP.posts=actP.posts.filter(p=>p.postId!==newPost.id);
+  actP.posts.unshift({postId:newPost.id,gameId:gid,gameName:games.find(x=>x.id===gid)?.name||gid,body:body.slice(0,80),ts:newPost.ts,nick});
+  if(actP.posts.length>50)actP.posts=actP.posts.slice(0,50);
+  lsSet('ssalmuk_activity',actP);
   lsSet('ssalmuk_nick',nick);
   ta.value='';ta.style.height='';
   document.getElementById('writePin').value='';
@@ -1789,6 +1893,218 @@ async function submitPost(){
   document.getElementById('commPosts').scrollTop=0;
   showToast('✅ 글이 등록됐습니다!');
 }
+
+// ════════════════════════════════════════
+// 재방문 동기부여 — 알림 & 활동 시스템 (1단계)
+// ════════════════════════════════════════
+let _notifTab='notifs';
+
+function updateNotifBadge(){
+  const notifs=lsGet('ssalmuk_notifs',[]);
+  const unread=notifs.filter(n=>!n.read).length;
+  const badge=document.getElementById('notifBadge');
+  if(!badge)return;
+  if(unread>0){badge.style.display='flex';badge.textContent=unread>9?'9+':String(unread);}
+  else{badge.style.display='none';}
+}
+
+function checkWageChanges(){
+  const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+  const lastCheck=lsGet('ssalmuk_wage_check_ts',0);
+  const now=Date.now();
+  if(now-lastCheck<3600e3*6)return; // 6시간마다만 체크
+  const notifs=lsGet('ssalmuk_notifs',[]);
+  Object.values(act.votes||{}).forEach(v=>{
+    const g=games.find(x=>x.id===v.gameId);
+    if(!g||!v.expertAtVote)return;
+    const pct=Math.round((g.expert-v.expertAtVote)/v.expertAtVote*100);
+    if(Math.abs(pct)<15)return;
+    // 동일 게임 동일 방향 알림 중복 방지 (24시간 내)
+    const dup=notifs.find(n=>n.type==='wage'&&n.gameId===v.gameId&&(now-n.ts)<86400e3);
+    if(dup)return;
+    notifs.unshift({
+      id:'wn-'+v.gameId+'-'+now,
+      type:'wage',
+      gameId:v.gameId,
+      gameName:g.name,
+      gameIcon:g.icon||'🎮',
+      pct,
+      from:v.expertAtVote,
+      to:g.expert,
+      ts:now,
+      read:false
+    });
+  });
+  lsSet('ssalmuk_notifs',notifs.slice(0,50));
+  lsSet('ssalmuk_wage_check_ts',now);
+  updateNotifBadge();
+}
+
+function checkReplyNotifs(){
+  const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+  const lastVisit=lsGet('ssalmuk_last_visit_ts',0);
+  const now=Date.now();
+  const notifs=lsGet('ssalmuk_notifs',[]);
+  (act.posts||[]).forEach(mp=>{
+    const allPosts=posts[mp.gameId]||[];
+    const newReplies=allPosts.filter(r=>r.parentId===mp.postId&&r.ts>lastVisit&&r.ts>mp.ts);
+    newReplies.forEach(r=>{
+      if(notifs.find(n=>n.type==='reply'&&n.replyId===r.id))return;
+      notifs.unshift({
+        id:'rn-'+r.id,
+        type:'reply',
+        postId:mp.postId,
+        gameId:mp.gameId,
+        gameName:mp.gameName,
+        replyId:r.id,
+        replyBody:r.body.slice(0,60),
+        replyNick:r.nick,
+        ts:r.ts,
+        read:false
+      });
+    });
+  });
+  lsSet('ssalmuk_notifs',notifs.slice(0,50));
+  lsSet('ssalmuk_last_visit_ts',now);
+  updateNotifBadge();
+}
+
+function fmtWageShort(v){
+  if(!v||v===0)return '0원';
+  if(v>=10000)return (v/10000).toFixed(v%10000===0?0:1)+'만원';
+  return v.toLocaleString()+'원';
+}
+
+function renderNotifBody(){
+  const body=document.getElementById('notifBody');
+  if(!body)return;
+  if(_notifTab==='notifs'){
+    const notifs=lsGet('ssalmuk_notifs',[]);
+    if(!notifs.length){
+      body.innerHTML='<div class="notif-empty">아직 알림이 없어요.<br>투표하거나 글을 남기면 여기서 변동을 알려드립니다.</div>';
+      return;
+    }
+    body.innerHTML=notifs.map(n=>{
+      const unreadClass=n.read?'':n.type==='wage'?'unread-wage':'unread-reply';
+      const dotClass=n.read?'ndot-read':n.type==='wage'?'ndot-wage':'ndot-reply';
+      let title='',desc='';
+      if(n.type==='wage'){
+        const arrow=n.pct>0?'▲':'▼';
+        title=`${n.gameIcon||'🎮'} ${n.gameName} 시급 변동`;
+        desc=`${fmtWageShort(n.from)} → ${fmtWageShort(n.to)} (${arrow}${Math.abs(n.pct)}%)`;
+      }else{
+        title=`💬 내 글에 답글이 달렸어요`;
+        desc=`${n.gameName} · "${escHtml(n.replyBody)}"`;
+      }
+      return `<div class="notif-item ${unreadClass}" onclick="readNotif('${n.id}','${n.gameId||''}')">
+        <div class="notif-item-row">
+          <div style="flex:1">
+            <div class="notif-item-title">${title}</div>
+            <div class="notif-item-body">${desc}</div>
+            <div class="notif-item-time">${timeAgo(n.ts)}</div>
+          </div>
+          <div class="notif-dot ${dotClass}"></div>
+        </div>
+      </div>`;
+    }).join('');
+  } else if(_notifTab==='votes'){
+    const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+    const voteList=Object.values(act.votes||{});
+    if(!voteList.length){
+      body.innerHTML='<div class="notif-empty">아직 투표한 게임이 없어요.<br>게임 카드에서 투표하면 여기서 시급 변동을 추적합니다.</div>';
+      return;
+    }
+    body.innerHTML=voteList.sort((a,b)=>b.ts-a.ts).map(v=>{
+      const g=games.find(x=>x.id===v.gameId);
+      const curExpert=g?g.expert:v.expertAtVote;
+      const pct=v.expertAtVote?Math.round((curExpert-v.expertAtVote)/v.expertAtVote*100):0;
+      const pctHtml=pct>0?`<span class="activity-pct apct-up">▲ +${pct}%</span>`:pct<0?`<span class="activity-pct apct-down">▼ ${pct}%</span>`:`<span class="activity-pct apct-same">변동없음</span>`;
+      const toClass=pct>0?'wage-up-text':pct<0?'wage-down-text':'wage-same-text';
+      return `<div class="activity-card" onclick="closeNotif();openComm('${v.gameId}')">
+        <div class="activity-game-row">
+          <span class="activity-icon">${v.gameIcon||'🎮'}</span>
+          <div>
+            <div class="activity-name">${v.gameName}</div>
+            <div class="activity-meta">${timeAgo(v.ts)} 투표</div>
+          </div>
+          ${pctHtml}
+        </div>
+        <div class="activity-wage-row">
+          <span class="activity-wage-from">투표 시 ${fmtWageShort(v.expertAtVote)}</span>
+          <span style="color:var(--muted)">→</span>
+          <span class="activity-wage-to ${toClass}">현재 ${fmtWageShort(curExpert)}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+    const myPosts=act.posts||[];
+    if(!myPosts.length){
+      body.innerHTML='<div class="notif-empty">아직 작성한 글이 없어요.<br>게임 게시판에서 한마디 남겨보세요.</div>';
+      return;
+    }
+    body.innerHTML=myPosts.map(p=>{
+      const allGamePosts=posts[p.gameId]||[];
+      const replyCount=allGamePosts.filter(r=>r.parentId===p.postId).length;
+      const replyBadge=replyCount>0?`<span class="reply-badge">💬 답글 ${replyCount}</span>`:'';
+      return `<div class="mypost-card" onclick="closeNotif();openComm('${p.gameId}')">
+        <div class="mypost-game">${p.gameName}</div>
+        <div class="mypost-body">${escHtml(p.body.slice(0,80))}${p.body.length>80?'…':''}</div>
+        <div class="mypost-meta">
+          <span>${timeAgo(p.ts)}</span>
+          ${replyBadge}
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function readNotif(nid,gameId){
+  const notifs=lsGet('ssalmuk_notifs',[]);
+  const n=notifs.find(x=>x.id===nid);
+  if(n)n.read=true;
+  lsSet('ssalmuk_notifs',notifs);
+  updateNotifBadge();
+  if(gameId)openComm(gameId);
+  closeNotif();
+}
+
+function markAllRead(){
+  const notifs=lsGet('ssalmuk_notifs',[]);
+  notifs.forEach(n=>n.read=true);
+  lsSet('ssalmuk_notifs',notifs);
+  updateNotifBadge();
+  renderNotifBody();
+}
+
+function switchNotifTab(tab){
+  _notifTab=tab;
+  document.querySelectorAll('.ntab').forEach((el,i)=>{
+    const tabs=['notifs','votes','myposts'];
+    el.classList.toggle('active',tabs[i]===tab);
+  });
+  renderNotifBody();
+}
+
+function openNotif(){
+  _notifTab='notifs';
+  document.querySelectorAll('.ntab').forEach((el,i)=>el.classList.toggle('active',i===0));
+  renderNotifBody();
+  document.getElementById('notifOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  history.pushState('modal','','');
+}
+
+function closeNotif(){
+  document.getElementById('notifOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  if(history.state==='modal')history.back();
+}
+
+function closeNotifOut(e){
+  if(e.target===document.getElementById('notifOverlay'))closeNotif();
+}
+
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';}
 function showPendingMsg(name,count){
@@ -2626,8 +2942,10 @@ async function seedDailyChat(){
 window.addEventListener('popstate',()=>{
   const ro=document.getElementById('reportOverlay');
   const co=document.getElementById('commOverlay');
+  const no=document.getElementById('notifOverlay');
   if(ro&&ro.classList.contains('open')){ro.classList.remove('open');document.body.style.overflow='';}
   if(co&&co.classList.contains('open')){co.classList.remove('open');document.body.style.overflow='';commGameId=null;}
+  if(no&&no.classList.contains('open')){no.classList.remove('open');document.body.style.overflow='';}
 });
 
 // ── 시작 ──
@@ -2642,6 +2960,9 @@ window.addEventListener('popstate',()=>{
   }catch(e){console.error('startup error:',e);}
   document.getElementById('loadingScreen').style.display='none';
   try{
+    checkWageChanges();
+    checkReplyNotifs();
+    updateNotifBadge();
     renderAll();
     renderPredictions();
     initChart();
