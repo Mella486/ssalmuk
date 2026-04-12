@@ -543,44 +543,6 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .scroll-dot.active{background:var(--accent);border-color:var(--accent);transform:scale(1.2);}
 .predict-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:4px;opacity:.6;}
 
-
-
-/* ── 재방문 대시보드 ── */
-.revisit-dashboard{padding:0 var(--px) 14px;display:flex;flex-direction:column;gap:10px;}
-.revisit-hero{background:linear-gradient(135deg,rgba(198,241,53,.10),rgba(96,165,250,.08));border:1px solid var(--border);border-radius:var(--cr);padding:14px;display:flex;flex-direction:column;gap:10px;}
-.revisit-topline{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.revisit-title{font-family:'Black Han Sans',sans-serif;font-size:17px;}
-.revisit-sub{font-size:11px;color:var(--muted);}
-.revisit-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(198,241,53,.10);border:1px solid rgba(198,241,53,.24);border-radius:999px;padding:4px 9px;font-size:10px;font-weight:700;color:var(--accent);}
-.revisit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;}
-.revisit-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;min-height:104px;display:flex;flex-direction:column;gap:7px;}
-.revisit-card.kpi{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));}
-.revisit-kicker{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;}
-.revisit-main{font-size:15px;font-weight:700;line-height:1.35;word-break:keep-all;}
-.revisit-meta{font-size:11px;color:var(--muted);line-height:1.45;}
-.revisit-chip-row{display:flex;flex-wrap:wrap;gap:6px;}
-.revisit-chip{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:999px;padding:4px 8px;font-size:10px;color:var(--text);}
-.revisit-actions{display:flex;gap:8px;flex-wrap:wrap;}
-.revisit-btn{background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.20);color:var(--accent);border-radius:8px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
-.revisit-btn.secondary{background:var(--bg3);border-color:var(--border);color:var(--text);}
-.revisit-list{display:flex;flex-direction:column;gap:7px;}
-.revisit-row{display:flex;align-items:center;gap:8px;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:8px 10px;}
-.revisit-row-left{display:flex;align-items:center;gap:8px;min-width:0;}
-.revisit-rank{width:22px;height:22px;border-radius:7px;background:rgba(198,241,53,.10);border:1px solid rgba(198,241,53,.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;}
-.revisit-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.revisit-delta{font-size:11px;font-weight:700;flex-shrink:0;}
-.revisit-delta.up{color:var(--green);}
-.revisit-delta.down{color:var(--red);}
-.revisit-delta.same{color:var(--muted);}
-.revisit-section-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--cr);padding:14px;display:flex;flex-direction:column;gap:10px;}
-.revisit-section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.revisit-section-title{font-size:13px;font-weight:700;}
-.revisit-note{font-size:10px;color:var(--muted);}
-@media(min-width:960px){
-  .revisit-grid{grid-template-columns:repeat(4,1fr);}
-  .revisit-panels{display:grid;grid-template-columns:1.05fr .95fr;gap:10px;}
-}
-
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px;}
 </style>
@@ -635,7 +597,6 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   </div>
   <!-- 🔥 신작 쌀먹 예측 -->
   <div class="predict-section" id="predictSection"></div>
-  <div class="revisit-dashboard" id="revisitDashboard"></div>
   <div class="controls">
    <span class="sort-label">정렬</span> <select class="sort-select" id="sortSelect" onchange="renderAll()"> <option value="expert">고수 시급순</option> <option value="beginner">초보 시급순</option> <option value="trust">신뢰도순</option> <option value="votes">투표수순</option> </select>
   </div>
@@ -1248,146 +1209,6 @@ async function loadData(){
 // ── 렌더링 ──
 function postCount(gid){return(posts[gid]||[]).length;}
 function totalLikes(gid){return(posts[gid]||[]).reduce((s,p)=>s+p.likes,0);}
-
-function dashboardFmtDelta(v){
-  if(v>0)return '+'+fmtW(v);
-  if(v<0)return '-'+fmtW(Math.abs(v));
-  return '변동 없음';
-}
-function getPredictVoteValue(pid){
-  return lsGet('pred_vote_'+pid,null);
-}
-function getDashboardActivity(){
-  const activities=[];
-  Object.keys(myVotes||{}).forEach(id=>{const g=games.find(x=>x.id===id); if(g) activities.push({label:g.name,type:'기존 투표'});});
-  (PREDICT_DATA||[]).forEach(p=>{ const v=getPredictVoteValue(p.id); if(v) activities.push({label:p.name,type:'신작 투표'}); if(lsGet('pred_wage_reported_'+p.id,false)) activities.push({label:p.name,type:'신작 시급 제보'}); });
-  try{
-    for(let i=0;i<localStorage.length;i++){
-      const k=localStorage.key(i)||'';
-      if(k.startsWith('pending_submitted_')) activities.push({label:k.replace('pending_submitted_',''),type:'신규 게임 제보'});
-    }
-  }catch(e){}
-  const uniq=[]; const seen=new Set();
-  activities.forEach(a=>{const key=a.type+'_'+a.label; if(!seen.has(key)){seen.add(key); uniq.push(a);}});
-  return uniq;
-}
-function getDebateCandidate(){
-  const cands=[];
-  games.forEach(g=>{
-    const total=(g.upVotes||0)+(g.downVotes||0);
-    if(total<10)return;
-    const yes=((g.upVotes||0)/total)*100;
-    cands.push({
-      title:g.name,
-      meta:'기존 작품 · 신뢰 투표 '+total+'표',
-      pct:Math.round(yes),
-      gap:Math.abs(yes-50),
-      cta:'지금 의견 갈림'
-    });
-  });
-  (PREDICT_DATA||[]).filter(p=>getPredictStatus(p).type!=='done').forEach(p=>{
-    const total=(p.yes||0)+(p.no||0);
-    if(total<10)return;
-    const yes=((p.yes||0)/total)*100;
-    cands.push({
-      title:p.name,
-      meta:'신작 예측 · 된다/안된다 '+total+'표',
-      pct:Math.round(yes),
-      gap:Math.abs(yes-50),
-      cta:'예측 팽팽'
-    });
-  });
-  cands.sort((a,b)=>a.gap-b.gap);
-  return cands[0]||null;
-}
-function getMovementLists(){
-  const snap=getWeeklySnap();
-  const mapped=games.map((g,idx)=>{
-    const prev=snap?.ranks?.[g.id]?.expert;
-    const delta=typeof prev==='number' ? (g.expert-prev) : 0;
-    return {id:g.id,name:g.name,icon:g.icon,delta,rank:idx+1,expert:g.expert};
-  });
-  const up=[...mapped].sort((a,b)=>b.delta-a.delta).slice(0,3);
-  const down=[...mapped].sort((a,b)=>a.delta-b.delta).slice(0,3);
-  return {up,down,hasSnap:!!snap};
-}
-function renderRevisitDashboard(){
-  const el=document.getElementById('revisitDashboard');
-  if(!el || !games?.length)return;
-  const sorted=getSorted();
-  const leader=sorted[0];
-  const predictActive=(PREDICT_DATA||[]).filter(p=>getPredictStatus(p).type!=='done');
-  const hottest=predictActive.slice().sort((a,b)=>((b.yes||0)+(b.no||0))-((a.yes||0)+(a.no||0)))[0]||null;
-  const debate=getDebateCandidate();
-  const acts=getDashboardActivity();
-  const mv=getMovementLists();
-  const activityCount=acts.length;
-  const activityChips=acts.slice(0,4).map(a=>`<span class="revisit-chip">${a.type} · ${a.label}</span>`).join('') || '<span class="revisit-chip">아직 참여 기록이 없어요</span>';
-  const upRows=mv.up.map((item,i)=>`<div class="revisit-row"><div class="revisit-row-left"><div class="revisit-rank">${i+1}</div><div><div class="revisit-name">${item.icon||'🎮'} ${item.name}</div><div class="revisit-note">현재 고수 시급 ${fmtW(item.expert)}</div></div></div><div class="revisit-delta ${item.delta>0?'up':item.delta<0?'down':'same'}">${mv.hasSnap?dashboardFmtDelta(item.delta):'관찰 시작'}</div></div>`).join('');
-  const downRows=mv.down.map((item,i)=>`<div class="revisit-row"><div class="revisit-row-left"><div class="revisit-rank">${i+1}</div><div><div class="revisit-name">${item.icon||'🎮'} ${item.name}</div><div class="revisit-note">현재 고수 시급 ${fmtW(item.expert)}</div></div></div><div class="revisit-delta ${item.delta>0?'up':item.delta<0?'down':'same'}">${mv.hasSnap?dashboardFmtDelta(item.delta):'관찰 시작'}</div></div>`).join('');
-  el.innerHTML=`
-    <div class="revisit-hero">
-      <div class="revisit-topline">
-        <div>
-          <div class="revisit-title">다시 오게 만드는 샘플 대시보드</div>
-          <div class="revisit-sub">급등·급락·논쟁·내 활동을 한 화면에서 보도록 붙여본 MVP입니다.</div>
-        </div>
-        <span class="revisit-badge">재방문 유도 샘플</span>
-      </div>
-      <div class="revisit-grid">
-        <div class="revisit-card kpi">
-          <div class="revisit-kicker">TODAY LEADER</div>
-          <div class="revisit-main">${leader.icon||'🎮'} ${leader.name}</div>
-          <div class="revisit-meta">현재 최고 고수 시급 <b>${fmtW(leader.expert)}</b></div>
-        </div>
-        <div class="revisit-card kpi">
-          <div class="revisit-kicker">HOT PREDICTION</div>
-          <div class="revisit-main">${hottest ? `${hottest.icon||'🔥'} ${hottest.name}` : '신작 대기중'}</div>
-          <div class="revisit-meta">${hottest ? `참여 ${((hottest.yes||0)+(hottest.no||0)).toLocaleString()}표 · 예상 시급 ${fmtW(hottest.wage||0)}` : '신작 예측이 열리면 여기에 표시됩니다.'}</div>
-        </div>
-        <div class="revisit-card kpi">
-          <div class="revisit-kicker">DEBATE NOW</div>
-          <div class="revisit-main">${debate ? debate.title : '아직 논쟁 게임 없음'}</div>
-          <div class="revisit-meta">${debate ? `${debate.meta} · 된다 비중 ${debate.pct}%` : '의견이 팽팽한 항목이 생기면 노출됩니다.'}</div>
-        </div>
-        <div class="revisit-card kpi">
-          <div class="revisit-kicker">MY FOOTPRINT</div>
-          <div class="revisit-main">내 참여 ${activityCount}건</div>
-          <div class="revisit-meta">내가 건드린 게임을 다시 확인하게 만드는 영역</div>
-        </div>
-      </div>
-      <div class="revisit-chip-row">${activityChips}</div>
-      <div class="revisit-actions">
-        <button class="revisit-btn" onclick="document.getElementById('predictSection').scrollIntoView({behavior:'smooth',block:'start'})">신작 예측 보러가기</button>
-        <button class="revisit-btn secondary" onclick="document.getElementById('gameSearch').focus();window.scrollTo({top:document.getElementById('gameSearch').getBoundingClientRect().top+window.scrollY-90,behavior:'smooth'})">관심 게임 다시 찾기</button>
-      </div>
-    </div>
-    <div class="revisit-panels">
-      <div class="revisit-section-card">
-        <div class="revisit-section-head"><div class="revisit-section-title">오늘 급등 / 급락 체크</div><div class="revisit-note">${mv.hasSnap?'직전 스냅샷 대비':'첫 방문은 관찰 시작으로 표시'}</div></div>
-        <div class="revisit-grid" style="grid-template-columns:1fr;gap:10px;">
-          <div>
-            <div class="revisit-kicker" style="margin-bottom:7px;">급등 후보</div>
-            <div class="revisit-list">${upRows}</div>
-          </div>
-          <div>
-            <div class="revisit-kicker" style="margin-bottom:7px;">급락 후보</div>
-            <div class="revisit-list">${downRows}</div>
-          </div>
-        </div>
-      </div>
-      <div class="revisit-section-card">
-        <div class="revisit-section-head"><div class="revisit-section-title">다시 방문할 이유 카드</div><div class="revisit-note">기획 샘플</div></div>
-        <div class="revisit-list">
-          <div class="revisit-row"><div class="revisit-row-left"><div class="revisit-rank">1</div><div><div class="revisit-name">오늘 가장 논쟁적인 게임</div><div class="revisit-note">팽팽한 투표를 전면 노출</div></div></div><div class="revisit-delta same">${debate ? debate.cta : '대기'}</div></div>
-          <div class="revisit-row"><div class="revisit-row-left"><div class="revisit-rank">2</div><div><div class="revisit-name">내가 참여한 게임 다시보기</div><div class="revisit-note">내 제보·투표 흔적 중심</div></div></div><div class="revisit-delta up">${activityCount}건</div></div>
-          <div class="revisit-row"><div class="revisit-row-left"><div class="revisit-rank">3</div><div><div class="revisit-name">신작 검증 예정 배지</div><div class="revisit-note">출시 후 예측 적중 확인</div></div></div><div class="revisit-delta same">${predictActive.length}개</div></div>
-          <div class="revisit-row"><div class="revisit-row-left"><div class="revisit-rank">4</div><div><div class="revisit-name">주간 관찰 루틴</div><div class="revisit-note">급등락/논쟁/관심게임 체크</div></div></div><div class="revisit-delta up">추천</div></div>
-        </div>
-      </div>
-    </div>`;
-}
-
 function getSorted(){
   const s=document.getElementById('sortSelect').value;
   const list=[...games];
@@ -1582,7 +1403,7 @@ function renderCards(){
   // 광고가 채워졌을 때만 노출
   requestAnimationFrame(()=>refreshAdVisibility(grid));
 }
-function renderAll(){renderStats();renderChart();renderCards();renderRevisitDashboard();saveWeeklySnapshot();}
+function renderAll(){renderStats();renderChart();renderCards();saveWeeklySnapshot();}
 
 function refreshAdVisibility(scope=document){
   scope.querySelectorAll('.ad-banner').forEach(el=>{
@@ -2214,8 +2035,8 @@ async function seedDailyPredChat(){
         `${p.name} 실제 시세는 열리고 나서 봐야 함`,
         `${p.name} 쌀먹 루트 미리 연구하는 사람 많네요`
       ]);
-      const msg=pickFreshDailyMessage(pool,`ssalmuk_pred_daily_history_${p.id}`,(pool&&pool[0])||`${p.name} 분위기 체크 중`);
-      const nick=pickDailyNick(g.id);
+      const msg=pool[Math.floor(Math.random()*pool.length)];
+      const nick=DAILY_NICKS[Math.floor(Math.random()*DAILY_NICKS.length)];
       const color=DAILY_COLORS[Math.floor(Math.random()*DAILY_COLORS.length)];
       const post={id:`pred-daily-${p.id}-${dateKey}-${i}`,nick,color,body:msg,ts:Date.now()-((i+1)*3600e3),likes:Math.floor(Math.random()*4),gameId:predGid,pinHash:''};
       if(!(posts[predGid]||[]).some(x=>x.id===post.id)){
@@ -2242,7 +2063,7 @@ function getPredictStatus(p){
 function renderPredictions(){
   const sec=document.getElementById('predictSection');
   const active=PREDICT_DATA.filter(p=>getPredictStatus(p).type!=='done');
-  if(!active.length){sec.innerHTML=''; renderRevisitDashboard(); return;}
+  if(!active.length){sec.innerHTML='';return;}
   const currentId=predictCurrentId&&active.some(p=>p.id===predictCurrentId)?predictCurrentId:(active[0]?.id||null);
   predictCurrentId=currentId;
   const fmtPW=v=>v>=10000?(v/10000).toFixed(v%10000===0?0:1):v.toLocaleString();
@@ -2330,7 +2151,6 @@ function renderPredictions(){
       },{passive:true});
     }
   }
-  renderRevisitDashboard();
 }
 function toggleTagPanel(pid){const panel=document.getElementById('tagPanel_'+pid);const willOpen=!panel.classList.contains('open');panel.classList.toggle('open');if(willOpen){const p=PREDICT_DATA.find(x=>x.id===pid);trackReportEntry('new_release_feature_price_report', pid, p?.name, 'predict_card');}}
 function toggleTag(el){el.classList.toggle('selected');}
@@ -2617,120 +2437,6 @@ const DAILY_POOL={
 };
 const DAILY_NICKS=['쌀먹러','파밍장인','시급계산기','새벽파머','골드마스터','거래소고수','꾸준파밍','현실쌀먹','효율충','시급왕'];
 const DAILY_COLORS=['#fb923c','#60a5fa','#a78bfa','#4ade80','#f87171','#22d3ee','#c6f135','#fbbf24','#e879f9','#38bdf8'];
-const DAILY_PREFIXES=['오늘은','방금도','체감상','지금 보니','새벽 기준','주말이라','패치 이후','시장 보면','직접 해보니','커뮤 분위기상'];
-const DAILY_SUFFIXES=['느낌임','같네요','인 듯','체감됨','맞는 듯','추천합니다','계속 보는 중','생각보다 괜찮음','변동성 있음','확실히 다름'];
-const DAILY_CONTROVERSY_OPENERS=['솔직히','냉정히 말하면','이건 좀 갈리겠지만','나만 그렇게 느끼나','반박 많을 것 같지만','커뮤랑 다르게 보이는데','해본 사람은 알겠지만'];
-const DAILY_CONTROVERSY_CLOSERS=['나만 이렇게 보나?','반박 환영','이견 있으면 이유 좀','고수들은 다르게 봄?','이거 동의하면 추천','초보 기준으론 얘기 달라질 수도','커뮤 여론이랑은 좀 다를 듯'];
-const DAILY_DEBATE_ANGLES=[
-  '요즘 이거 시급 과장된 거 아닌가',
-  '생각보다 초보 진입장벽이 더 큰 듯',
-  '다들 고점만 보고 말하는 느낌',
-  '꾸준히 벌린다는 사람들 세팅값은 빼고 말하는 듯',
-  '결국 서버빨이 더 큰 게임 같음',
-  '지금 들어가면 늦었다는 말은 과한 듯',
-  '오히려 무과금보다 소과금이 효율 더 좋은 듯',
-  '시간 박는 것 대비 기대수익은 애매한 편',
-  '주말 기준 체감이랑 평일 체감이 너무 다름',
-  '이 게임은 손보다 정보력이 더 중요한 듯'
-];
-const DAILY_GAME_STYLE={
-  'lineage-classic':{nicks:['혈맹정리맨','아덴계산기','클래식고인물','사냥터감별사'],topics:['혈맹전','아덴 시세','사냥터 통제','장비 드랍'],angles:['통제 없는 서버가 더 잘 벌리는 듯','혈맹 없으면 시급 반토막 느낌','다들 아덴만 보는데 장비빨이 더 큼','고렙 사냥터 경쟁 심하면 생각보다 별로']},
-  'lineage-m':{nicks:['다이아추적기','M파머','변신장부','TJ대기중'],topics:['다이아 시세','TJ','혈석','변신 뽑기'],angles:['다이아 시세 버티는 서버만 살아남는 듯','과금 안 하면 결국 천장 낮은 느낌','TJ 직전엔 다들 수익 좋다고 착각하는 듯','M은 자동보다 거래 타이밍이 더 중요']},
-  'lineage2m':{nicks:['2M분석충','오브장인','아인감별사','서버경제학자'],topics:['보스 드랍','서버 이전','컬렉션','거래소 호가'],angles:['2M은 신규보다 복귀가 더 유리한 판 같음','보스 못 먹는 라인은 숫자만 좋아 보이는 듯','서버 이전 열리면 시급 계산 다시 해야 할 듯']},
-  'lineage-w':{nicks:['W무과금','월드파머','W시세봇','다이아체커'],topics:['월드 거래','PvP 회피','아인','글로벌 시세'],angles:['W는 싸움 피할 줄 알면 생각보다 괜찮음','글로벌 시세 차익 보는 사람만 웃는 듯','다들 저평가하는데 은근 안정적임']},
-  'lost-ark':{nicks:['골드정산러','버스감별사','군단장숙제러','보석상인'],topics:['골드 시세','군단장 버스','보석','주간 숙제'],angles:['로아는 결국 배럭 수로 찍어누르는 게임 같음','버스 안 돌리면 시급 상위권은 과장인 듯','골드값 빠지면 체감 수익 확 꺾임','숙제 피로도까지 넣으면 생각보다 애매']},
-  'maplestory':{nicks:['결정석장부','메소계산기','보스돌이장인','스타포스반대파'],topics:['결정석','메소 시세','보스돌이','스타포스'],angles:['메이플은 스타포스 복구비 빼면 말 달라짐','보스돌이 세팅 끝난 사람들 기준 시급이 과장된 듯','결정석만 보고 좋다 하기엔 메소값 변동이 큼','신규는 쌀먹보다 육성비가 더 아까움']},
-  'maplestory-m':{nicks:['메M직장인','자동사냥감시단','모바일메소러','출퇴근파머'],topics:['자동사냥','거래소','출퇴근 파밍','이벤트'],angles:['메M은 접근성 좋다는 말이 장점의 거의 전부 같음','PC랑 비교하면 기대치부터 낮춰야 맞는 듯','자동사냥 세팅 모르면 시간만 녹는 느낌']},
-  'odin':{nicks:['오딘레포트','크리스탈감별사','북유럽파머','오딘보스반'],topics:['크리스탈','월드보스','직업 격차','신섭 경제'],angles:['오딘은 직업빨 심해서 평균 시급 얘기 의미 없는 듯','신섭 초반 아니면 생각보다 맛 덜함','고수들 말 듣고 들어가면 기대치만 커지는 게임 같음']},
-  'fc-online':{nicks:['강장일지','카드투자자','FC시장통','강화복구반'],topics:['카드 시세','강화장사','이벤트 매물','챔스 시즌'],angles:['FC는 실력보다 시세 읽는 눈이 더 중요','강화 수익 자랑은 터진 카드값 빼고 말하는 듯','이벤트 끝나면 물린 사람 꽤 나올 듯']},
-  'dnf':{nicks:['경매장정찰병','에픽감정사','증폭회의론자','레이드장부'],topics:['경매장','에픽','증폭','레이드'],angles:['던파는 입장 스펙 없으면 시급 얘기 자체가 무의미','증폭 욕심내는 순간 수익 계산 꼬이는 듯','시즌 초반 지나면 상위권 유지 어렵지 않나']},
-  'blackdesert':{nicks:['카프라스수집가','검은사막장부','생활러반박러','보스도박꾼'],topics:['카프라스','생활 콘텐츠','보스 드랍','수수료'],angles:['검사는 생활까지 해야 숫자 나오는 게임 같음','보스 한 방 대박 사례로 평균 포장하는 느낌','수수료 생각하면 체감은 낮은 편 아닌가']},
-  'blackdesert-m':{nicks:['검M출근부','검M파머','모바일생활러','자동사냥검증단'],topics:['자동사냥','거래소','생활 파밍','이벤트'],angles:['검M은 꾸준함 말고는 폭발력이 약한 듯','모바일치고는 낫지만 상위권까진 아닌 느낌','자동사냥 효율도 결국 계정 스펙빨 같음']},
-  'diablo4':{nicks:['시즌레이서','유니크헌터','디아시세충','지옥물결매니아'],topics:['시즌 초반','유니크','골드 거래','트레이드 제한'],angles:['디아4는 시즌 초반 지나면 사실상 끝물 느낌','대박 드랍 사례만 보고 들어가면 실망할 듯','트레이드 제한 때문에 생각보다 막혀 있음']},
-  'baramland':{nicks:['진검상인','바람고인물','주막경제학자','도사파머'],topics:['레어템','진검','사냥터 독점','구서버 시세'],angles:['바람은 정보 없는 신규가 벌긴 거의 힘든 듯','레어템 한 번 대박으로 평균 포장하는 느낌','구서버 아는 사람만 돈 버는 구조 아닌가']},
-  'bns':{nicks:['블소복귀러','무한의탑장인','단검상인','검기파머'],topics:['무한의탑','단검 시세','복귀 유저','거래량'],angles:['블소는 거래량 줄어서 상위 시급 유지 어렵지 않나','복귀 유저 기준으론 기대보다 별로일 수도','아는 루트 있는 사람만 버는 느낌이 강함']}
-};
-
-function shuffleArray(arr){
-  const copy=[...arr];
-  for(let i=copy.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [copy[i],copy[j]]=[copy[j],copy[i]];
-  }
-  return copy;
-}
-function sampleOne(arr,fallback=''){
-  return Array.isArray(arr)&&arr.length ? arr[Math.floor(Math.random()*arr.length)] : fallback;
-}
-function loadRecentMessages(key){
-  const list=lsGet(key,[]);
-  return Array.isArray(list)?list:[];
-}
-function saveRecentMessages(key,list,max=12){
-  lsSet(key,list.slice(-max));
-}
-function normalizeMessageText(msg=''){
-  return String(msg).replace(/["“”]/g,'').replace(/[.!?]+$/,'').trim();
-}
-function extractToneSeeds(gid,pool=[]){
-  const seeded=(Array.isArray(pool)?pool:[]).map(normalizeMessageText).filter(Boolean);
-  const existing=((posts&&posts[gid])||[])
-    .map(p=>normalizeMessageText(p.body||''))
-    .filter(Boolean)
-    .filter(v=>v.length>=8&&v.length<=62);
-  return shuffleArray([...new Set([...existing.slice(-20),...seeded])]);
-}
-function buildDebateMessage(gid,pool=[]){
-  const style=DAILY_GAME_STYLE[gid]||{};
-  const toneSeeds=extractToneSeeds(gid,pool);
-  const base=sampleOne(toneSeeds,sampleOne(pool,''));
-  const topic=sampleOne(style.topics, '시세');
-  const angle=sampleOne([...(style.angles||[]), ...DAILY_DEBATE_ANGLES], '다들 고점만 보고 말하는 느낌');
-  const opener=sampleOne(DAILY_CONTROVERSY_OPENERS,'솔직히');
-  const closer=sampleOne(DAILY_CONTROVERSY_CLOSERS,'반박 환영');
-  const prefix=sampleOne(DAILY_PREFIXES,'오늘은');
-  const suffix=sampleOne(DAILY_SUFFIXES,'같네요');
-
-  const templates=[
-    `${opener} ${angle}. ${closer}`,
-    `${prefix} ${base}인데 ${angle}. ${closer}`,
-    `${topic} 기준으론 ${angle}. ${closer}`,
-    `${base}. 근데 ${angle}. ${closer}`,
-    `${prefix} ${topic}만 보면 좋아 보이는데 ${angle}. ${closer}`,
-    `${opener} ${base} ${suffix}. 근데 ${angle}. ${closer}`
-  ].map(v=>v.replace(/\s+/g,' ').trim());
-
-  return shuffleArray([...new Set(templates.filter(v=>v&&v.length<=95))]);
-}
-function buildDailyVariants(gid,pool=[]){
-  const baseSeeds=extractToneSeeds(gid,pool);
-  const set=new Set(baseSeeds);
-  baseSeeds.forEach(msg=>{
-    const clean=normalizeMessageText(msg);
-    if(!clean)return;
-    const prefix=sampleOne(DAILY_PREFIXES,'오늘은');
-    const suffix=sampleOne(DAILY_SUFFIXES,'같네요');
-    const closer=sampleOne(DAILY_CONTROVERSY_CLOSERS,'반박 환영');
-    set.add(`${prefix} ${clean}`);
-    set.add(`${clean} ${suffix}`);
-    set.add(`${clean}. ${closer}`);
-  });
-  buildDebateMessage(gid,pool).forEach(v=>set.add(v));
-  return shuffleArray([...set].filter(v=>v&&v.length<=95));
-}
-function pickFreshDailyMessage(gid,pool,historyKey,fallback='오늘 분위기 체크 중'){
-  const variants=buildDailyVariants(gid,pool);
-  const history=loadRecentMessages(historyKey);
-  let msg=variants.find(v=>!history.includes(v));
-  if(!msg) msg=variants[0]||fallback;
-  saveRecentMessages(historyKey,[...history,msg]);
-  return msg;
-}
-function pickDailyNick(gid){
-  const style=DAILY_GAME_STYLE[gid]||{};
-  const pool=[...(style.nicks||[]),...DAILY_NICKS];
-  return sampleOne(pool,'쌀먹러');
-}
 async function seedDailyChat(){
   const todayKey='ssalmuk_daily_'+new Date().toISOString().slice(0,10);
   if(lsGet(todayKey,false))return;
@@ -2744,8 +2450,8 @@ async function seedDailyChat(){
     if(!hasToday){
       const pool=DAILY_POOL[g.id];
       if(!pool||!pool.length)return;
-      const msg=pickFreshDailyMessage(g.id,pool,`ssalmuk_daily_history_${g.id}`,(pool&&pool[0])||`${g.name} 분위기 체크 중`);
-      const nick=pickDailyNick(g.id);
+      const msg=pool[Math.floor(Math.random()*pool.length)];
+      const nick=DAILY_NICKS[Math.floor(Math.random()*DAILY_NICKS.length)];
       const color=DAILY_COLORS[Math.floor(Math.random()*DAILY_COLORS.length)];
       const hoursAgo=Math.floor(Math.random()*8)+1;
       const post={id:'daily-'+g.id+'-'+Date.now(),nick,color,body:msg,ts:now-hoursAgo*3600e3,likes:Math.floor(Math.random()*3),gameId:g.id,pinHash:''};
