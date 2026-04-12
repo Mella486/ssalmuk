@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b0c0e">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230b0c0e' width='100' height='100'/><text y='.9em' font-size='90'>🌾</text></svg>">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-192.png">
 <meta name="google-site-verification" content="SXVf-m8jIWeAUG0y9I19GzX5hSdY1vUqVhLyyeK1V_g" />
 
 <!-- ════════════════════════════════════
@@ -699,14 +700,14 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   <div class="footer-logo">🌾 쌀먹지수</div>
   <div class="footer-copy">
     © 2026 쌀먹지수 · 게임별 쌀먹 시급 커뮤니티 랭킹<br>
-    문의: <a href="mailto:ssalmukindex@gmail.com">ssalmukindex@gmail.com</a><br>
+    문의: <a href="/cdn-cgi/l/email-protection#b4c7c7d5d8d9c1dfdddad0d1ccf4d3d9d5ddd89ad7dbd9"><span class="__cf_email__" data-cfemail="582b2b3934352d3331363c3d20183f35393134763b3735">[email&#160;protected]</span></a><br>
     본 사이트의 시급 정보는 유저 제보 기반이며, 실제 수익을 보장하지 않습니다.
   </div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── FIREBASE 초기화 ──
 const firebaseConfig = {
   apiKey: "AIzaSyCyFs3vedpZtbPdiLLKNoSLz_S23y-H-tE",
@@ -2413,6 +2414,7 @@ const DAILY_NICKS_BY_STANCE={
   question:['오늘도궁금','시급토론러','데이터찾는중','루트질문러','진짜얼마벌림']
 };
 const DAILY_COLORS=['#fb923c','#60a5fa','#a78bfa','#4ade80','#f87171','#22d3ee','#c6f135','#fbbf24','#e879f9','#38bdf8'];
+const DAILY_NICKS=Object.values(DAILY_NICKS_BY_STANCE).flat();
 
 const DAILY_TAG_CONTEXT={
   'MMORPG':{
@@ -2646,12 +2648,4 @@ window.addEventListener('popstate',()=>{
     attachAnalyticsListeners();
     trackPageEntry();
     trackViewOnce('main_chart', {content_type:'chart', content_name:'main_wage_chart'});
-    trackViewOnce('predict_section', {content_type:'section', content_name:'new_release_predictions'});
-  }catch(e){console.error('render error:',e);}
-  refreshAdVisibility(document);
-  watchAdSlot(document.getElementById('adSlot1'),{tries:24,interval:500});
-  if(!navigator.onLine)showOfflineNotice();
-})();
-</script>
-</body>
-</html>
+    trackViewOnce('predict_section', {content_type:'section', content_name:'new_releas
