@@ -222,6 +222,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <script>Chart.register(ChartDataLabels);</script>
@@ -604,6 +605,98 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 .mypost-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);}
 .reply-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(167,139,250,.12);color:#a78bfa;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
 @media(min-width:600px){.notif-sheet{max-width:500px;border-radius:16px;margin-bottom:20px;}}
+
+/* ════ 인증 시스템 CSS ════ */
+.comm-tab-bar{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.comm-tab{flex:1;text-align:center;font-size:12px;font-weight:700;padding:9px 4px;cursor:pointer;color:var(--muted);border:none;background:transparent;border-bottom:2px solid transparent;font-family:'Noto Sans KR',sans-serif;-webkit-tap-highlight-color:transparent;transition:color .15s,border-color .15s;}
+.comm-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.comm-panel{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.comm-panel.cpanel-hidden{display:none!important;}
+.cert-posts{flex:1;overflow-y:auto;padding:10px var(--px) 16px;}
+.hof-posts{flex:1;overflow-y:auto;padding:10px var(--px) 16px;}
+/* 게임 카드 하단 */
+.card-king-strip{background:rgba(198,241,53,.05);border:1px solid rgba(198,241,53,.15);border-radius:8px;padding:6px 9px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.card-king-strip:active{opacity:.8;}
+.king-strip-row{display:flex;align-items:center;justify-content:space-between;}
+.king-strip-left{display:flex;align-items:center;gap:6px;}
+.king-strip-badge{font-size:10px;font-weight:700;color:rgba(198,241,53,.75);}
+.king-strip-name{font-size:12px;font-weight:700;color:var(--text);}
+.king-strip-wage{font-size:12px;font-weight:700;color:var(--accent);margin-left:4px;}
+.king-strip-memo{font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.king-strip-dday{font-size:10px;font-weight:700;color:#ef9f27;flex-shrink:0;}
+.king-strip-cnt{font-size:9px;color:var(--muted);text-align:right;margin-top:2px;}
+.king-strip-empty{background:var(--bg3);border:1.5px dashed rgba(255,255,255,.1);border-radius:8px;padding:7px 10px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;-webkit-tap-highlight-color:transparent;}
+.card-action-row{display:flex;gap:7px;margin-bottom:8px;}
+.card-talk-btn{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1.5px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;white-space:nowrap;flex-shrink:0;font-family:'Noto Sans KR',sans-serif;}
+.card-talk-btn:active{opacity:.7;}
+.card-talk-btn .chat-count{position:absolute;top:-4px;right:-6px;background:var(--accent);color:#0b0c0e;font-size:8px;font-weight:700;padding:1px 4px;border-radius:8px;line-height:1.2;min-width:14px;text-align:center;}
+.card-cert-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:rgba(198,241,53,.08);border:1px solid rgba(198,241,53,.25);border-radius:8px;padding:7px 10px;cursor:pointer;font-size:11px;font-weight:700;color:var(--accent);-webkit-tap-highlight-color:transparent;font-family:'Noto Sans KR',sans-serif;}
+.card-cert-btn:active{opacity:.7;}
+/* 인증 아이템 */
+.cert-king-card{background:rgba(198,241,53,.06);border:1px solid rgba(198,241,53,.2);border-radius:10px;padding:12px;margin-bottom:10px;}
+.cert-king-badge{font-size:10px;font-weight:700;color:rgba(198,241,53,.75);margin-bottom:7px;display:flex;align-items:center;gap:4px;}
+.cert-king-dday{font-size:9px;color:#ef9f27;font-weight:700;background:rgba(239,159,39,.1);border:1px solid rgba(239,159,39,.25);border-radius:3px;padding:1px 6px;margin-left:auto;}
+.cert-row{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+.cert-avatar{width:30px;height:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.cert-av-king{border:1px solid rgba(198,241,53,.3);color:var(--accent);}
+.cert-av-normal{border:1px solid rgba(255,255,255,.1);color:var(--muted);}
+.cert-nick{font-size:13px;font-weight:700;color:var(--text);}
+.cert-wages{display:flex;gap:5px;margin-top:2px;}
+.cert-wage-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.cwp-exp{background:rgba(198,241,53,.12);color:var(--accent);}
+.cwp-beg{background:rgba(96,165,250,.1);color:#60a5fa;}
+.cert-memo-txt{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0;}
+.cert-img-wrap{width:100%;border-radius:7px;overflow:hidden;cursor:pointer;background:var(--bg3);border:1px solid rgba(255,255,255,.08);margin-bottom:7px;}
+.cert-img-wrap img{width:100%;display:block;max-height:220px;object-fit:cover;}
+.cert-img-placeholder{height:50px;display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:var(--muted);}
+.cert-foot{display:flex;align-items:center;justify-content:space-between;}
+.cert-helpful-btn{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;color:var(--muted);font-family:'Noto Sans KR',sans-serif;-webkit-tap-highlight-color:transparent;}
+.cert-helpful-btn.liked{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3);color:var(--green);}
+.cert-item-wrap{padding:10px 0;border-bottom:1px solid var(--border);}
+.cert-item-wrap:last-of-type{border-bottom:none;}
+.cert-write-trigger{width:100%;margin-top:10px;background:rgba(198,241,53,.06);border:1.5px dashed rgba(198,241,53,.2);border-radius:8px;padding:11px;font-size:12px;font-weight:700;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;}
+/* 인증 작성 오버레이 */
+.cert-form-overlay{display:none;position:fixed;inset:0;z-index:350;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;}
+.cert-form-overlay.open{display:flex;}
+.cert-form-sheet{background:var(--bg2);border:1px solid var(--border2);border-radius:16px 16px 0 0;padding:0;width:100%;max-height:88vh;overflow-y:auto;}
+.cert-form-handle{width:36px;height:4px;background:rgba(255,255,255,.14);border-radius:2px;margin:14px auto 0;}
+.cert-form-title{font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--accent);padding:12px var(--px) 0;}
+.cert-form-sub{font-size:11px;color:var(--muted);padding:4px var(--px) 12px;}
+.cert-form-body{padding:0 var(--px) calc(24px + env(safe-area-inset-bottom));}
+.cert-input-row{display:flex;gap:8px;margin-bottom:10px;}
+.cert-input-group{flex:1;}
+.cert-input-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;display:block;}
+.cert-wage-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:20px;font-weight:700;text-align:center;outline:none;font-family:'Noto Sans KR',sans-serif;-webkit-appearance:none;}
+.cert-wage-input:focus{border-color:rgba(198,241,53,.4);}
+.cert-memo-ta{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Noto Sans KR',sans-serif;resize:none;margin-bottom:10px;}
+.cert-memo-ta:focus{border-color:rgba(198,241,53,.4);}
+.cert-img-upload-btn{width:100%;background:var(--bg3);border:1.5px dashed rgba(255,255,255,.18);border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-bottom:10px;-webkit-tap-highlight-color:transparent;}
+.cert-img-upload-btn svg{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.cert-img-upload-txt{font-size:12px;color:var(--muted);font-weight:500;}
+.cert-img-prev-wrap{width:100%;border-radius:8px;overflow:hidden;border:1px solid rgba(198,241,53,.25);margin-bottom:10px;position:relative;}
+.cert-img-prev-wrap img{width:100%;display:block;max-height:200px;object-fit:cover;}
+.cert-img-prev-remove{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;cursor:pointer;}
+.cert-progress-wrap{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:10px;display:none;}
+.cert-progress-bar{height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .3s;}
+.cert-submit-btn{width:100%;background:var(--accent);color:#0b0c0e;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.cert-submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+/* HOF */
+.hof-header-box{text-align:center;padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px;}
+.hof-title{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--accent);}
+.hof-sub-txt{font-size:11px;color:var(--muted);margin-top:3px;}
+.hof-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.hof-item:last-child{border-bottom:none;}
+.hof-month-txt{font-size:11px;color:var(--muted);width:50px;flex-shrink:0;padding-top:1px;}
+.hof-crown-ico{font-size:14px;flex-shrink:0;}
+.hof-info{flex:1;min-width:0;}
+.hof-nick{font-size:13px;font-weight:700;color:var(--text);}
+.hof-wage{font-size:12px;color:var(--accent);font-weight:700;margin-top:1px;}
+.hof-memo{font-size:11px;color:var(--muted);line-height:1.5;margin-top:3px;}
+.hof-help-cnt{font-size:10px;color:var(--muted);margin-top:2px;}
+.hof-empty-msg{text-align:center;padding:40px 0;color:var(--muted);font-size:13px;}
+/* 풀스크린 이미지 뷰어 */
+.cert-fullimg-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;padding:20px;}
+@media(min-width:600px){.cert-form-sheet{max-width:500px;border-radius:16px;margin-bottom:20px;}}
 </style>
 </head>
 <body>
@@ -734,19 +827,68 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
       </div>
       <div class="comm-stats-bar" id="cStatsBar"></div>
     </div>
-    <div class="comm-posts" id="commPosts"></div>
-    <div class="comm-write">
-      <div class="write-nick-row">
-        <input class="wni" id="writeNick" placeholder="닉네임" maxlength="12"/>
-        <input class="wni" id="writePin" type="password" placeholder="PIN 4자리" maxlength="4" inputmode="numeric" style="width:100px;flex:none;"/>
+    <div class="comm-tab-bar">
+      <button class="comm-tab active" id="ctab-free" onclick="switchCommTab('free')">자유 토론</button>
+      <button class="comm-tab" id="ctab-cert" onclick="switchCommTab('cert')">스샷/인증</button>
+      <button class="comm-tab" id="ctab-hof" onclick="switchCommTab('hof')">명예의 전당</button>
+    </div>
+    <div class="comm-panel" id="panel-free">
+      <div class="comm-posts" id="commPosts"></div>
+      <div class="comm-write">
+        <div class="write-nick-row">
+          <input class="wni" id="writeNick" placeholder="닉네임" maxlength="12"/>
+          <input class="wni" id="writePin" type="password" placeholder="PIN 4자리" maxlength="4" inputmode="numeric" style="width:100px;flex:none;"/>
+        </div>
+        <div class="write-row">
+          <textarea class="write-ta" id="writeTa" rows="1" placeholder="자유롭게 떠들어보세요 👋" oninput="autoResize(this)"></textarea>
+          <button class="write-send" onclick="submitPost()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <div class="write-anon" id="writeAnonHint">닉네임·PIN은 수정/삭제에 사용됩니다</div>
       </div>
-      <div class="write-row">
-        <textarea class="write-ta" id="writeTa" rows="1" placeholder="자유롭게 떠들어보세요 👋" oninput="autoResize(this)"></textarea>
-        <button class="write-send" onclick="submitPost()">
-          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+    </div>
+    <div class="comm-panel cpanel-hidden" id="panel-cert">
+      <div class="cert-posts" id="certPosts"></div>
+    </div>
+    <div class="comm-panel cpanel-hidden" id="panel-hof">
+      <div class="hof-posts" id="hofPosts"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 인증 작성 오버레이 -->
+<div class="cert-form-overlay" id="certFormOverlay" onclick="closeCertFormOut(event)">
+  <div class="cert-form-sheet">
+    <div class="cert-form-handle"></div>
+    <div class="cert-form-title">🌾 쌀먹 인증 올리기</div>
+    <div class="cert-form-sub" id="certFormGameName">스샷 필수 · 하루 1회 · 닉네임 랜덤 생성</div>
+    <div class="cert-form-body">
+      <div class="cert-input-row">
+        <div class="cert-input-group">
+          <label class="cert-input-label">고수 기준 (만원)</label>
+          <input class="cert-wage-input" id="certExpInput" type="number" step="0.1" placeholder="4.1" inputmode="decimal"/>
+        </div>
+        <div class="cert-input-group">
+          <label class="cert-input-label">초보 기준 (만원)</label>
+          <input class="cert-wage-input" id="certBegInput" type="number" step="0.1" placeholder="0.7" inputmode="decimal"/>
+        </div>
       </div>
-      <div class="write-anon" id="writeAnonHint">닉네임·PIN은 수정/삭제에 사용됩니다</div>
+      <textarea class="cert-memo-ta" id="certMemoInput" rows="2" placeholder="루트, 조건, 주의사항 한 줄 (필수)"></textarea>
+      <input type="file" id="certFileInput" accept="image/*" style="display:none" onchange="onCertFileSelect(this)"/>
+      <div class="cert-img-upload-btn" id="certUploadBtn" onclick="document.getElementById('certFileInput').click()">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span class="cert-img-upload-txt">거래내역 · 마일리지 스샷 첨부 (필수)</span>
+      </div>
+      <div class="cert-img-prev-wrap" id="certImgPrevWrap" style="display:none">
+        <img id="certImgPrevImg" src="" alt="미리보기"/>
+        <div class="cert-img-prev-remove" onclick="removeCertImg()">✕</div>
+      </div>
+      <div class="cert-progress-wrap" id="certProgressWrap">
+        <div class="cert-progress-bar" id="certProgressBar"></div>
+      </div>
+      <button class="cert-submit-btn" id="certSubmitBtn" onclick="submitCert()">인증 등록하기</button>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px;line-height:1.7;">닉네임 랜덤 생성 · 하루 1회 제한<br>이달 말 이미지 자동 삭제 · 인증왕은 명예의 전당 등재</div>
     </div>
   </div>
 </div>
@@ -794,6 +936,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const storage = firebase.storage();
 
 // ── 기본 데이터 ──
 const DEFAULT=[
@@ -1117,6 +1260,7 @@ function getWageChange(gid,currentExpert){
 }
 
 let games=[],posts={},myVotes={},myPostLikes={},pendingGames={},chart=null,commGameId=null,replyTarget=null;
+let certs={},myCertHelpful={},_commTab='free',_certFormGameId=null,_certImgFile=null;
 
 // ── 유사도 검사 ──
 const normName=s=>s.toLowerCase().replace(/[\s\-\_\.]/g,'');
@@ -1461,10 +1605,16 @@ function renderCards(){
         <div class="wage-row"><span class="wage-lbl">초보</span><div class="bar-wrap"><div class="bar beg" style="width:${Math.round(g.beginner/maxW*100)}%"></div></div><span class="wage-val">${fmtW(g.beginner)}</span></div>
         <div class="wage-row"><span class="wage-lbl">고수</span><div class="bar-wrap"><div class="bar exp" style="width:${Math.round(g.expert/maxW*100)}%"></div></div><span class="wage-val exp">${fmtW(g.expert)}${wcHtml}</span></div>
       </div>
-      <div class="card-chat-row">
-        <button class="card-chat-btn g-${act}" onclick="openComm('${g.id}')">💬<span class="chat-count">${fmtCount(pc)}</span></button>
-        <span class="card-quote" data-gid="${g.id}">${allQuotes(g.id,0)}</span>
-        <button class="card-say-btn" onclick="openComm('${g.id}')">한마디 하기</button>
+      ${buildKingStripHtml(g)}
+      <div class="card-action-row">
+        <button class="card-talk-btn" onclick="openComm('${g.id}')" style="position:relative;">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          토론<span class="chat-count">${fmtCount(pc)}</span>
+        </button>
+        <button class="card-cert-btn" onclick="openCertSheet('${g.id}')">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,12 14,4"/></svg>
+          인증하기
+        </button>
       </div>
       <div class="vote-row">
         <button class="vote-btn vt-up ${myV==='up'?'voted-up':''}" onclick="vote('${g.id}','up')"><span class="vote-icon"></span><span>${g.upVotes.toLocaleString()} 정확해요</span></button>
@@ -1701,11 +1851,23 @@ function openComm(gid){
   trackChatEntry('existing_game', gid, g.name);
   document.getElementById('cIcon').textContent=g.icon||'🎮';
   document.getElementById('cTitle').textContent=g.name+' 커뮤니티';
+  switchCommTab('free');
   renderCommStats(gid);renderPosts(gid);
   document.getElementById('writeTa').value='';
   const savedNick=lsGet('ssalmuk_nick','');
   document.getElementById('writeNick').value=savedNick;
   document.getElementById('writePin').value='';
+  document.getElementById('commOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  history.pushState('modal','','');
+}
+function openCertSheet(gid){
+  commGameId=gid;
+  const g=games.find(x=>x.id===gid);if(!g)return;
+  document.getElementById('cIcon').textContent=g.icon||'🎮';
+  document.getElementById('cTitle').textContent=g.name+' 커뮤니티';
+  switchCommTab('cert');
+  renderCommStats(gid);
   document.getElementById('commOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   history.pushState('modal','','');
@@ -2103,6 +2265,340 @@ function closeNotif(){
 
 function closeNotifOut(e){
   if(e.target===document.getElementById('notifOverlay'))closeNotif();
+}
+
+
+// ════════════════════════════════════════
+// 인증 시스템 (스샷/인증왕/명예의 전당)
+// ════════════════════════════════════════
+function getCurrentMonth(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+function getCertDaysLeft(){
+  const d=new Date();
+  const last=new Date(d.getFullYear(),d.getMonth()+1,0);
+  return last.getDate()-d.getDate();
+}
+function getMonthKing(gid){
+  const month=getCurrentMonth();
+  const list=(certs[gid]||[]).filter(c=>c.month===month);
+  if(!list.length)return null;
+  return list.reduce((best,c)=>c.helpfulCount>best.helpfulCount?c:best,list[0]);
+}
+function getCertCount(gid){
+  return (certs[gid]||[]).filter(c=>c.month===getCurrentMonth()).length;
+}
+async function loadCerts(){
+  try{
+    const month=getCurrentMonth();
+    const snap=await db.collection('certs').where('month','==',month).get();
+    certs={};
+    snap.docs.forEach(d=>{
+      const data={...d.data(),id:d.id};
+      if(!certs[data.gameId])certs[data.gameId]=[];
+      certs[data.gameId].push(data);
+    });
+    myCertHelpful=lsGet('ssalmuk_cert_helpful',{});
+  }catch(e){console.error('loadCerts error:',e);certs={};}
+}
+function buildKingStripHtml(g){
+  const king=getMonthKing(g.id);
+  const cnt=getCertCount(g.id);
+  const dl=getCertDaysLeft();
+  const dLabel=dl===0?'D-Day':'D-'+dl;
+  if(!king){
+    return `<div class="king-strip-empty" onclick="openCertSheet('${g.id}')">
+      <span style="font-size:11px;color:var(--muted);">👑 이달의 인증왕 — 아직 없어요</span>
+      <span style="font-size:10px;color:var(--accent);font-weight:700;">첫 인증하기 →</span>
+    </div>`;
+  }
+  const memoStr=(king.memo||'').slice(0,36)+(king.memo&&king.memo.length>36?'…':'');
+  return `<div class="card-king-strip" onclick="openCertSheet('${g.id}')">
+    <div class="king-strip-row">
+      <div class="king-strip-left">
+        <span style="font-size:14px;">👑</span>
+        <div>
+          <div class="king-strip-badge">이달의 인증왕</div>
+          <div><span class="king-strip-name">${escHtml(king.nick)}</span><span class="king-strip-wage">${king.expertWage}만원/h</span></div>
+        </div>
+      </div>
+      <div style="flex-shrink:0;text-align:right;">
+        <div class="king-strip-dday">${dLabel}</div>
+        <div class="king-strip-cnt">인증 ${cnt}건</div>
+      </div>
+    </div>
+    ${memoStr?`<div class="king-strip-memo">${escHtml(memoStr)}</div>`:''}
+  </div>`;
+}
+function switchCommTab(tab){
+  _commTab=tab;
+  ['free','cert','hof'].forEach(t=>{
+    const panel=document.getElementById('panel-'+t);
+    const btn=document.getElementById('ctab-'+t);
+    if(panel)panel.classList.toggle('cpanel-hidden',t!==tab);
+    if(btn)btn.classList.toggle('active',t===tab);
+  });
+  if(tab==='cert')renderCertPanel(commGameId);
+  else if(tab==='hof')renderHofPanel(commGameId);
+}
+function renderCertPanel(gid){
+  const el=document.getElementById('certPosts');
+  if(!el||!gid)return;
+  const month=getCurrentMonth();
+  const list=(certs[gid]||[]).filter(c=>c.month===month).sort((a,b)=>b.helpfulCount-a.helpfulCount);
+  const dl=getCertDaysLeft();
+  const dLabel=dl===0?'D-Day':'D-'+dl;
+  let html='';
+  if(list.length){
+    const king=list[0];
+    const ki=king.nick?king.nick.slice(0,1):'?';
+    html+=`<div class="cert-king-card">
+      <div class="cert-king-badge">👑 현재 1위 · 인증왕 도전 중<span class="cert-king-dday">${dLabel}</span></div>
+      <div class="cert-row">
+        <div class="cert-avatar cert-av-king">${escHtml(ki)}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="cert-nick">${escHtml(king.nick)}</div>
+          <div class="cert-wages">
+            <span class="cert-wage-pill cwp-exp">고수 ${king.expertWage}만원</span>
+            <span class="cert-wage-pill cwp-beg">초보 ${king.beginnerWage}만원</span>
+          </div>
+        </div>
+        <div style="flex-shrink:0;font-size:10px;color:var(--green);font-weight:700;text-align:right;">도움됐어요<br>${king.helpfulCount}표</div>
+      </div>
+      ${king.memo?`<div class="cert-memo-txt">${escHtml(king.memo)}</div>`:''}
+      ${king.imageUrl?`<div class="cert-img-wrap" onclick="openCertImg('${king.imageUrl}')"><img src="${king.imageUrl}" loading="lazy" alt="인증 스샷"/></div>`:`<div class="cert-img-wrap"><div class="cert-img-placeholder">📷 스샷 없음</div></div>`}
+      <div class="cert-foot">
+        <span class="cert-time">${timeAgo(king.ts)}</span>
+        <button class="cert-helpful-btn${myCertHelpful[king.id]?' liked':''}" onclick="toggleCertHelpful('${king.id}')">
+          ${myCertHelpful[king.id]?'❤️':'🤍'} 도움됐어요 ${king.helpfulCount}
+        </button>
+      </div>
+    </div>`;
+    list.slice(1).forEach(c=>{
+      const ci=c.nick?c.nick.slice(0,1):'?';
+      html+=`<div class="cert-item-wrap">
+        <div class="cert-row" style="margin-bottom:5px;">
+          <div class="cert-avatar cert-av-normal">${escHtml(ci)}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="cert-nick">${escHtml(c.nick)}</div>
+            <div class="cert-wages">
+              <span class="cert-wage-pill cwp-exp">고수 ${c.expertWage}만원</span>
+              <span class="cert-wage-pill cwp-beg">초보 ${c.beginnerWage}만원</span>
+            </div>
+          </div>
+        </div>
+        ${c.memo?`<div class="cert-memo-txt">${escHtml(c.memo)}</div>`:''}
+        ${c.imageUrl?`<div class="cert-img-wrap" onclick="openCertImg('${c.imageUrl}')"><img src="${c.imageUrl}" loading="lazy" alt="인증 스샷"/></div>`:''}
+        <div class="cert-foot">
+          <span class="cert-time">${timeAgo(c.ts)}</span>
+          <button class="cert-helpful-btn${myCertHelpful[c.id]?' liked':''}" onclick="toggleCertHelpful('${c.id}')">
+            ${myCertHelpful[c.id]?'❤️':'🤍'} 도움됐어요 ${c.helpfulCount}
+          </button>
+        </div>
+      </div>`;
+    });
+  }else{
+    html=`<div style="text-align:center;padding:32px 0;color:var(--muted);font-size:13px;line-height:1.7;">아직 인증이 없어요.<br>이달의 인증왕에 도전해보세요!</div>`;
+  }
+  html+=`<button class="cert-write-trigger" onclick="openCertForm()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    내 쌀먹 인증 올리기
+  </button>`;
+  el.innerHTML=html;
+}
+function renderHofPanel(gid){
+  const el=document.getElementById('hofPosts');
+  if(!el||!gid)return;
+  const g=games.find(x=>x.id===gid);
+  el.innerHTML='<div style="text-align:center;padding:20px 0;font-size:11px;color:var(--muted);">불러오는 중...</div>';
+  db.collection('cert_hof').doc(gid).get().then(doc=>{
+    const entries=doc.exists?(doc.data().entries||[]):[];
+    if(!entries.length){
+      el.innerHTML=`<div class="hof-header-box"><div class="hof-title">🏆 역대 쌀먹왕</div><div class="hof-sub-txt">${g?.name||gid}</div></div><div class="hof-empty-msg">아직 등재된 인증왕이 없어요.<br>이달 첫 번째 역사를 만들어보세요!</div>`;
+      return;
+    }
+    const CROWNS=['👑','🥈','🥉'];
+    let html=`<div class="hof-header-box"><div class="hof-title">🏆 역대 쌀먹왕</div><div class="hof-sub-txt">${g?.name||gid} · 매월 말 이미지 삭제 · 수치·메모 영구 보존</div></div>`;
+    [...entries].reverse().forEach((e,i)=>{
+      html+=`<div class="hof-item">
+        <div class="hof-month-txt">${e.month}</div>
+        <div class="hof-crown-ico">${CROWNS[i]||'🏅'}</div>
+        <div class="hof-info">
+          <div class="hof-nick">${escHtml(e.nick)}</div>
+          <div class="hof-wage">${e.expertWage}만원/h</div>
+          ${e.memo?`<div class="hof-memo">${escHtml(e.memo)}</div>`:''}
+          <div class="hof-help-cnt">도움됐어요 ${e.helpfulCount}표</div>
+        </div>
+      </div>`;
+    });
+    el.innerHTML=html;
+  }).catch(()=>{el.innerHTML='<div class="hof-empty-msg">불러오기 실패. 잠시 후 다시 시도해주세요.</div>';});
+}
+function openCertForm(){
+  const gid=commGameId;if(!gid)return;
+  const month=getCurrentMonth();
+  const submitKey='ssalmuk_cert_submitted_'+gid+'_'+month;
+  if(lsGet(submitKey,false)){showToast('이미 이달에 인증하셨습니다.');return;}
+  _certFormGameId=gid;_certImgFile=null;
+  const g=games.find(x=>x.id===gid);
+  document.getElementById('certFormGameName').textContent=(g?.name||gid)+' · 스샷 필수 · 하루 1회';
+  document.getElementById('certExpInput').value='';
+  document.getElementById('certBegInput').value='';
+  document.getElementById('certMemoInput').value='';
+  document.getElementById('certFileInput').value='';
+  document.getElementById('certUploadBtn').style.display='flex';
+  document.getElementById('certImgPrevWrap').style.display='none';
+  document.getElementById('certProgressWrap').style.display='none';
+  document.getElementById('certProgressBar').style.width='0';
+  document.getElementById('certSubmitBtn').disabled=false;
+  document.getElementById('certSubmitBtn').textContent='인증 등록하기';
+  document.getElementById('certFormOverlay').classList.add('open');
+  history.pushState('modal','','');
+}
+function closeCertForm(){
+  document.getElementById('certFormOverlay').classList.remove('open');
+  if(history.state==='modal')history.back();
+}
+function closeCertFormOut(e){if(e.target===document.getElementById('certFormOverlay'))closeCertForm();}
+function onCertFileSelect(input){
+  const file=input.files[0];if(!file)return;
+  if(!file.type.startsWith('image/')){showToast('⚠️ 이미지 파일만 첨부 가능합니다.');return;}
+  _certImgFile=file;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    document.getElementById('certImgPrevImg').src=ev.target.result;
+    document.getElementById('certUploadBtn').style.display='none';
+    document.getElementById('certImgPrevWrap').style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeCertImg(){
+  _certImgFile=null;
+  document.getElementById('certFileInput').value='';
+  document.getElementById('certImgPrevWrap').style.display='none';
+  document.getElementById('certUploadBtn').style.display='flex';
+}
+function compressCertImage(file){
+  return new Promise(resolve=>{
+    const canvas=document.createElement('canvas');
+    const img=new Image();
+    img.onload=()=>{
+      const maxPx=1200;let w=img.width,h=img.height;
+      if(w>maxPx){h=Math.round(h*maxPx/w);w=maxPx;}
+      if(h>maxPx){w=Math.round(w*maxPx/h);h=maxPx;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      let q=0.82;
+      const tryQ=()=>{canvas.toBlob(blob=>{if(!blob||q<=0.3)resolve(blob||null);else if(blob.size<=400*1024)resolve(blob);else{q-=0.08;tryQ();};},'image/jpeg',q);};
+      tryQ();
+    };
+    img.onerror=()=>resolve(null);
+    img.src=URL.createObjectURL(file);
+  });
+}
+async function submitCert(){
+  const gid=_certFormGameId;if(!gid)return;
+  const expVal=parseFloat(document.getElementById('certExpInput').value);
+  const begVal=parseFloat(document.getElementById('certBegInput').value)||0;
+  const memo=document.getElementById('certMemoInput').value.trim();
+  if(!expVal||expVal<=0){showToast('⚠️ 고수 기준 시급을 입력해주세요.');return;}
+  if(!memo){showToast('⚠️ 루트/조건 한 줄 설명을 입력해주세요.');return;}
+  if(!_certImgFile){showToast('⚠️ 스샷을 첨부해주세요.');return;}
+  const month=getCurrentMonth();
+  const submitKey='ssalmuk_cert_submitted_'+gid+'_'+month;
+  if(lsGet(submitKey,false)){showToast('이미 이달에 인증하셨습니다.');return;}
+  const btn=document.getElementById('certSubmitBtn');
+  btn.disabled=true;btn.textContent='등록 중...';
+  const pw=document.getElementById('certProgressWrap');
+  const pb=document.getElementById('certProgressBar');
+  pw.style.display='block';pb.style.width='10%';
+  try{
+    const blob=await compressCertImage(_certImgFile);
+    if(!blob){showToast('⚠️ 이미지 처리 실패. 다시 시도해주세요.');btn.disabled=false;btn.textContent='인증 등록하기';pw.style.display='none';return;}
+    pb.style.width='30%';
+    const fp=getFingerprint();const ts=Date.now();
+    const path='certs/'+gid+'/'+month+'_'+ts+'_'+fp+'.jpg';
+    const ref=storage.ref(path);
+    const task=ref.put(blob,{contentType:'image/jpeg'});
+    await new Promise((resolve,reject)=>{
+      task.on('state_changed',
+        snap=>{pb.style.width=Math.round(30+(snap.bytesTransferred/snap.totalBytes)*50)+'%';},
+        reject,resolve
+      );
+    });
+    pb.style.width='85%';
+    const imageUrl=await ref.getDownloadURL();
+    const nick=randNick();const color=randColor();
+    const newCert={id:fp+'_'+gid+'_'+month,gameId:gid,gameName:games.find(x=>x.id===gid)?.name||gid,fp,nick,color,expertWage:Math.round(expVal*10)/10,beginnerWage:Math.round(begVal*10)/10,memo,imageUrl,imagePath:path,helpfulCount:0,ts,month};
+    await db.collection('certs').doc(newCert.id).set(newCert,{merge:true});
+    if(!certs[gid])certs[gid]=[];
+    certs[gid]=certs[gid].filter(c=>!(c.fp===fp&&c.month===month));
+    certs[gid].push(newCert);
+    pb.style.width='100%';
+    lsSet(submitKey,true);
+    const act=lsGet('ssalmuk_activity',{votes:{},posts:[]});
+    if(!act.certs)act.certs=[];
+    act.certs=act.certs.filter(c=>c.gameId!==gid);
+    act.certs.unshift({gameId:gid,gameName:newCert.gameName,expertWage:newCert.expertWage,month,ts});
+    if(act.certs.length>20)act.certs=act.certs.slice(0,20);
+    lsSet('ssalmuk_activity',act);
+    showToast('✅ 인증이 등록됐습니다!');
+    closeCertForm();
+    renderCertPanel(gid);
+    renderCards();
+  }catch(e){
+    console.error('submitCert error:',e);
+    showToast('⚠️ 등록 중 오류가 발생했습니다. 다시 시도해주세요.');
+  }finally{
+    btn.disabled=false;btn.textContent='인증 등록하기';
+    pw.style.display='none';pb.style.width='0';
+  }
+}
+async function toggleCertHelpful(certId){
+  const gid=commGameId;if(!gid)return;
+  const cert=(certs[gid]||[]).find(c=>c.id===certId);if(!cert)return;
+  const liked=!!myCertHelpful[certId];
+  if(liked){cert.helpfulCount=Math.max(0,cert.helpfulCount-1);delete myCertHelpful[certId];}
+  else{cert.helpfulCount++;myCertHelpful[certId]=1;}
+  lsSet('ssalmuk_cert_helpful',myCertHelpful);
+  try{await db.collection('certs').doc(certId).update({helpfulCount:cert.helpfulCount});}catch(e){}
+  renderCertPanel(gid);renderCards();
+}
+function openCertImg(url){
+  const ov=document.createElement('div');
+  ov.className='cert-fullimg-overlay';
+  ov.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:88vh;border-radius:8px;object-fit:contain;"/><div style="position:absolute;top:16px;right:16px;width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#fff;">✕</div>';
+  ov.onclick=()=>ov.remove();
+  document.body.appendChild(ov);
+}
+async function checkAndArchiveMonth(){
+  const currentMonth=getCurrentMonth();
+  const lastChecked=lsGet('ssalmuk_cert_archive_check','');
+  if(lastChecked===currentMonth)return;
+  const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-1);
+  const prevMonth=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  try{
+    const snap=await db.collection('certs').where('month','==',prevMonth).get();
+    if(snap.empty){lsSet('ssalmuk_cert_archive_check',currentMonth);return;}
+    const prevCerts={};
+    snap.docs.forEach(d=>{const data=d.data();if(!prevCerts[data.gameId])prevCerts[data.gameId]=[];prevCerts[data.gameId].push(data);});
+    for(const gid of Object.keys(prevCerts)){
+      const hofRef=db.collection('cert_hof').doc(gid);
+      const hofDoc=await hofRef.get();
+      const existing=hofDoc.exists?(hofDoc.data().entries||[]):[];
+      if(existing.some(e=>e.month===prevMonth))continue;
+      const winner=prevCerts[gid].reduce((best,c)=>c.helpfulCount>best.helpfulCount?c:best,prevCerts[gid][0]);
+      existing.push({month:prevMonth,nick:winner.nick,expertWage:winner.expertWage,beginnerWage:winner.beginnerWage,memo:winner.memo||'',helpfulCount:winner.helpfulCount});
+      if(existing.length>24)existing.shift();
+      await hofRef.set({entries:existing},{merge:true}).catch(()=>{});
+      // 이미지 제외 cert 문서 삭제 (Storage 파일은 별도 관리)
+      const batch=db.batch();
+      prevCerts[gid].forEach(c=>batch.delete(db.collection('certs').doc(c.id)));
+      await batch.commit().catch(()=>{});
+    }
+    lsSet('ssalmuk_cert_archive_check',currentMonth);
+  }catch(e){console.error('checkAndArchiveMonth error:',e);}
 }
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -3043,6 +3539,8 @@ window.addEventListener('popstate',()=>{
   const ro=document.getElementById('reportOverlay');
   const co=document.getElementById('commOverlay');
   const no=document.getElementById('notifOverlay');
+  const cfo=document.getElementById('certFormOverlay');
+  if(cfo&&cfo.classList.contains('open')){cfo.classList.remove('open');return;}
   if(ro&&ro.classList.contains('open')){ro.classList.remove('open');document.body.style.overflow='';}
   if(co&&co.classList.contains('open')){co.classList.remove('open');document.body.style.overflow='';commGameId=null;}
   if(no&&no.classList.contains('open')){no.classList.remove('open');document.body.style.overflow='';}
@@ -3052,11 +3550,13 @@ window.addEventListener('popstate',()=>{
 (async()=>{
   try{
     await loadData();
+    await loadCerts();
     await loadPredictionVoteSummaries();
     await loadPredictionWageSummaries();
     await syncPredictionMigrations();
     await seedDailyChat();
     await seedDailyPredChat();
+    checkAndArchiveMonth().catch(()=>{});
   }catch(e){console.error('startup error:',e);}
   document.getElementById('loadingScreen').style.display='none';
   try{
