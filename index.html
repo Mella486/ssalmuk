@@ -2339,8 +2339,9 @@ function switchCommTab(tab){
     if(panel)panel.classList.toggle('cpanel-hidden',t!==tab);
     if(btn)btn.classList.toggle('active',t===tab);
   });
-  if(tab==='cert')renderCertPanel(commGameId);
-  else if(tab==='hof')renderHofPanel(commGameId);
+  if(tab==='cert') renderCertPanel(commGameId);
+  else if(tab==='hof') renderHofPanel(commGameId);
+  else if(tab==='free') { renderCommStats(commGameId); renderPosts(commGameId); } // ← 추가
 }
 function renderCertPanel(gid){
   const el=document.getElementById('certPosts');
