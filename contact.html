@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0c0e">
+<meta name="description" content="쌀먹지수 문의 — 기능 제안, 버그 신고, 제휴/광고 문의">
+<meta name="robots" content="index, follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-192.png">
+<link rel="canonical" href="https://ssalmukindex.com/contact.html">
+<title>문의하기 — 쌀먹지수</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0c0e;--bg2:#13141a;--bg3:#1c1e27;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --accent:#c6f135;--text:#f0f0f2;--muted:#7a7d8a;
+  --px:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.7;min-height:100vh;-webkit-text-size-adjust:100%;}
+header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 var(--px);display:flex;align-items:center;justify-content:space-between;height:50px;gap:8px;}
+.logo{display:flex;flex-direction:column;}
+.logo-main{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--accent);text-decoration:none;}
+.logo-sub{font-size:11px;color:var(--muted);}
+.back-btn{background:var(--bg3);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap;}
+.back-btn:hover{background:var(--bg2);}
+.page-wrap{max-width:640px;margin:0 auto;padding:24px var(--px) 60px;}
+.page-title{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--text);margin-bottom:8px;line-height:1.3;}
+.page-title .accent{color:var(--accent);}
+.page-sub{font-size:13.5px;color:var(--muted);margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);line-height:1.7;}
+
+.email-card{background:linear-gradient(135deg,rgba(198,241,53,.12),rgba(198,241,53,.04));border:1px solid rgba(198,241,53,.25);border-radius:14px;padding:24px 20px;text-align:center;margin-bottom:28px;}
+.email-ico{font-size:36px;margin-bottom:8px;}
+.email-label{font-size:12px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;}
+.email-addr{font-family:'Bebas Neue','Noto Sans KR',sans-serif;font-size:22px;color:var(--accent);font-weight:700;word-break:break-all;margin-bottom:12px;}
+.email-addr a{color:var(--accent);text-decoration:none;}
+.email-copy-btn{background:var(--accent);color:#0b0c0e;border:none;border-radius:8px;padding:10px 18px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.email-copy-btn:hover{opacity:.9;}
+.email-note{font-size:11px;color:var(--muted);margin-top:10px;}
+
+h2{font-family:'Black Han Sans',sans-serif;font-size:17px;color:var(--accent);margin:32px 0 14px;letter-spacing:.2px;}
+.inquiry-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.inquiry-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;}
+.inquiry-ico{font-size:22px;flex-shrink:0;line-height:1;}
+.inquiry-body{flex:1;min-width:0;}
+.inquiry-title{font-weight:700;color:var(--text);margin-bottom:4px;font-size:14px;}
+.inquiry-desc{color:var(--muted);font-size:12.5px;line-height:1.65;}
+
+.tip-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:16px 0;}
+.tip-title{font-weight:700;color:var(--accent);margin-bottom:10px;font-size:13.5px;}
+.tip-list{list-style:none;padding:0;margin:0;}
+.tip-list li{padding-left:20px;position:relative;margin-bottom:6px;font-size:13px;color:var(--text);line-height:1.65;}
+.tip-list li::before{content:"✓";position:absolute;left:0;top:0;color:var(--accent);font-weight:700;}
+
+.faq-item{border-bottom:1px solid var(--border);padding:14px 0;}
+.faq-item:last-child{border-bottom:none;}
+.faq-q{font-weight:700;color:var(--text);margin-bottom:6px;font-size:13.5px;}
+.faq-q::before{content:"Q. ";color:var(--accent);font-weight:700;}
+.faq-a{color:var(--muted);font-size:13px;line-height:1.7;padding-left:22px;}
+
+.response-notice{background:rgba(198,241,53,.06);border:1px dashed rgba(198,241,53,.3);border-radius:8px;padding:12px 14px;font-size:12.5px;color:var(--text);line-height:1.65;margin-top:20px;}
+.response-notice strong{color:var(--accent);}
+
+a{color:var(--accent);text-decoration:underline;text-underline-offset:2px;}
+.site-footer{padding:24px var(--px);text-align:center;border-top:1px solid var(--border);margin-top:40px;max-width:640px;margin-left:auto;margin-right:auto;}
+.footer-logo{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--accent);margin-bottom:4px;}
+.footer-links{display:flex;justify-content:center;gap:14px;margin:8px 0;font-size:11px;}
+.footer-links a{color:var(--muted);text-decoration:none;}
+.footer-copy{font-size:10px;color:var(--muted);line-height:1.6;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);color:#0b0c0e;padding:10px 20px;border-radius:8px;font-weight:700;font-size:13px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:200;}
+.toast.show{opacity:1;}
+@media(max-width:480px){.page-title{font-size:22px;}.email-addr{font-size:18px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <a href="/" class="logo-main">🌾 쌀먹지수</a>
+    <span class="logo-sub">게임별 시급 커뮤니티 랭킹</span>
+  </div>
+  <a href="/" class="back-btn">← 메인으로</a>
+</header>
+
+<main class="page-wrap">
+  <h1 class="page-title">문의<span class="accent">하기</span></h1>
+  <div class="page-sub">
+    쌀먹지수에 관한 모든 문의는 이메일로 받고 있습니다.<br>
+    피드백, 버그 신고, 광고/제휴 문의까지 무엇이든 환영합니다.
+  </div>
+
+  <div class="email-card">
+    <div class="email-ico">📧</div>
+    <div class="email-label">CONTACT EMAIL</div>
+    <div class="email-addr"><a href="mailto:ssalmukindex@gmail.com">ssalmukindex@gmail.com</a></div>
+    <button class="email-copy-btn" onclick="copyEmail()">📋 이메일 복사</button>
+    <div class="email-note">클릭 시 메일 앱이 열립니다</div>
+  </div>
+
+  <h2>문의 유형 안내</h2>
+  <div class="inquiry-list">
+    <div class="inquiry-item">
+      <div class="inquiry-ico">🐞</div>
+      <div class="inquiry-body">
+        <div class="inquiry-title">버그 신고</div>
+        <div class="inquiry-desc">사이트 오작동, 투표·알림·인증 관련 이상 증상, 모바일/브라우저 호환 문제 등을 제보해 주세요. 사용 중인 기기와 브라우저 정보를 함께 보내주시면 도움이 됩니다.</div>
+      </div>
+    </div>
+    <div class="inquiry-item">
+      <div class="inquiry-ico">💡</div>
+      <div class="inquiry-body">
+        <div class="inquiry-title">기능 제안</div>
+        <div class="inquiry-desc">"이런 기능이 있었으면 좋겠다" 싶은 아이디어가 있다면 자유롭게 보내주세요. 사용자의 제안을 우선 검토합니다.</div>
+      </div>
+    </div>
+    <div class="inquiry-item">
+      <div class="inquiry-ico">🎮</div>
+      <div class="inquiry-body">
+        <div class="inquiry-title">게임 등록 · 수정 요청</div>
+        <div class="inquiry-desc">신규 게임 등록, 게임 정보 오류 수정, 부적절한 데이터 삭제 요청을 보내주세요. 운영진 검토 후 반영합니다.</div>
+      </div>
+    </div>
+    <div class="inquiry-item">
+      <div class="inquiry-ico">🤝</div>
+      <div class="inquiry-body">
+        <div class="inquiry-title">제휴 · 광고 · 언론 취재</div>
+        <div class="inquiry-desc">배너 광고, 콘텐츠 제휴, 언론 인터뷰, 데이터 사용 등의 비즈니스 문의는 이메일로 회사/매체명과 함께 연락 주세요.</div>
+      </div>
+    </div>
+    <div class="inquiry-item">
+      <div class="inquiry-ico">🔐</div>
+      <div class="inquiry-body">
+        <div class="inquiry-title">개인정보 · 게시물 삭제</div>
+        <div class="inquiry-desc">본인이 작성한 게시물/댓글/제보의 삭제 요청, 개인정보 처리 관련 문의는 이메일로 접수해 주세요. 작성 시점과 내용을 함께 보내주시면 빠르게 처리됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>문의 전 확인해주세요</h2>
+  <div class="tip-box">
+    <div class="tip-title">📝 빠른 답변을 받으려면</div>
+    <ul class="tip-list">
+      <li>버그 제보 시 발생 상황, 사용 기기, 브라우저 정보를 함께 보내주세요</li>
+      <li>스크린샷을 첨부하면 해결 속도가 빨라집니다</li>
+      <li>게시물 삭제 요청은 작성 시점과 대략적인 내용을 함께 보내주세요</li>
+      <li>제휴·광고 문의는 회사명, 담당자, 연락처를 포함해 주세요</li>
+    </ul>
+  </div>
+
+  <h2>자주 묻는 질문</h2>
+  <div class="faq-item">
+    <div class="faq-q">회원 가입 없이 이용 가능한가요?</div>
+    <div class="faq-a">네. 쌀먹지수는 회원 가입 없이 모든 기능을 이용할 수 있습니다. 제보·투표·게시물 작성 시 닉네임과 PIN만 입력하면 되며, PIN으로 자신의 글을 나중에 수정·삭제할 수 있습니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">시급 정보는 얼마나 정확한가요?</div>
+    <div class="faq-a">쌀먹지수의 시급은 유저 제보와 투표로 산출되는 커뮤니티 지표입니다. 신뢰도 비율이 높을수록 많은 유저가 해당 시급이 정확하다고 동의한 것이지만, 실제 수익은 플레이 시간·장비·운 등 다양한 변수에 따라 달라질 수 있습니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">투표를 조작하면 어떻게 되나요?</div>
+    <div class="faq-a">브라우저 지문 기반으로 동일 사용자의 반복 투표를 자동 차단합니다. 조직적인 조작이 감지될 경우 해당 데이터를 무효 처리하며, 반복적 악용 시 IP 차단 등의 조치를 취합니다.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">답변까지 얼마나 걸리나요?</div>
+    <div class="faq-a">개인 운영 사이트이다 보니 모든 문의에 즉시 답변드리긴 어렵습니다. 영업일 기준 7일 이내에 답변드리는 것을 목표로 하며, 긴급한 내용(법적 문제, 심각한 버그)은 우선 처리합니다.</div>
+  </div>
+
+  <div class="response-notice">
+    <strong>📬 답변 시간</strong><br>
+    쌀먹지수는 1인 운영 사이트입니다. 모든 문의는 영업일 기준 7일 이내에 답변드리는 것을 목표로 하며, 시간대에 따라 지연될 수 있습니다. 양해 부탁드립니다.
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-logo">🌾 쌀먹지수</div>
+  <div class="footer-links">
+    <a href="/">메인</a>
+    <a href="/about.html">소개</a>
+    <a href="/privacy.html">개인정보처리방침</a>
+    <a href="/contact.html">문의</a>
+  </div>
+  <div class="footer-copy">
+    © 2026 쌀먹지수 · 게임별 쌀먹 시급 커뮤니티 랭킹<br>
+    본 사이트의 시급 정보는 유저 제보 기반이며, 실제 수익을 보장하지 않습니다.
+  </div>
+</footer>
+
+<div class="toast" id="toast">이메일이 복사되었습니다</div>
+
+<script>
+function copyEmail(){
+  const email='ssalmukindex@gmail.com';
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(email).then(showToast);
+  }else{
+    const t=document.createElement('textarea');
+    t.value=email;document.body.appendChild(t);t.select();
+    try{document.execCommand('copy');showToast();}catch(e){}
+    document.body.removeChild(t);
+  }
+}
+function showToast(){
+  const el=document.getElementById('toast');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+</script>
+</body>
+</html>
