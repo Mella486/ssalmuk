@@ -3393,7 +3393,13 @@ function getDailyWageBand(value){
   return '사실상 거의 없는 편';
 }
 function buildAutoDailyMessage(game,dateKey){
-  const rng=createDailyRng(`${dateKey}:${game.id}:${game.expert}:${game.beginner}:${game.upVotes}:${game.downVotes}`);
+  // 순차 카운터로 매일 다른 시드 보장 + 최근 사용 메시지 추적
+  const counterKey='daily_counter_'+game.id;
+  const counter=lsGet(counterKey,0)+1;
+  lsSet(counterKey,counter);
+  const rng=createDailyRng(`${dateKey}:${game.id}:${counter}:${game.expert}`);
+  const recentKey='daily_recent_'+game.id;
+  const recentUsed=lsGet(recentKey,[]);
   const ctx=getDailyGameContext(game);
   const activity=pickDaily(ctx.activity,rng);
   const expBand=getDailyWageBand(game.expert);
@@ -3525,10 +3531,22 @@ function buildAutoDailyMessage(game,dateKey){
     stance='contrarian';
   }
 
-  const nick=pickDaily(DAILY_NICKS_BY_STANCE[stance]||DAILY_NICKS_BY_STANCE['question'],rng);
-  const color=pickDaily(DAILY_COLORS,rng);
+  // 닉네임: 카운터 기반 순차 회전 (댓글 내용과 분리)
+  const allNicks=DAILY_NICKS;
+  const nick=allNicks[counter%allNicks.length];
+  const color=DAILY_COLORS[(counter*7)%DAILY_COLORS.length];
   const likes=Math.floor(rng()*5);
   const hoursAgo=Math.floor(rng()*10)+1;
+  // 최근 7일 내 같은 내용 방지: body 앞 30자 해시로 비교
+  const bodyFp=body.slice(0,30);
+  if(recentUsed.includes(bodyFp)){
+    // 시드 한 번 더 돌려서 다른 변형 시도
+    const rng2=createDailyRng(`${dateKey}:${game.id}:${counter}:retry`);
+    const retryIdx=Math.floor(rng2()*3);
+    body=body.replace(/\./,['요.','임.','죠.'][retryIdx]);
+  }
+  const updatedRecent=[bodyFp,...recentUsed].slice(0,14);
+  lsSet(recentKey,updatedRecent);
   return {nick,color,body,likes,hoursAgo};
 }
 async function seedDailyChat(){
