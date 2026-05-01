@@ -467,6 +467,12 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   .hero{flex-direction:row;align-items:flex-start;justify-content:space-between;}
   .hero-stats{min-width:280px;}
 }
+/* ── 네비게이션 ── */
+.site-nav{display:flex;gap:12px;padding:6px var(--px);background:var(--bg2);border-bottom:1px solid var(--border);font-size:11px;overflow-x:auto;scrollbar-width:none;}
+.site-nav::-webkit-scrollbar{display:none;}
+.site-nav a{color:var(--muted);text-decoration:none;white-space:nowrap;padding:2px 0;}
+.site-nav a:hover,.site-nav a:active{color:var(--accent);}
+
 /* ── 푸터 ── */
 .site-footer{padding:24px var(--px) calc(24px + env(safe-area-inset-bottom));text-align:center;border-top:1px solid var(--border);margin-top:20px;}
 .footer-logo{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--accent);margin-bottom:4px;}
@@ -709,32 +715,57 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
 </div>
 
 <noscript>
-<div style="padding:20px;max-width:600px;margin:0 auto;color:#f0f0f2;font-family:sans-serif;">
-  <h1 style="color:#c6f135;font-size:24px;">🌾 쌀먹지수 — 게임별 쌀먹(현금화) 시급 랭킹</h1>
-  <p>실제 유저 투표로 만들어지는 게임 쌀먹 시급 랭킹 사이트입니다. 초보·고수 기준 시급, 신뢰도, 직업 비교까지 실시간으로 제공합니다.</p>
-  <h2 style="color:#c6f135;font-size:18px;margin-top:20px;">2026년 4월 기준 시급 랭킹</h2>
-  <ul style="line-height:2;color:#7a7d8a;">
-    <li><strong style="color:#f0f0f2;">리니지M</strong> — 고수 4.5만원/h · 초보 5,000원/h · MMORPG</li>
-    <li><strong style="color:#f0f0f2;">리니지2M</strong> — 고수 3.8만원/h · 초보 4,000원/h · MMORPG</li>
-    <li><strong style="color:#f0f0f2;">리니지W</strong> — 고수 3.5만원/h · 초보 4,000원/h · MMORPG</li>
-    <li><strong style="color:#f0f0f2;">오딘</strong> — 고수 3.5만원/h · 초보 5,000원/h · MMORPG</li>
-    <li><strong style="color:#f0f0f2;">리니지 클래식</strong> — 고수 3.2만원/h · 초보 8,000원/h · MMORPG</li>
-    <li><strong style="color:#f0f0f2;">바람의나라</strong> — 고수 2.8만원/h · 초보 5,000원/h · MMORPG</li>
-    <li><strong style="color:#f0f0f2;">로스트아크</strong> — 고수 2.5만원/h · 초보 6,000원/h · MORPG</li>
-    <li><strong style="color:#f0f0f2;">FC온라인</strong> — 고수 2만원/h · 초보 3,000원/h · 스포츠</li>
-    <li><strong style="color:#f0f0f2;">던전앤파이터</strong> — 고수 1.8만원/h · 초보 4,000원/h · MORPG</li>
-    <li><strong style="color:#f0f0f2;">메이플스토리</strong> — 고수 1.5만원/h · 초보 3,000원/h · MMORPG</li>
-  </ul>
-  <h2 style="color:#c6f135;font-size:18px;margin-top:20px;">주요 기능</h2>
-  <ul style="line-height:2;color:#7a7d8a;">
-    <li>📊 게임별 초보·고수 시급 실시간 랭킹</li>
-    <li>✅ 유저 투표 기반 신뢰도 검증</li>
-    <li>💬 게임별 커뮤니티 토론</li>
-    <li>🔥 신작 게임 쌀먹 예측</li>
-    <li>⚙️ 시급 제보 및 조정 시스템</li>
-  </ul>
-  <p style="margin-top:16px;">이 사이트는 JavaScript를 사용합니다. JavaScript를 활성화하면 실시간 데이터와 투표 기능을 이용할 수 있습니다.</p>
-  <p style="margin-top:12px;"><a href="/about.html" style="color:#c6f135;">사이트 소개</a> · <a href="/guide.html" style="color:#c6f135;">쌀먹 가이드</a> · <a href="/privacy.html" style="color:#c6f135;">개인정보처리방침</a></p>
+<div style="padding:20px;max-width:700px;margin:0 auto;color:#f0f0f2;font-family:sans-serif;line-height:1.8;">
+  <h1 style="color:#c6f135;font-size:24px;margin-bottom:8px;">🌾 쌀먹지수 — 게임별 쌀먹(현금화) 시급 랭킹</h1>
+  <p style="color:#7a7d8a;font-size:14px;">실제 유저 투표로 만들어지는 게임 쌀먹 시급 랭킹 사이트입니다. 20개 이상 게임의 초보·고수 기준 시급, 신뢰도, 직업 비교까지 실시간으로 제공합니다. 매일 업데이트되는 커뮤니티 투표 기반 데이터로, 어떤 게임이 가장 돈이 되는지 한눈에 비교할 수 있습니다.</p>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">📊 2026년 4월 기준 시급 랭킹 TOP 10</h2>
+  <p style="color:#7a7d8a;font-size:13px;">아래 시급은 유저 투표와 제보를 기반으로 집계된 고수 기준 시급입니다. 초보 시급은 일반적으로 고수 시급의 10~30% 수준입니다.</p>
+  <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;">
+    <thead><tr style="border-bottom:1px solid #333;color:#c6f135;text-align:left;"><th style="padding:6px;">순위</th><th style="padding:6px;">게임</th><th style="padding:6px;">장르</th><th style="padding:6px;">고수 시급</th><th style="padding:6px;">초보 시급</th></tr></thead>
+    <tbody style="color:#aaa;">
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">1</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">리니지M</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">4.5만원/h</td><td style="padding:6px;">5,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">2</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">리니지2M</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">3.8만원/h</td><td style="padding:6px;">4,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">3</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">리니지W</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">3.5만원/h</td><td style="padding:6px;">4,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">4</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">오딘</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">3.5만원/h</td><td style="padding:6px;">5,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">5</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">리니지 클래식</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">3.2만원/h</td><td style="padding:6px;">8,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">6</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">바람의나라</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">2.8만원/h</td><td style="padding:6px;">5,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">7</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">로스트아크</td><td style="padding:6px;">MORPG</td><td style="padding:6px;color:#c6f135;">2.5만원/h</td><td style="padding:6px;">6,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">8</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">FC온라인</td><td style="padding:6px;">스포츠</td><td style="padding:6px;color:#c6f135;">2만원/h</td><td style="padding:6px;">3,000원/h</td></tr>
+      <tr style="border-bottom:1px solid #1c1e27;"><td style="padding:6px;">9</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">던전앤파이터</td><td style="padding:6px;">MORPG</td><td style="padding:6px;color:#c6f135;">1.8만원/h</td><td style="padding:6px;">4,000원/h</td></tr>
+      <tr><td style="padding:6px;">10</td><td style="padding:6px;color:#f0f0f2;font-weight:700;">메이플스토리</td><td style="padding:6px;">MMORPG</td><td style="padding:6px;color:#c6f135;">1.5만원/h</td><td style="padding:6px;">3,000원/h</td></tr>
+    </tbody>
+  </table>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">🌾 쌀먹이란?</h2>
+  <p style="color:#7a7d8a;font-size:13px;">쌀먹이란 게임 내에서 획득한 재화(골드, 아이템 등)를 현금으로 전환하여 수익을 얻는 활동입니다. '쌀을 먹고 산다'는 표현에서 유래했으며, 최근에는 합법적인 부업이나 용돈벌이 수단으로 인식이 변화하고 있습니다. 쌀먹지수는 이러한 시급 정보를 유저 투표와 제보를 통해 수집하고, 실시간 랭킹으로 제공하는 국내 최초의 게임 쌀먹 시급 커뮤니티 랭킹 사이트입니다.</p>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">✅ 주요 기능</h2>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">시급 랭킹:</strong> 20개 이상 게임의 초보·고수 기준 시급을 막대 그래프로 비교합니다. 정렬 기준을 변경하여 고수 시급순, 초보 시급순, 신뢰도순, 투표수순으로 확인할 수 있습니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">신뢰도 투표:</strong> "정확해요/틀렸어요" 투표를 통해 각 게임 시급 데이터의 정확도를 커뮤니티가 직접 검증합니다. 틀렸어요가 40%를 넘으면 자동으로 재검토 대상이 됩니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">시급 제보:</strong> 직접 경험한 시급이 다르다면 제보 기능을 통해 조정을 제안할 수 있습니다. 30% 이상 편차가 있는 제보는 신뢰도를 고려하여 낮은 비중으로 반영됩니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">게임별 커뮤니티:</strong> 각 게임의 쌀먹 관련 정보를 자유롭게 공유하고 토론할 수 있는 실시간 채팅 기능을 제공합니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">신작 쌀먹 예측:</strong> 출시 예정 게임의 쌀먹 가능성을 "된다/안된다" 투표로 미리 예측합니다. 출시 후 2주간 실제 시급과 비교하여 예측 정확도를 검증합니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">직업 비교:</strong> 게임 쌀먹 시급을 편의점 알바, 공장 근무, 프리랜서 등 실제 직업의 시급과 비교하여 직관적으로 이해할 수 있습니다.</p>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">🔥 신작 쌀먹 예측</h2>
+  <p style="color:#7a7d8a;font-size:13px;">현재 예측 진행 중인 신작 게임: 솔: 인챈트(넷마블, MMORPG), 오딘Q(카카오게임즈, MMORPG), 크로노 오디세이(카카오게임즈, MMORPG). 각 게임의 예상 시급, 유저 예측 분포, 특징 태그를 확인하고 투표에 참여할 수 있습니다.</p>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">❓ 자주 묻는 질문</h2>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">Q. 쌀먹지수의 시급은 어떻게 산출되나요?</strong><br>유저 제보와 투표를 기반으로 합니다. 제보된 시급은 기존 데이터와 가중 평균으로 합산되며, "정확해요/틀렸어요" 투표를 통해 신뢰도가 검증됩니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">Q. 초보 시급과 고수 시급은 왜 차이가 큰가요?</strong><br>게임 쌀먹은 캐릭터 레벨, 장비, 콘텐츠 접근성에 따라 수익이 크게 달라집니다. 초보 시급은 신규 유저가 기대할 수 있는 현실적 수준이며, 고수 시급은 최적화된 세팅에서의 최대 수익입니다.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">Q. 쌀먹은 합법인가요?</strong><br>게임 내 재화 거래 자체가 불법은 아니지만, 각 게임사의 이용약관에 따라 제한될 수 있습니다. 약관 위반 시 계정 제재를 받을 수 있으므로 각 게임의 정책을 확인하세요.</p>
+  <p style="color:#7a7d8a;font-size:13px;"><strong style="color:#f0f0f2;">Q. 어떤 게임부터 시작하면 좋나요?</strong><br>자신이 이미 플레이하고 있는 게임이 가장 좋은 시작점입니다. 새로 시작한다면 초보 시급이 높고 자동사냥이 가능한 모바일 MMORPG(리니지2M, 검은사막 모바일 등)를 추천합니다.</p>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">🎮 등록된 게임 전체 목록</h2>
+  <p style="color:#7a7d8a;font-size:13px;">리니지 클래식, 리니지M, 리니지2M, 리니지W, 로스트아크, 메이플스토리, 메이플스토리M, 바람의나라, FC온라인, 던전앤파이터, 디아블로4, 원신, 배틀그라운드, 오딘, 블레이드앤소울, 검은사막, 검은사막 모바일, 디아블로 이모탈, 아이온2, 마비노기, 라그나로크, 아키에이지, 뮤 오리진, 서든어택, 카트라이더, 로한M 등 20개 이상의 게임이 등록되어 있으며, 유저 제보를 통해 지속적으로 추가됩니다.</p>
+
+  <h2 style="color:#c6f135;font-size:18px;margin-top:24px;border-bottom:1px solid #222;padding-bottom:4px;">📌 면책 조항</h2>
+  <p style="color:#7a7d8a;font-size:13px;">본 사이트의 시급 정보는 유저 제보와 투표를 기반으로 한 참고 자료이며, 실제 수익을 보장하지 않습니다. 게임 내 재화 거래는 각 게임사의 이용약관에 따라 제한될 수 있으므로, 이용자 본인의 판단과 책임 하에 활동하시기 바랍니다.</p>
+
+  <p style="margin-top:20px;font-size:13px;"><a href="/about.html" style="color:#c6f135;">사이트 소개</a> · <a href="/guide.html" style="color:#c6f135;">쌀먹 가이드 2026</a> · <a href="/privacy.html" style="color:#c6f135;">개인정보처리방침</a></p>
+  <p style="color:#7a7d8a;font-size:11px;margin-top:8px;">© 2026 쌀먹지수 · 문의: ssalmukindex@gmail.com</p>
+  <p style="color:#7a7d8a;font-size:11px;">이 사이트는 JavaScript를 사용합니다. JavaScript를 활성화하면 실시간 데이터, 투표, 커뮤니티 기능을 이용할 수 있습니다.</p>
 </div>
 </noscript>
 
@@ -752,6 +783,12 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
     <button class="btn-submit" onclick="openReportModal()">+ 제보</button>
   </div>
 </header>
+<nav class="site-nav">
+  <a href="/">홈</a>
+  <a href="/about.html">소개</a>
+  <a href="/guide.html">쌀먹 가이드</a>
+  <a href="/privacy.html">개인정보처리방침</a>
+</nav>
 
 <div class="hero">
   <div>
