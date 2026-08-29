@@ -958,14 +958,14 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   <table>
     <thead><tr><th>순위</th><th>게임</th><th>장르</th><th>고수 시급</th><th>초보 시급</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td>리니지M</td><td>MMORPG</td><td>4.5만원/h</td><td>5,000원/h</td></tr>
-      <tr><td>2</td><td>리니지2M</td><td>MMORPG</td><td>3.8만원/h</td><td>4,000원/h</td></tr>
-      <tr><td>3</td><td>리니지W</td><td>MMORPG</td><td>3.5만원/h</td><td>4,000원/h</td></tr>
-      <tr><td>4</td><td>오딘</td><td>MMORPG</td><td>3.5만원/h</td><td>5,000원/h</td></tr>
-      <tr><td>5</td><td>리니지 클래식</td><td>MMORPG</td><td>3.2만원/h</td><td>8,000원/h</td></tr>
-      <tr><td>6</td><td>RF온라인</td><td>MMORPG</td><td>3만원/h</td><td>6,000원/h</td></tr>
-      <tr><td>7</td><td>제우스: 오만의 신</td><td>MMORPG</td><td>3만원/h</td><td>5,000원/h</td></tr>
-      <tr><td>8</td><td>미르4</td><td>MMORPG</td><td>2.9만원/h</td><td>5,000원/h</td></tr>
+      <tr><td>1</td><td>솔: 인챈트</td><td>MMORPG</td><td>4만원/h</td><td>7,000원/h</td></tr>
+      <tr><td>2</td><td>리니지W</td><td>MMORPG</td><td>3.5만원/h</td><td>4,000원/h</td></tr>
+      <tr><td>3</td><td>오딘</td><td>MMORPG</td><td>3.5만원/h</td><td>5,000원/h</td></tr>
+      <tr><td>4</td><td>리니지 클래식</td><td>MMORPG</td><td>3.2만원/h</td><td>8,000원/h</td></tr>
+      <tr><td>5</td><td>RF온라인</td><td>MMORPG</td><td>3만원/h</td><td>6,000원/h</td></tr>
+      <tr><td>6</td><td>제우스: 오만의 신</td><td>MMORPG</td><td>3만원/h</td><td>5,000원/h</td></tr>
+      <tr><td>7</td><td>미르4</td><td>MMORPG</td><td>2.9만원/h</td><td>5,000원/h</td></tr>
+      <tr><td>8</td><td>리니지M</td><td>MMORPG</td><td>2.8만원/h</td><td>5,000원/h</td></tr>
       <tr><td>9</td><td>바람의나라</td><td>MMORPG</td><td>2.8만원/h</td><td>5,000원/h</td></tr>
       <tr><td>10</td><td>아키에이지</td><td>MMORPG</td><td>2.6만원/h</td><td>5,000원/h</td></tr>
     </tbody>
@@ -992,7 +992,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(11,12,14,0.95);backdrop
   <p><span class="faq-q">Q. 어떤 게임부터 시작하면 좋나요?</span><br>자신이 이미 플레이하고 있는 게임이 가장 좋은 시작점입니다. 새로 시작한다면 초보 시급이 높고 자동사냥이 가능한 모바일 MMORPG(리니지2M, 검은사막 모바일 등)를 추천합니다.</p>
 
   <h2>🎮 등록된 게임 전체 목록</h2>
-  <p>리니지 클래식, 리니지M, 리니지2M, 리니지W, 로스트아크, 메이플스토리, 메이플스토리M, 바람의나라, FC온라인, 던전앤파이터, 원신, 배틀그라운드, 오딘, 블레이드앤소울, 검은사막, 검은사막 모바일, 디아블로 이모탈, 아이온2, 마비노기, 라그나로크, 아키에이지, 뮤 오리진, 서든어택, 카트라이더, 제우스: 오만의 신 등 25개 이상의 게임이 등록되어 있으며, 유저 제보를 통해 지속적으로 추가됩니다.</p>
+  <p>리니지 클래식, 리니지M, 리니지2M, 리니지W, 로스트아크, 메이플스토리, 메이플스토리M, 바람의나라, FC온라인, 던전앤파이터, 원신, 배틀그라운드, 오딘, 블레이드앤소울, 검은사막, 검은사막 모바일, 디아블로 이모탈, 아이온2, 마비노기, 라그나로크, 아키에이지, 뮤 오리진, 서든어택, 카트라이더, 제우스: 오만의 신, 솔: 인챈트 등 25개 이상의 게임이 등록되어 있으며, 유저 제보를 통해 지속적으로 추가됩니다.</p>
 
   <h2>📌 면책 조항</h2>
   <p>본 사이트의 시급 정보는 유저 제보와 투표를 기반으로 한 참고 자료이며, 실제 수익을 보장하지 않습니다. 게임 내 재화 거래는 각 게임사의 이용약관에 따라 제한될 수 있으므로, 이용자 본인의 판단과 책임 하에 활동하시기 바랍니다.</p>
@@ -1029,8 +1029,8 @@ const storage = firebase.storage();
 // ── 기본 데이터 ──
 const DEFAULT=[
   {id:'lineage-classic',name:'리니지 클래식',  icon:'⚔️',tag:'MMORPG', beginner:8000, expert:32000,upVotes:74,  downVotes:13, ts:Date.now()-864e5*10,reportCount:100},
-  {id:'lineage-m',      name:'리니지M',        icon:'🏰',tag:'MMORPG', beginner:5000, expert:45000,upVotes:58,  downVotes:11, ts:Date.now()-864e5*8, reportCount:100},
-  {id:'lineage2m',      name:'리니지2M',       icon:'🗡️',tag:'MMORPG', beginner:4000, expert:38000,upVotes:47,  downVotes:9,  ts:Date.now()-864e5*9, reportCount:100},
+  {id:'lineage-m',      name:'리니지M',        icon:'🏰',tag:'MMORPG', beginner:5000, expert:28000,upVotes:58,  downVotes:11, ts:Date.now()-864e5*8, reportCount:100},
+  {id:'lineage2m',      name:'리니지2M',       icon:'🗡️',tag:'MMORPG', beginner:4000, expert:25000,upVotes:47,  downVotes:9,  ts:Date.now()-864e5*9, reportCount:100},
   {id:'lineage-w',      name:'리니지W',        icon:'🌙',tag:'MMORPG', beginner:4000, expert:35000,upVotes:38,  downVotes:7,  ts:Date.now()-864e5*7, reportCount:100},
   {id:'lost-ark',       name:'로스트아크',     icon:'🚢',tag:'MORPG',  beginner:6000, expert:25000,upVotes:143, downVotes:36, ts:Date.now()-864e5*5, reportCount:100},
   {id:'maplestory',     name:'메이플스토리',   icon:'🍁',tag:'MMORPG', beginner:3000, expert:15000,upVotes:98,  downVotes:43, ts:Date.now()-864e5*7, reportCount:100},
@@ -1059,6 +1059,7 @@ const DEFAULT=[
   {id:'wemade-mir',     name:'미르4',          icon:'🐉',tag:'MMORPG', beginner:5000, expert:29000,upVotes:37,  downVotes:10, ts:Date.now()-864e5*7, reportCount:100},
   {id:'vampyr',         name:'뱀피르',         icon:'🧛',tag:'MMORPG', beginner:3000, expert:22000,upVotes:18,  downVotes:4,  ts:Date.now()-864e5*5, reportCount:100},
   {id:'zeus',           name:'제우스: 오만의 신',icon:'🏛️',tag:'MMORPG', beginner:5000, expert:30000,upVotes:12,  downVotes:3,  ts:Date.now()-864e5*3, reportCount:100},
+  {id:'sol-enchant',    name:'솔: 인챈트',      icon:'🌟',tag:'MMORPG', beginner:7000, expert:40000,upVotes:26,  downVotes:6,  ts:Date.now()-864e5*72,reportCount:100},
 ];
 const SEED_POSTS={
   'lineage-classic':[
