@@ -1,0 +1,9 @@
+# HTML is generated and reviewed before commit; Jekyll only publishes the static output.
+exclude:
+  - content
+  - scripts
+  - tests
+  - CLAUDE.md
+  - README.md
+  - REVIEW_READINESS.md
+  - review-cases.csv
